@@ -203,7 +203,7 @@ techpark.customer_master.render_commercial = function (frm, rows, plant_map) {
 
 	let html = M.stats_html([
 		{ label: "Turnover Records", value: rows.length },
-		{ label: "Total Recorded", value: total ? frappe.format(total, { fieldtype: "Currency" }) : "—" },
+		{ label: "Total Recorded", value: total ? format_currency(total) : "—" },
 	]);
 	html += M.table_html(
 		["Financial Year", "Plant", "Amount", "Unit", "Remarks"],
