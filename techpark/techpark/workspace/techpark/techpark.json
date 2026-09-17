@@ -1,0 +1,157 @@
+{
+ "app": "techpark",
+ "charts": [],
+ "content": "[{\"id\":\"hdr001\",\"type\":\"header\",\"data\":{\"text\":\"Customer & Sites\",\"level\":4,\"col\":12}},{\"id\":\"sc001\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"sc002\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plants / Addresses\",\"col\":3}},{\"id\":\"sc003\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"People\",\"col\":3}},{\"id\":\"hdr002\",\"type\":\"header\",\"data\":{\"text\":\"Setup Masters\",\"level\":4,\"col\":12}},{\"id\":\"sc004\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Department\",\"col\":3}},{\"id\":\"sc005\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Division / Channel\",\"col\":3}},{\"id\":\"sc006\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Application\",\"col\":3}},{\"id\":\"sc007\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Product Segment\",\"col\":3}},{\"id\":\"sc008\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Product\",\"col\":3}},{\"id\":\"sc009\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Competitor\",\"col\":3}},{\"id\":\"sc010\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Consumption Type\",\"col\":3}},{\"id\":\"sc011\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Product Category\",\"col\":3}},{\"id\":\"sc012\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Unit\",\"col\":3}},{\"id\":\"hdr003\",\"type\":\"header\",\"data\":{\"text\":\"Sales Data Entry\",\"level\":4,\"col\":12}},{\"id\":\"sc013\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Segment Application\",\"col\":3}},{\"id\":\"sc014\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Wheel Specification\",\"col\":3}},{\"id\":\"sc015\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Wheel Consumption\",\"col\":3}},{\"id\":\"sc016\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Product Production\",\"col\":3}},{\"id\":\"sc017\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Turnover\",\"col\":3}},{\"id\":\"sc018\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Manufacturing Details\",\"col\":3}}]",
+ "creation": "2026-09-16 15:00:00",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "small-file",
+ "idx": 1,
+ "is_hidden": 0,
+ "label": "TechPark",
+ "links": [],
+ "modified": "2026-09-16 15:54:06.666307",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TechPark",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 23.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Customers",
+   "link_to": "CRM Organization",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Plants / Addresses",
+   "link_to": "Address",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "People",
+   "link_to": "Contact",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Department",
+   "link_to": "Customer Department",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Division / Channel",
+   "link_to": "Customer Division",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Application",
+   "link_to": "Customer Application",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Product Segment",
+   "link_to": "Product Segment",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Customer Product",
+   "link_to": "Customer Product",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Competitor",
+   "link_to": "Competitor",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Consumption Type",
+   "link_to": "Consumption Type",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Product Category",
+   "link_to": "Product Category",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Unit",
+   "link_to": "Unit",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Segment Application",
+   "link_to": "Customer Segment Application",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Wheel Specification",
+   "link_to": "Wheel Specification",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Wheel Consumption",
+   "link_to": "Wheel Consumption",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Product Production",
+   "link_to": "Customer Product Production",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Customer Turnover",
+   "link_to": "Customer Turnover",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Manufacturing Detail",
+   "link_to": "Manufacturing Details",
+   "type": "DocType"
+  }
+ ],
+ "title": "TechPark",
+ "type": "Workspace"
+}

@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "DEPT-.####",
+ "creation": "2026-09-16 11:58:48.730274",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "department_name",
+  "department_code",
+  "department_type",
+  "small_text",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "department_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Department name ",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "department_code",
+   "fieldtype": "Data",
+   "label": "Department code",
+   "unique": 1
+  },
+  {
+   "fieldname": "department_type",
+   "fieldtype": "Link",
+   "label": "Department Type",
+   "options": "Department Type"
+  },
+  {
+   "fieldname": "small_text",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active?"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-16 12:08:36.429406",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "Customer Department",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "department_name",
+ "track_changes": 1
+}

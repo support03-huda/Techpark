@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "WCN-.######",
+ "creation": "2026-09-16 13:57:49.534032",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "plant",
+  "department",
+  "divisionchannel",
+  "consumption_type",
+  "application",
+  "quantity",
+  "unit",
+  "frequency",
+  "current_supplier",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer ",
+   "options": "CRM Organization",
+   "reqd": 1
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "label": "Plant",
+   "options": "Address"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Customer Department"
+  },
+  {
+   "fieldname": "divisionchannel",
+   "fieldtype": "Link",
+   "label": "Division/Channel",
+   "options": "Customer Division"
+  },
+  {
+   "fieldname": "consumption_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Consumption Type",
+   "options": "Consumption Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Customer Application"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Unit"
+  },
+  {
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "label": "Frequency",
+   "options": "Monthly\nQuarterly\nHalf-Yearly\nYearly"
+  },
+  {
+   "fieldname": "current_supplier",
+   "fieldtype": "Link",
+   "label": "Current Supplier",
+   "options": "Competitor"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-16 14:06:19.951487",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "Wheel Consumption",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
