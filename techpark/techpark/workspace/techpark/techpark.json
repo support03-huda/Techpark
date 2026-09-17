@@ -29,14 +29,14 @@
    "color": "Blue",
    "doc_view": "List",
    "label": "Customers",
-   "link_to": "CRM Organization",
+   "link_to": "Customer",
    "type": "DocType"
   },
   {
    "color": "Blue",
    "doc_view": "List",
    "label": "Plants / Addresses",
-   "link_to": "Address",
+   "link_to": "Plant",
    "type": "DocType"
   },
   {

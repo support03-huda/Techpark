@@ -1,0 +1,337 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-17 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_customer",
+  "customer_name",
+  "group_name",
+  "customer_type",
+  "industry_domain",
+  "segments",
+  "column_break_main",
+  "customer_code",
+  "customer_status",
+  "territory_region",
+  "annual_turnover_cr",
+  "total_employees",
+  "handled_by",
+  "section_primary_contact",
+  "primary_contact_name",
+  "column_break_pc1",
+  "primary_contact_phone",
+  "column_break_pc2",
+  "primary_contact_email",
+  "section_address",
+  "customer_address",
+  "column_break_addr",
+  "plant_location",
+  "state",
+  "pincode",
+  "tab_contacts",
+  "contacts",
+  "section_audit",
+  "inactivated_by",
+  "column_break_audit",
+  "inactivated_on",
+  "tab_plants",
+  "plants_html",
+  "tab_production",
+  "production_html",
+  "tab_products",
+  "products_html",
+  "tab_commercial",
+  "commercial_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_customer",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "bold": 1,
+   "description": "Legal / trade name of the customer",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "length": 100,
+   "reqd": 1
+  },
+  {
+   "fieldname": "group_name",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Group Name",
+   "length": 100
+  },
+  {
+   "default": "Company",
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "Company\nIndividual"
+  },
+  {
+   "description": "e.g. Automotive & Industrial",
+   "fieldname": "industry_domain",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Industry Domain",
+   "length": 50
+  },
+  {
+   "fieldname": "segments",
+   "fieldtype": "Table MultiSelect",
+   "label": "Segments",
+   "options": "Organizaton Segment"
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_code",
+   "fieldtype": "Data",
+   "label": "Customer Code",
+   "length": 6,
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "default": "Prospect",
+   "fieldname": "customer_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer Status",
+   "options": "Prospect\nActive Customer\nInactive",
+   "reqd": 1
+  },
+  {
+   "fieldname": "territory_region",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Territory / Region",
+   "options": "\nNorth\nSouth\nEast\nWest\nCentral"
+  },
+  {
+   "fieldname": "annual_turnover_cr",
+   "fieldtype": "Float",
+   "label": "Annual Turnover (₹ Cr)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "total_employees",
+   "fieldtype": "Int",
+   "label": "Total Employees"
+  },
+  {
+   "fieldname": "handled_by",
+   "fieldtype": "Table MultiSelect",
+   "label": "Handled By (Agents)",
+   "options": "Customer Agent"
+  },
+  {
+   "fieldname": "section_primary_contact",
+   "fieldtype": "Section Break",
+   "label": "Primary Contact"
+  },
+  {
+   "description": "Filled automatically from the contact marked Primary",
+   "fieldname": "primary_contact_name",
+   "fieldtype": "Data",
+   "label": "Contact Name",
+   "length": 50
+  },
+  {
+   "fieldname": "column_break_pc1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "primary_contact_phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "length": 15,
+   "options": "Phone"
+  },
+  {
+   "fieldname": "column_break_pc2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "primary_contact_email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "length": 50,
+   "options": "Email"
+  },
+  {
+   "fieldname": "section_address",
+   "fieldtype": "Section Break",
+   "label": "Head Office Address"
+  },
+  {
+   "fieldname": "customer_address",
+   "fieldtype": "Small Text",
+   "label": "Customer Address"
+  },
+  {
+   "fieldname": "column_break_addr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "plant_location",
+   "fieldtype": "Data",
+   "label": "Location / City",
+   "length": 50
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State",
+   "length": 50
+  },
+  {
+   "fieldname": "pincode",
+   "fieldtype": "Data",
+   "label": "Pincode",
+   "length": 10
+  },
+  {
+   "fieldname": "tab_contacts",
+   "fieldtype": "Tab Break",
+   "label": "Contacts"
+  },
+  {
+   "fieldname": "contacts",
+   "fieldtype": "Table",
+   "label": "Contacts",
+   "options": "Company contacts"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_audit",
+   "fieldtype": "Section Break",
+   "label": "Inactivation Audit"
+  },
+  {
+   "fieldname": "inactivated_by",
+   "fieldtype": "Link",
+   "label": "Inactivated By",
+   "no_copy": 1,
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_audit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inactivated_on",
+   "fieldtype": "Datetime",
+   "label": "Inactivated On",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_plants",
+   "fieldtype": "Tab Break",
+   "label": "Plants"
+  },
+  {
+   "fieldname": "plants_html",
+   "fieldtype": "HTML",
+   "label": "Plants"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_production",
+   "fieldtype": "Tab Break",
+   "label": "Production"
+  },
+  {
+   "fieldname": "production_html",
+   "fieldtype": "HTML",
+   "label": "Production"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_products",
+   "fieldtype": "Tab Break",
+   "label": "Products"
+  },
+  {
+   "fieldname": "products_html",
+   "fieldtype": "HTML",
+   "label": "Products"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_commercial",
+   "fieldtype": "Tab Break",
+   "label": "Commercial"
+  },
+  {
+   "fieldname": "commercial_html",
+   "fieldtype": "HTML",
+   "label": "Commercial"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-17 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "Customer",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer_name,group_name,industry_domain",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

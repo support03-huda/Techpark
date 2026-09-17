@@ -25,8 +25,8 @@
  "roles": [],
  "sequence_id": 23.0,
  "shortcuts": [
-  {"doctype": "Workspace Shortcut", "label": "Customers", "type": "DocType", "link_to": "CRM Organization", "doc_view": "List", "color": "Blue"},
-  {"doctype": "Workspace Shortcut", "label": "Plants / Addresses", "type": "DocType", "link_to": "Address", "doc_view": "List", "color": "Blue"},
+  {"doctype": "Workspace Shortcut", "label": "Customers", "type": "DocType", "link_to": "Customer", "doc_view": "List", "color": "Blue"},
+  {"doctype": "Workspace Shortcut", "label": "Plants / Addresses", "type": "DocType", "link_to": "Plant", "doc_view": "List", "color": "Blue"},
   {"doctype": "Workspace Shortcut", "label": "People", "type": "DocType", "link_to": "Contact", "doc_view": "List", "color": "Blue"},
   {"doctype": "Workspace Shortcut", "label": "Department", "type": "DocType", "link_to": "Customer Department", "doc_view": "List", "color": "Green"},
   {"doctype": "Workspace Shortcut", "label": "Division / Channel", "type": "DocType", "link_to": "Customer Division", "doc_view": "List", "color": "Green"},

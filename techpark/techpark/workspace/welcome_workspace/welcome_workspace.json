@@ -28,13 +28,13 @@
   {
    "doc_view": "",
    "label": "Customers",
-   "link_to": "CRM Organization",
+   "link_to": "Customer",
    "type": "DocType"
   },
   {
    "doc_view": "",
    "label": "Plants/Addresses",
-   "link_to": "Address",
+   "link_to": "Plant",
    "type": "DocType"
   },
   {
