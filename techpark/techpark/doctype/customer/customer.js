@@ -26,27 +26,29 @@ techpark.customer_master.stats_html = function (stats) {
 	const tiles = stats
 		.map(
 			(s) => `
-			<div style="flex:1; min-width:140px; border:1px solid var(--border-color); border-radius:var(--border-radius); padding:10px 14px;">
-				<div style="font-size:20px; font-weight:600;">${frappe.utils.escape_html(String(s.value))}</div>
-				<div class="text-muted" style="font-size:12px;">${frappe.utils.escape_html(s.label)}</div>
+			<div style="flex:1; min-width:140px; border:1px solid var(--border-color); border-radius:var(--border-radius); padding:12px 16px; background:var(--card-bg, var(--fg-color));">
+				<div style="font-size:22px; font-weight:600; line-height:1.3;">${frappe.utils.escape_html(String(s.value))}</div>
+				<div class="text-muted" style="font-size:12px; margin-top:2px;">${frappe.utils.escape_html(s.label)}</div>
 			</div>`
 		)
 		.join("");
-	return `<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">${tiles}</div>`;
+	return `<div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">${tiles}</div>`;
 };
 
 techpark.customer_master.table_html = function (headers, rows) {
 	if (!rows.length) {
-		return `<p class="text-muted">No records yet.</p>`;
+		return `<p class="text-muted" style="margin-bottom:16px;">No records yet.</p>`;
 	}
 	const head = headers.map((h) => `<th>${frappe.utils.escape_html(h)}</th>`).join("");
 	const body = rows
 		.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
 		.join("");
-	return `<table class="table table-bordered" style="margin-bottom:12px;">
-		<thead><tr>${head}</tr></thead>
-		<tbody>${body}</tbody>
-	</table>`;
+	return `<div style="border:1px solid var(--border-color); border-radius:var(--border-radius); overflow:hidden; margin-bottom:16px;">
+		<table class="table table-bordered" style="margin-bottom:0;">
+			<thead><tr>${head}</tr></thead>
+			<tbody>${body}</tbody>
+		</table>
+	</div>`;
 };
 
 techpark.customer_master.badge = function (text, color) {
@@ -54,11 +56,19 @@ techpark.customer_master.badge = function (text, color) {
 };
 
 techpark.customer_master.add_button_html = function (label) {
-	return `<button type="button" class="btn btn-xs btn-default tp-add-btn">+ ${frappe.utils.escape_html(label)}</button>`;
+	return `<div style="margin-top:8px;">
+		<button type="button" class="btn btn-sm btn-default tp-add-btn">
+			<svg class="icon icon-xs" style="margin-right:4px; vertical-align:-1px;"><use href="#icon-add"></use></svg>${frappe.utils.escape_html(label)}
+		</button>
+	</div>`;
 };
 
 techpark.customer_master.bind_add_button = function (wrapper, doctype, defaults) {
 	wrapper.find(".tp-add-btn").on("click", () => frappe.new_doc(doctype, defaults));
+};
+
+techpark.customer_master.wrap = function (html) {
+	return `<div style="padding:16px 2px 4px;">${html}</div>`;
 };
 
 techpark.customer_master.link = function (doctype, name, label) {
@@ -135,7 +145,7 @@ techpark.customer_master.render_plants = function (frm, plants) {
 		])
 	);
 	html += M.add_button_html("Add Plant");
-	wrapper.html(html);
+	wrapper.html(M.wrap(html));
 	M.bind_add_button(wrapper, "Plant", { customer: frm.doc.name });
 };
 
@@ -164,7 +174,7 @@ techpark.customer_master.render_production = function (frm, rows, plant_map, pro
 		])
 	);
 	html += M.add_button_html("Add Production");
-	wrapper.html(html);
+	wrapper.html(M.wrap(html));
 	M.bind_add_button(wrapper, "Customer Product Production", { customer: frm.doc.name });
 };
 
@@ -192,7 +202,7 @@ techpark.customer_master.render_products = function (frm, production, product_ma
 		})
 	);
 	html += M.add_button_html("Add Production");
-	wrapper.html(html);
+	wrapper.html(M.wrap(html));
 	M.bind_add_button(wrapper, "Customer Product Production", { customer: frm.doc.name });
 };
 
@@ -216,6 +226,6 @@ techpark.customer_master.render_commercial = function (frm, rows, plant_map) {
 		])
 	);
 	html += M.add_button_html("Add Turnover");
-	wrapper.html(html);
+	wrapper.html(M.wrap(html));
 	M.bind_add_button(wrapper, "Customer Turnover", { customer: frm.doc.name });
 };

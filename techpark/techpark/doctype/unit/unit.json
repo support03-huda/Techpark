@@ -2,6 +2,7 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
+ "autoname": "U-.####",
  "creation": "2026-09-16 12:43:55.903976",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -28,10 +29,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-16 12:48:21.399910",
+ "modified": "2026-09-17 16:28:04.522484",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Unit",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -52,5 +54,6 @@
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "unit_name",
  "track_changes": 1
 }
