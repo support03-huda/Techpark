@@ -5,3 +5,4 @@ techpark.patches.rename_customer_to_tp_customer
 
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
+techpark.patches.set_prospect_since

@@ -1,0 +1,34 @@
+{
+ "attach_print": 0,
+ "channel": "System Notification",
+ "condition": "doc.docstatus == 1 and (not doc.follow_up or frappe.db.get_value(\"ToDo\", doc.follow_up, \"status\") == \"Open\")",
+ "condition_type": "Python",
+ "creation": "2026-09-26 18:30:00.000000",
+ "date_changed": "next_action_date",
+ "days_in_advance": 1,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Daily Visit Report",
+ "enabled": 1,
+ "event": "Days Before",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "Your follow-up for **{{ doc.customer_name }}** ({{ doc.plant_name }}) is due **tomorrow, {{ frappe.utils.formatdate(doc.next_action_date) }}**.\n\n**Next action:** {{ doc.next_action }}\n\nFrom visit {{ doc.name }} on {{ frappe.utils.formatdate(doc.visit_date) }} ({{ doc.visit_purpose }}).\n",
+ "message_type": "Markdown",
+ "minutes_offset": 0,
+ "modified": "2026-09-26 18:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "DVR Follow-up Due Tomorrow",
+ "notification_message": "{{ doc.next_action }} (from visit {{ doc.name }} on {{ frappe.utils.formatdate(doc.visit_date) }})",
+ "notification_title": "Follow-up due tomorrow: {{ doc.customer_name }}",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "receiver_by_document_field": "visited_by"
+  }
+ ],
+ "send_system_notification": 0,
+ "send_to_all_assignees": 0,
+ "subject": "Follow-up due tomorrow: {{ doc.customer_name }}"
+}

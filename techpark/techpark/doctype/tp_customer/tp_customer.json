@@ -34,6 +34,7 @@
   "contacts",
   "section_audit",
   "inactivated_by",
+  "prospect_since",
   "column_break_audit",
   "inactivated_on",
   "tab_plants",
@@ -218,7 +219,7 @@
    "collapsible": 1,
    "fieldname": "section_audit",
    "fieldtype": "Section Break",
-   "label": "Inactivation Audit"
+   "label": "Status Audit"
   },
   {
    "fieldname": "inactivated_by",
@@ -226,6 +227,14 @@
    "label": "Inactivated By",
    "no_copy": 1,
    "options": "User",
+   "read_only": 1
+  },
+  {
+   "description": "Set automatically when the status becomes Prospect. The \"Customer in Prospect for 7+ Days\" notification counts from this date.",
+   "fieldname": "prospect_since",
+   "fieldtype": "Date",
+   "label": "Prospect Since",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -297,7 +306,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-26 16:00:00.000000",
+ "modified": "2026-09-26 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

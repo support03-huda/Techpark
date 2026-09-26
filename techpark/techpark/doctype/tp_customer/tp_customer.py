@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, now_datetime, validate_email_address
+from frappe.utils import cint, now_datetime, today, validate_email_address
 
 from techpark.naming import next_numeric_name
 
@@ -22,6 +22,7 @@ class TPCustomer(Document):
 		self.validate_duplicate_name()
 		self.validate_contacts()
 		self.track_inactivation()
+		self.track_prospect()
 
 	def validate_duplicate_name(self):
 		duplicate = frappe.db.get_value(
@@ -64,3 +65,13 @@ class TPCustomer(Document):
 		if not before or before.customer_status != "Inactive":
 			self.inactivated_by = frappe.session.user
 			self.inactivated_on = now_datetime()
+
+	def track_prospect(self):
+		"""Start the prospect clock when the status becomes Prospect (used by the 7-day Prospect notification)."""
+		if self.customer_status != "Prospect":
+			self.prospect_since = None
+			return
+
+		before = self.get_doc_before_save()
+		if not before or before.customer_status != "Prospect":
+			self.prospect_since = today()
