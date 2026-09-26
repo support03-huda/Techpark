@@ -1,4 +1,5 @@
 [pre_model_sync]
+techpark.patches.rename_customer_to_tp_customer
 # Patches added in this section will be executed before doctypes are migrated
 # Read docs to understand patches: https://frappeframework.com/docs/v14/user/en/database-migrations
 

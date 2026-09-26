@@ -1,10 +1,10 @@
 // Copyright (c) 2026, Techpark International
-// Renders the Plants / Production / Products / Commercial tabs with data
+// Renders the Plants / Production / Products / Commercial / Visits tabs with data
 // pulled live from Plant, Customer Product Production, Customer Product,
-// Product Category and Customer Turnover — all via the standard whitelisted
+// Product Category, Customer Turnover and Daily Visit Report — all via the standard whitelisted
 // frappe.client.get_list, no custom server APIs.
 
-frappe.ui.form.on("Customer", {
+frappe.ui.form.on("TP Customer", {
 	refresh(frm) {
 		if (frm.is_new()) return;
 		techpark.customer_master.render(frm);
@@ -121,6 +121,13 @@ techpark.customer_master.render = async function (frm) {
 		M.render_production(frm, production, plant_map, product_map);
 		M.render_products(frm, production, product_map, category_map, plant_map);
 		M.render_commercial(frm, turnovers, plant_map);
+
+		const visits = await M.get_list(
+			"Daily Visit Report",
+			{ customer: frm.doc.name, docstatus: ["<", 2] },
+			["name", "visit_date", "plant", "visit_purpose", "lead_status", "stage_completed", "next_action", "employee_name", "docstatus"]
+		);
+		M.render_visits(frm, visits, plant_map);
 	} catch (e) {
 		console.error("Customer Master: failed to load linked records", e);
 	}
@@ -228,4 +235,33 @@ techpark.customer_master.render_commercial = function (frm, rows, plant_map) {
 	html += M.add_button_html("Add Turnover");
 	wrapper.html(M.wrap(html));
 	M.bind_add_button(wrapper, "Customer Turnover", { customer: frm.doc.name });
+};
+
+techpark.customer_master.render_visits = function (frm, visits, plant_map) {
+	const M = techpark.customer_master;
+	const wrapper = frm.fields_dict.visits_html.$wrapper;
+	visits.sort((a, b) => (a.visit_date < b.visit_date ? 1 : -1));
+	const status_colors = { Prospect: "orange", Won: "green", Lost: "red", "On Hold": "gray" };
+
+	let html = M.stats_html([
+		{ label: "Total Visits", value: visits.length },
+		{ label: "Last Visit", value: visits.length ? frappe.datetime.str_to_user(visits[0].visit_date) : "—" },
+		{ label: "Latest Lead Status", value: visits.length ? visits[0].lead_status : "—" },
+	]);
+	html += M.table_html(
+		["DVR ID", "Date", "Plant", "Purpose", "Lead Status", "Stage", "Next Action", "Employee"],
+		visits.map((v) => [
+			M.link("Daily Visit Report", v.name),
+			frappe.datetime.str_to_user(v.visit_date),
+			frappe.utils.escape_html(plant_map[v.plant]?.plant_name || v.plant || ""),
+			frappe.utils.escape_html(v.visit_purpose || ""),
+			v.docstatus === 0 ? M.badge("Draft", "gray") : M.badge(v.lead_status, status_colors[v.lead_status] || "blue"),
+			`${v.stage_completed || 0}%`,
+			frappe.utils.escape_html(v.next_action || ""),
+			frappe.utils.escape_html(v.employee_name || ""),
+		])
+	);
+	html += M.add_button_html("New DVR");
+	wrapper.html(M.wrap(html));
+	M.bind_add_button(wrapper, "Daily Visit Report", { customer: frm.doc.name });
 };

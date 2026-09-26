@@ -7,7 +7,7 @@ techpark/                                  -> copy into apps/techpark/techpark/
 ├── naming.py                              numeric auto-naming (Customer 10001+, Plant 101+)
 ├── api/customer_master.py                 whitelisted server API used by the page
 └── techpark/                              the "Techpark" module folder
-    ├── doctype/customer/                  Customer doctype (+ form & list JS)
+    ├── doctype/tp_customer/               TP Customer doctype (+ form & list JS) — named "TP Customer" so it does not clash with ERPNext's Customer
     ├── doctype/customer_agent/            child table: "Handled by agents"
     ├── doctype/plant/                     Plant master doctype
     └── page/customer_master/              Desk page /app/customer-master (JS + CSS)

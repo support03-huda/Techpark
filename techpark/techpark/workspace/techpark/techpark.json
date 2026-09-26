@@ -1,7 +1,7 @@
 {
  "app": "techpark",
  "charts": [],
- "content": "[{\"id\":\"s6EslCvcHY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the TechPark workspace!!!</span>\",\"col\":12}},{\"id\":\"BkcGr4nT-E\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Customers\",\"col\":4}},{\"id\":\"UCscmupyw2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Qualified Leads\",\"col\":4}}]",
+ "content": "[{\"id\":\"s6EslCvcHY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the TechPark workspace!!!</span>\",\"col\":12}},{\"id\":\"BkcGr4nT-E\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Customers\",\"col\":4}},{\"id\":\"UCscmupyw2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Qualified Leads\",\"col\":4}},{\"id\":\"dvrVisitsMo\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Visits This Month\",\"col\":4}}]",
  "creation": "2026-09-16 15:00:00",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "TechPark",
  "links": [],
- "modified": "2026-09-17 16:34:47.216983",
+ "modified": "2026-09-26 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark",
@@ -25,6 +25,10 @@
   {
    "label": "Qualified Leads",
    "number_card_name": "Qualified Leads"
+  },
+  {
+   "label": "Visits This Month",
+   "number_card_name": "Visits This Month"
   }
  ],
  "owner": "Administrator",
@@ -32,7 +36,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 23.0,
+ "sequence_id": 23,
  "shortcuts": [],
  "title": "TechPark",
  "type": "Workspace"

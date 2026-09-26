@@ -1,4 +1,4 @@
-frappe.listview_settings["Customer"] = {
+frappe.listview_settings["TP Customer"] = {
 	add_fields: ["customer_status"],
 	get_indicator(doc) {
 		const colors = { "Active Customer": "green", Prospect: "orange", Inactive: "red" };

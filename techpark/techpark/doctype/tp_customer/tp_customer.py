@@ -11,7 +11,7 @@ from techpark.naming import next_numeric_name
 CUSTOMER_CODE_START = 10001
 
 
-class Customer(Document):
+class TPCustomer(Document):
 	def autoname(self):
 		self.name = next_numeric_name(self.doctype, CUSTOMER_CODE_START)
 		self.customer_code = self.name

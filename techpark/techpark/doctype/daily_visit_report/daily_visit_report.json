@@ -1,0 +1,295 @@
+{
+ "actions": [],
+ "autoname": "DVR-.YYYY.-.#####",
+ "creation": "2026-09-26 12:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_visit",
+  "visit_date",
+  "customer",
+  "customer_name",
+  "contact_person",
+  "visit_purpose",
+  "column_break_visit",
+  "visited_by",
+  "employee_name",
+  "plant",
+  "plant_name",
+  "section_lead",
+  "lead_status",
+  "column_break_lead",
+  "lead_stage",
+  "section_progress",
+  "stage_completed",
+  "stage_html",
+  "section_notes",
+  "discussion_notes",
+  "customer_requirement",
+  "column_break_notes",
+  "next_action",
+  "next_action_date",
+  "section_links",
+  "actions_html",
+  "follow_up",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_visit",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "visit_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Visit Date",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "TP Customer",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "bold": 1,
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "description": "Picked from the customer's Contacts tab",
+   "fieldname": "contact_person",
+   "fieldtype": "Autocomplete",
+   "label": "Contact Person"
+  },
+  {
+   "fieldname": "visit_purpose",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Visit Purpose",
+   "options": "Introduction\nReceived Enquiry\nEnquiry Follow-up\nTechnical Discussion\nTrial / Demo\nQuotation Follow-up\nOrder Follow-up\nPayment Follow-up\nComplaint / Service\nRelationship Visit",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_visit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "__user",
+   "fieldname": "visited_by",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "visited_by.full_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Plant",
+   "options": "Plant",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "plant.plant_name",
+   "fieldname": "plant_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Plant Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_lead",
+   "fieldtype": "Section Break",
+   "label": "Lead"
+  },
+  {
+   "default": "Prospect",
+   "description": "What happened as a result of this visit?",
+   "fieldname": "lead_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Lead Status",
+   "options": "Prospect\nWon\nLost\nOn Hold",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_lead",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_stage",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Lead Stage",
+   "options": "\nIntroduction\nReceived Enquiry\nRequirement Shared\nTechnical Discussion\nTrial / Sample\nQuotation Submitted\nNegotiation\nOrder Received"
+  },
+  {
+   "fieldname": "section_progress",
+   "fieldtype": "Section Break",
+   "hide_border": 1
+  },
+  {
+   "fieldname": "stage_completed",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Stage Completed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stage_html",
+   "fieldtype": "HTML",
+   "label": "Stage Progress"
+  },
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break",
+   "label": "Discussion"
+  },
+  {
+   "fieldname": "discussion_notes",
+   "fieldtype": "Text",
+   "label": "Discussion / Meeting Notes",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_requirement",
+   "fieldtype": "Small Text",
+   "label": "Customer Requirement"
+  },
+  {
+   "fieldname": "column_break_notes",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "next_action",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Next Action"
+  },
+  {
+   "description": "A follow-up ToDo is created for the employee on submit",
+   "fieldname": "next_action_date",
+   "fieldtype": "Date",
+   "label": "Next Action By"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "section_links",
+   "fieldtype": "Section Break",
+   "label": "From this Visit"
+  },
+  {
+   "fieldname": "actions_html",
+   "fieldtype": "HTML",
+   "label": "Actions"
+  },
+  {
+   "fieldname": "follow_up",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Follow-up ToDo",
+   "no_copy": 1,
+   "options": "ToDo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Daily Visit Report",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "group": "Created from this visit",
+   "link_doctype": "Visit Expense",
+   "link_fieldname": "daily_visit_report"
+  }
+ ],
+ "modified": "2026-09-26 15:30:35.937564",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "Daily Visit Report",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "customer_name,plant_name,visit_purpose,lead_status",
+ "show_title_field_in_link": 1,
+ "sort_field": "visit_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name",
+ "track_changes": 1
+}

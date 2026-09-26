@@ -43,7 +43,9 @@
   "tab_products",
   "products_html",
   "tab_commercial",
-  "commercial_html"
+  "commercial_html",
+  "tab_visits",
+  "visits_html"
  ],
  "fields": [
   {
@@ -280,14 +282,25 @@
    "fieldname": "commercial_html",
    "fieldtype": "HTML",
    "label": "Commercial"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_visits",
+   "fieldtype": "Tab Break",
+   "label": "Visits"
+  },
+  {
+   "fieldname": "visits_html",
+   "fieldtype": "HTML",
+   "label": "Visits"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-17 10:00:00.000000",
+ "modified": "2026-09-26 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
- "name": "Customer",
+ "name": "TP Customer",
  "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
