@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "creation": "2026-09-30 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "financial_year",
+  "plant",
+  "amount",
+  "unit",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "options": "Customer Turnover",
+   "label": "ID",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "Filled in when the customer is saved"
+  },
+  {
+   "fieldname": "financial_year",
+   "fieldtype": "Data",
+   "label": "Financial Year",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2,
+   "description": "e.g. 2025-26"
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "options": "Plant",
+   "label": "Plant",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "options": "Unit",
+   "label": "Unit",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "in_list_view": 1,
+   "columns": 2
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-30 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Turnover",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}

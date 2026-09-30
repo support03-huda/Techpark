@@ -1,14 +1,63 @@
 // Copyright (c) 2026, Techpark International
-// Renders the Plants / Production / Products / Commercial / Visits tabs with data
-// pulled live from Plant, Customer Product Production, Customer Product,
-// Product Category, Customer Turnover and Daily Visit Report — all via the standard whitelisted
-// frappe.client.get_list, no custom server APIs.
+// Plants / Production / Commercial / Visits tabs: summary tiles above editable
+// tables. The tables are synced to the real Plant, Customer Product Production,
+// Customer Turnover and Daily Visit Report records on save
+// (techpark/customer_sync.py). The Products tab is a read-only summary.
 
 frappe.ui.form.on("TP Customer", {
 	refresh(frm) {
+		const M = techpark.customer_master;
+		// Only this customer's plants in the Production / Commercial / Visits tables
+		for (const table of ["production", "turnovers", "visits"]) {
+			if (frm.fields_dict[table]) {
+				frm.set_query("plant", table, () => ({ filters: { customer: frm.doc.name || "" } }));
+			}
+		}
+		M.set_contact_options(frm);
+		M.render_plants(frm);
 		if (frm.is_new()) return;
-		techpark.customer_master.render(frm);
+		M.render_production(frm);
+		M.render_commercial(frm);
+		M.render_products(frm);
+		M.render_visits(frm);
 	},
+});
+
+// Re-count the tiles as rows are added / edited / removed
+frappe.ui.form.on("TP Customer Plant", {
+	plants_add: (frm) => techpark.customer_master.render_plants(frm),
+	plants_remove: (frm) => techpark.customer_master.render_plants(frm),
+	is_active: (frm) => techpark.customer_master.render_plants(frm),
+});
+frappe.ui.form.on("TP Customer Production", {
+	production_add: (frm) => techpark.customer_master.render_production(frm),
+	production_remove: (frm) => techpark.customer_master.render_production(frm),
+});
+frappe.ui.form.on("TP Customer Turnover", {
+	turnovers_add: (frm) => techpark.customer_master.render_commercial(frm),
+	turnovers_remove: (frm) => techpark.customer_master.render_commercial(frm),
+	amount: (frm) => techpark.customer_master.render_commercial(frm),
+});
+frappe.ui.form.on("TP Customer Visit", {
+	visits_add(frm, cdt, cdn) {
+		// Pre-fill the primary contact and, if there is only one, the plant
+		const primary = (frm.doc.contacts || []).find((c) => c.is_primary);
+		if (primary) frappe.model.set_value(cdt, cdn, "contact_person", techpark.customer_master.contact_label(primary));
+		const active = (frm.doc.plants || []).filter((p) => p.is_active && p.record);
+		if (active.length === 1) frappe.model.set_value(cdt, cdn, "plant", active[0].record);
+		techpark.customer_master.render_visits(frm);
+	},
+	visits_remove: (frm) => techpark.customer_master.render_visits(frm),
+	visit_date: (frm) => techpark.customer_master.render_visits(frm),
+	lead_status(frm, cdt, cdn) {
+		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Order Received");
+		techpark.customer_master.render_visits(frm);
+	},
+});
+frappe.ui.form.on("Company contacts", {
+	name1: (frm) => techpark.customer_master.set_contact_options(frm),
+	designation: (frm) => techpark.customer_master.set_contact_options(frm),
+	contacts_remove: (frm) => techpark.customer_master.set_contact_options(frm),
 });
 
 frappe.provide("techpark.customer_master");
@@ -32,7 +81,7 @@ techpark.customer_master.stats_html = function (stats) {
 			</div>`
 		)
 		.join("");
-	return `<div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">${tiles}</div>`;
+	return `<div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:8px;">${tiles}</div>`;
 };
 
 techpark.customer_master.table_html = function (headers, rows) {
@@ -55,18 +104,6 @@ techpark.customer_master.badge = function (text, color) {
 	return `<span class="indicator-pill ${color}">${frappe.utils.escape_html(text)}</span>`;
 };
 
-techpark.customer_master.add_button_html = function (label) {
-	return `<div style="margin-top:8px;">
-		<button type="button" class="btn btn-sm btn-default tp-add-btn">
-			<svg class="icon icon-xs" style="margin-right:4px; vertical-align:-1px;"><use href="#icon-add"></use></svg>${frappe.utils.escape_html(label)}
-		</button>
-	</div>`;
-};
-
-techpark.customer_master.bind_add_button = function (wrapper, doctype, defaults) {
-	wrapper.find(".tp-add-btn").on("click", () => frappe.new_doc(doctype, defaults));
-};
-
 techpark.customer_master.wrap = function (html) {
 	return `<div style="padding:16px 2px 4px;">${html}</div>`;
 };
@@ -75,125 +112,83 @@ techpark.customer_master.link = function (doctype, name, label) {
 	return `<a href="/app/${frappe.router.slug(doctype)}/${encodeURIComponent(name)}">${frappe.utils.escape_html(label || name)}</a>`;
 };
 
-techpark.customer_master.render = async function (frm) {
-	const M = techpark.customer_master;
-	try {
-		const plants = await M.get_list(
-			"Plant",
-			{ customer: frm.doc.name },
-			["name", "plant_name", "plant_location", "state", "is_active"]
-		);
-		const plant_map = {};
-		plants.forEach((p) => (plant_map[p.name] = p));
-
-		const production = await M.get_list(
-			"Customer Product Production",
-			{ customer: frm.doc.name },
-			["name", "plant", "department", "product", "production_volume", "unit", "frequency"]
-		);
-
-		const product_ids = [...new Set(production.map((r) => r.product).filter(Boolean))];
-		const products = product_ids.length
-			? await M.get_list("Customer Product", { name: ["in", product_ids] }, [
-					"name",
-					"product_name",
-					"product_category",
-					"active",
-			  ])
-			: [];
-		const product_map = {};
-		products.forEach((p) => (product_map[p.name] = p));
-
-		const category_ids = [...new Set(products.map((p) => p.product_category).filter(Boolean))];
-		const categories = category_ids.length
-			? await M.get_list("Product Category", { name: ["in", category_ids] }, ["name", "category_name"])
-			: [];
-		const category_map = {};
-		categories.forEach((c) => (category_map[c.name] = c.category_name));
-
-		const turnovers = await M.get_list(
-			"Customer Turnover",
-			{ customer: frm.doc.name },
-			["name", "plant", "financial_year", "amount", "unit", "remarks"]
-		);
-
-		M.render_plants(frm, plants);
-		M.render_production(frm, production, plant_map, product_map);
-		M.render_products(frm, production, product_map, category_map, plant_map);
-		M.render_commercial(frm, turnovers, plant_map);
-
-		const visits = await M.get_list(
-			"Daily Visit Report",
-			{ customer: frm.doc.name, docstatus: ["<", 2] },
-			["name", "visit_date", "plant", "visit_purpose", "lead_status", "stage_completed", "next_action", "employee_name", "docstatus"]
-		);
-		M.render_visits(frm, visits, plant_map);
-	} catch (e) {
-		console.error("Customer Master: failed to load linked records", e);
-	}
+techpark.customer_master.plant_names = function (frm) {
+	const names = {};
+	(frm.doc.plants || []).forEach((p) => p.record && (names[p.record] = p.plant_name));
+	return names;
 };
 
-techpark.customer_master.render_plants = function (frm, plants) {
+techpark.customer_master.render_plants = function (frm) {
+	if (!frm.fields_dict.plants_html) return;
 	const M = techpark.customer_master;
-	const wrapper = frm.fields_dict.plants_html.$wrapper;
-	const active = plants.filter((p) => p.is_active).length;
-
-	let html = M.stats_html([
-		{ label: "Total Plants", value: plants.length },
-		{ label: "Active Plants", value: active },
-	]);
-	html += M.table_html(
-		["Plant", "Location", "State", "Status"],
-		plants.map((p) => [
-			M.link("Plant", p.name, p.plant_name),
-			frappe.utils.escape_html(p.plant_location || ""),
-			frappe.utils.escape_html(p.state || ""),
-			M.badge(p.is_active ? "Active" : "Inactive", p.is_active ? "green" : "gray"),
-		])
+	const plants = frm.doc.plants || [];
+	frm.fields_dict.plants_html.$wrapper.html(
+		M.wrap(
+			M.stats_html([
+				{ label: "Total Plants", value: plants.length },
+				{ label: "Active Plants", value: plants.filter((p) => p.is_active).length },
+			])
+		)
 	);
-	html += M.add_button_html("Add Plant");
-	wrapper.html(M.wrap(html));
-	M.bind_add_button(wrapper, "Plant", { customer: frm.doc.name });
 };
 
-techpark.customer_master.render_production = function (frm, rows, plant_map, product_map) {
+techpark.customer_master.render_production = function (frm) {
+	if (!frm.fields_dict.production_html) return;
 	const M = techpark.customer_master;
-	const wrapper = frm.fields_dict.production_html.$wrapper;
-	const active_plants = Object.values(plant_map).filter((p) => p.is_active).length;
-
-	let html = M.stats_html([
-		{ label: "Active Plants", value: active_plants },
-		{ label: "Production Lines", value: rows.length },
-		{
-			label: "Annual Turnover",
-			value: frm.doc.annual_turnover_cr ? `₹${frm.doc.annual_turnover_cr} Cr` : "—",
-		},
-	]);
-	html += M.table_html(
-		["Plant", "Department", "Product", "Monthly Qty", "Unit", "Frequency"],
-		rows.map((r) => [
-			frappe.utils.escape_html(plant_map[r.plant]?.plant_name || r.plant || ""),
-			frappe.utils.escape_html(r.department || ""),
-			r.product ? M.link("Customer Product Production", r.name, product_map[r.product]?.product_name || r.product) : "",
-			r.production_volume != null ? frappe.utils.escape_html(String(r.production_volume)) : "",
-			frappe.utils.escape_html(r.unit || ""),
-			frappe.utils.escape_html(r.frequency || ""),
-		])
+	frm.fields_dict.production_html.$wrapper.html(
+		M.wrap(
+			M.stats_html([
+				{ label: "Active Plants", value: (frm.doc.plants || []).filter((p) => p.is_active).length },
+				{ label: "Production Lines", value: (frm.doc.production || []).length },
+				{
+					label: "Annual Turnover",
+					value: frm.doc.annual_turnover_cr ? `₹${frm.doc.annual_turnover_cr} Cr` : "—",
+				},
+			])
+		)
 	);
-	html += M.add_button_html("Add Production");
-	wrapper.html(M.wrap(html));
-	M.bind_add_button(wrapper, "Customer Product Production", { customer: frm.doc.name });
 };
 
-techpark.customer_master.render_products = function (frm, production, product_map, category_map, plant_map) {
+techpark.customer_master.render_commercial = function (frm) {
+	if (!frm.fields_dict.commercial_html) return;
+	const M = techpark.customer_master;
+	const rows = frm.doc.turnovers || [];
+	const total = rows.reduce((sum, r) => sum + (r.amount || 0), 0);
+	frm.fields_dict.commercial_html.$wrapper.html(
+		M.wrap(
+			M.stats_html([
+				{ label: "Turnover Records", value: rows.length },
+				{ label: "Total Recorded", value: total ? format_currency(total) : "—" },
+			])
+		)
+	);
+};
+
+// Products = the distinct products in the Production tab (read-only summary)
+techpark.customer_master.render_products = async function (frm) {
+	if (!frm.fields_dict.products_html) return;
 	const M = techpark.customer_master;
 	const wrapper = frm.fields_dict.products_html.$wrapper;
+	const plant_names = M.plant_names(frm);
 
 	const seen = {};
-	production.forEach((r) => {
+	(frm.doc.production || []).forEach((r) => {
 		if (r.product && !seen[r.product]) seen[r.product] = r.plant;
 	});
 	const product_ids = Object.keys(seen);
+
+	const products = product_ids.length
+		? await M.get_list("Customer Product", { name: ["in", product_ids] }, ["name", "product_name", "product_category", "active"])
+		: [];
+	const product_map = {};
+	products.forEach((p) => (product_map[p.name] = p));
+
+	const category_ids = [...new Set(products.map((p) => p.product_category).filter(Boolean))];
+	const categories = category_ids.length
+		? await M.get_list("Product Category", { name: ["in", category_ids] }, ["name", "category_name"])
+		: [];
+	const category_map = {};
+	categories.forEach((c) => (category_map[c.name] = c.category_name));
 
 	let html = M.stats_html([{ label: "Distinct Products", value: product_ids.length }]);
 	html += M.table_html(
@@ -203,65 +198,86 @@ techpark.customer_master.render_products = function (frm, production, product_ma
 			return [
 				M.link("Customer Product", pid, prod.product_name || pid),
 				frappe.utils.escape_html(category_map[prod.product_category] || ""),
-				frappe.utils.escape_html(plant_map[seen[pid]]?.plant_name || ""),
+				frappe.utils.escape_html(plant_names[seen[pid]] || seen[pid] || ""),
 				M.badge(prod.active ? "Active" : "Inactive", prod.active ? "green" : "gray"),
 			];
 		})
 	);
-	html += M.add_button_html("Add Production");
+	html += `<p class="text-muted small">${__("Products come from the Production tab — add a production row to add a product here.")}</p>`;
 	wrapper.html(M.wrap(html));
-	M.bind_add_button(wrapper, "Customer Product Production", { customer: frm.doc.name });
 };
 
-techpark.customer_master.render_commercial = function (frm, rows, plant_map) {
-	const M = techpark.customer_master;
-	const wrapper = frm.fields_dict.commercial_html.$wrapper;
-	const total = rows.reduce((sum, r) => sum + (r.amount || 0), 0);
+techpark.customer_master.contact_label = function (c) {
+	return c.designation ? `${c.name1} (${c.designation})` : c.name1;
+};
 
-	let html = M.stats_html([
-		{ label: "Turnover Records", value: rows.length },
-		{ label: "Total Recorded", value: total ? format_currency(total) : "—" },
+// Contact Person in the Visits table picks from this customer's Contacts tab
+techpark.customer_master.set_contact_options = function (frm) {
+	if (!frm.fields_dict.visits) return;
+	const options = (frm.doc.contacts || []).filter((c) => c.name1).map(techpark.customer_master.contact_label);
+	frm.fields_dict.visits.grid.update_docfield_property("contact_person", "options", options);
+};
+
+techpark.customer_master.VISIT_PERIODS = {
+	all: { label: __("All"), range: () => null },
+	week: { label: __("This Week"), range: () => [moment().startOf("isoWeek"), moment().endOf("isoWeek")] },
+	month: { label: __("This Month"), range: () => [moment().startOf("month"), moment().endOf("month")] },
+	last_month: {
+		label: __("Last Month"),
+		range: () => [moment().subtract(1, "month").startOf("month"), moment().subtract(1, "month").endOf("month")],
+	},
+};
+
+techpark.customer_master.in_period = function (frm, row) {
+	const range = techpark.customer_master.VISIT_PERIODS[frm.__visit_period || "all"].range();
+	if (!range || !row.visit_date) return true; // unsaved rows without a date always show
+	const d = moment(row.visit_date);
+	return d.isSameOrAfter(range[0], "day") && d.isSameOrBefore(range[1], "day");
+};
+
+// Filter bar + tiles above the Visits table; the table rows are filtered to the same period
+techpark.customer_master.render_visits = function (frm) {
+	if (!frm.fields_dict.visits_html) return;
+	const M = techpark.customer_master;
+	const period = frm.__visit_period || "all";
+	const visits = (frm.doc.visits || []).filter((v) => M.in_period(frm, v));
+	const latest = [...visits].filter((v) => v.visit_date).sort((a, b) => (a.visit_date < b.visit_date ? 1 : -1))[0];
+
+	const buttons = Object.entries(M.VISIT_PERIODS)
+		.map(
+			([key, p]) =>
+				`<button type="button" class="btn btn-xs ${key === period ? "btn-primary" : "btn-default"} tp-visit-period" data-period="${key}">${p.label}</button>`
+		)
+		.join(" ");
+
+	let html = `<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+		<span class="text-muted small" style="margin-right:4px;">${__("Show visits")}:</span>${buttons}
+	</div>`;
+	html += M.stats_html([
+		{ label: __("Visits"), value: visits.length },
+		{ label: __("Submitted"), value: visits.filter((v) => v.status === "Submitted").length },
+		{ label: __("Won"), value: visits.filter((v) => v.lead_status === "Won").length },
+		{ label: __("Last Visit"), value: latest ? frappe.datetime.str_to_user(latest.visit_date) : "—" },
+		{ label: __("Latest Lead Status"), value: latest ? latest.lead_status : "—" },
 	]);
-	html += M.table_html(
-		["Financial Year", "Plant", "Amount", "Unit", "Remarks"],
-		rows.map((r) => [
-			frappe.utils.escape_html(r.financial_year || ""),
-			frappe.utils.escape_html(plant_map[r.plant]?.plant_name || ""),
-			r.amount != null ? frappe.utils.escape_html(String(r.amount)) : "",
-			frappe.utils.escape_html(r.unit || ""),
-			frappe.utils.escape_html(r.remarks || ""),
-		])
-	);
-	html += M.add_button_html("Add Turnover");
-	wrapper.html(M.wrap(html));
-	M.bind_add_button(wrapper, "Customer Turnover", { customer: frm.doc.name });
-};
+	html += `<p class="text-muted small" style="margin:0;">${__(
+		"Add a row to log a visit — it is saved as a Daily Visit Report. Submitted visits can only be changed from the DVR itself (click its DVR ID)."
+	)}</p>`;
 
-techpark.customer_master.render_visits = function (frm, visits, plant_map) {
-	const M = techpark.customer_master;
 	const wrapper = frm.fields_dict.visits_html.$wrapper;
-	visits.sort((a, b) => (a.visit_date < b.visit_date ? 1 : -1));
-	const status_colors = { Prospect: "orange", Won: "green", Lost: "red", "On Hold": "gray" };
-
-	let html = M.stats_html([
-		{ label: "Total Visits", value: visits.length },
-		{ label: "Last Visit", value: visits.length ? frappe.datetime.str_to_user(visits[0].visit_date) : "—" },
-		{ label: "Latest Lead Status", value: visits.length ? visits[0].lead_status : "—" },
-	]);
-	html += M.table_html(
-		["DVR ID", "Date", "Plant", "Purpose", "Lead Status", "Stage", "Next Action", "Employee"],
-		visits.map((v) => [
-			M.link("Daily Visit Report", v.name),
-			frappe.datetime.str_to_user(v.visit_date),
-			frappe.utils.escape_html(plant_map[v.plant]?.plant_name || v.plant || ""),
-			frappe.utils.escape_html(v.visit_purpose || ""),
-			v.docstatus === 0 ? M.badge("Draft", "gray") : M.badge(v.lead_status, status_colors[v.lead_status] || "blue"),
-			`${v.stage_completed || 0}%`,
-			frappe.utils.escape_html(v.next_action || ""),
-			frappe.utils.escape_html(v.employee_name || ""),
-		])
-	);
-	html += M.add_button_html("New DVR");
 	wrapper.html(M.wrap(html));
-	M.bind_add_button(wrapper, "Daily Visit Report", { customer: frm.doc.name });
+	wrapper.find(".tp-visit-period").on("click", function () {
+		frm.__visit_period = $(this).data("period");
+		M.render_visits(frm);
+	});
+	M.filter_visit_rows(frm);
+};
+
+techpark.customer_master.filter_visit_rows = function (frm) {
+	const grid = frm.fields_dict.visits && frm.fields_dict.visits.grid;
+	if (!grid) return;
+	// Let the grid finish (re)drawing its rows before hiding the ones outside the period
+	setTimeout(() => {
+		(grid.grid_rows || []).forEach((gr) => $(gr.wrapper).toggle(techpark.customer_master.in_period(frm, gr.doc)));
+	}, 0);
 };

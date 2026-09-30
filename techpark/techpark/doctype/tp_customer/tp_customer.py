@@ -6,6 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, now_datetime, today, validate_email_address
 
+from techpark.customer_sync import push_to_records
 from techpark.naming import next_numeric_name
 
 CUSTOMER_CODE_START = 10001
@@ -23,6 +24,10 @@ class TPCustomer(Document):
 		self.validate_contacts()
 		self.track_inactivation()
 		self.track_prospect()
+
+	def on_update(self):
+		# Plants / Production / Commercial tab rows -> real records
+		push_to_records(self)
 
 	def validate_duplicate_name(self):
 		duplicate = frappe.db.get_value(

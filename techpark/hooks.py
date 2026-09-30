@@ -152,6 +152,23 @@ app_license = "mit"
 # 	}
 # }
 
+# Keep the TP Customer Plants / Production / Commercial / Visits tabs in step with the real records
+_customer_tab_sync = {
+	"on_update": "techpark.customer_sync.on_record_change",
+	"after_delete": "techpark.customer_sync.on_record_change",
+}
+doc_events = {
+	"Plant": _customer_tab_sync,
+	"Customer Product Production": _customer_tab_sync,
+	"Customer Turnover": _customer_tab_sync,
+	"Daily Visit Report": {
+		**_customer_tab_sync,
+		"on_submit": "techpark.customer_sync.on_record_change",
+		"on_cancel": "techpark.customer_sync.on_record_change",
+		"on_update_after_submit": "techpark.customer_sync.on_record_change",
+	},
+}
+
 # Scheduled Tasks
 # ---------------
 
