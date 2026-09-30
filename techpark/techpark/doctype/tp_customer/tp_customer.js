@@ -261,7 +261,7 @@ techpark.customer_master.render_visits = function (frm) {
 		{ label: __("Latest Lead Status"), value: latest ? latest.lead_status : "—" },
 	]);
 	html += `<p class="text-muted small" style="margin:0;">${__(
-		"Add a row to log a visit — it is saved as a Daily Visit Report. Submitted visits can only be changed from the DVR itself (click its DVR ID)."
+		"Add a row to log a visit — it is saved as a Daily Visit Report. On submitted visits you can still update Lead Status and Lead Stage as the lead progresses; anything else is changed from the DVR itself (click its DVR ID)."
 	)}</p>`;
 
 	const wrapper = frm.fields_dict.visits_html.$wrapper;

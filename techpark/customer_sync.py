@@ -14,8 +14,8 @@ notifications use them):
 Each child row keeps the id of its record in `record`.
 
 Visits are submittable: a new or draft row is submitted on save when
-"Submit DVR on Save" is ticked; submitted visits cannot be edited or removed
-from the grid (amend / cancel them from the DVR itself).
+"Submit DVR on Save" is ticked; on submitted visits only Lead Status / Lead Stage
+can be changed (Allow on Submit); anything else is amended or cancelled from the DVR itself.
 """
 
 import frappe
@@ -96,14 +96,16 @@ def _upsert_rows(customer, table, cfg):
 				record = frappe.get_doc(cfg["doctype"], row.record)
 				if record.customer != customer.name:
 					frappe.throw(_("{0} belongs to another customer.").format(row.record))
-				if any(_norm(record.get(f)) != _norm(v) for f, v in values.items()):
-					if record.docstatus != 0:
+				changed = {f: v for f, v in values.items() if _norm(record.get(f)) != _norm(v)}
+				if changed:
+					# Submitted records only accept their "Allow on Submit" fields (e.g. a DVR's lead status / stage)
+					if record.docstatus != 0 and not set(changed) <= _allowed_on_submit(cfg["doctype"]):
 						frappe.throw(
 							_("{0} is {1} and cannot be edited here. Open it to amend.").format(
 								frappe.bold(record.name), _(DOCSTATUS_LABEL[record.docstatus])
 							)
 						)
-					record.update(values)
+					record.update(changed)
 					record.save()
 			else:
 				record = frappe.get_doc({"doctype": cfg["doctype"], "customer": customer.name, **values}).insert()
@@ -161,6 +163,10 @@ def _check_plant(customer, table, row, values):
 				_(TABLES[table]["label"]), row.idx, frappe.bold(plant)
 			)
 		)
+
+
+def _allowed_on_submit(doctype):
+	return {df.fieldname for df in frappe.get_meta(doctype).fields if df.allow_on_submit}
 
 
 def _norm(value):

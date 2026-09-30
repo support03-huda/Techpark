@@ -53,6 +53,14 @@ class DailyVisitReport(Document):
 		self.create_follow_up()
 		self.activate_customer()
 
+	# Lead Status / Lead Stage are "Allow on Submit": the lead can move forward on a
+	# submitted visit. Frappe skips validate() for these updates, so recompute here.
+	def before_update_after_submit(self):
+		self.set_stage_completed()
+
+	def on_update_after_submit(self):
+		self.activate_customer()
+
 	def on_cancel(self):
 		if self.follow_up and frappe.db.get_value("ToDo", self.follow_up, "status") == "Open":
 			frappe.db.set_value("ToDo", self.follow_up, "status", "Cancelled")
