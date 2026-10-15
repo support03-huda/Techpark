@@ -1,7 +1,36 @@
 {
  "app": "techpark",
- "charts": [],
- "content": "[{\"id\":\"s6EslCvcHY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the TechPark workspace!!!</span>\",\"col\":12}},{\"id\":\"BkcGr4nT-E\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Customers\",\"col\":4}},{\"id\":\"UCscmupyw2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Qualified Leads\",\"col\":4}},{\"id\":\"dvrVisitsMo\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Visits This Month\",\"col\":4}}]",
+ "charts": [
+  {
+   "chart_name": "Monthly Visits",
+   "label": "Monthly Visits"
+  },
+  {
+   "chart_name": "Visits by Purpose",
+   "label": "Visits by Purpose"
+  },
+  {
+   "chart_name": "Lead Pipeline",
+   "label": "Lead Pipeline"
+  },
+  {
+   "chart_name": "Customers by Region",
+   "label": "Customers by Region"
+  },
+  {
+   "chart_name": "Customers by Status",
+   "label": "Customers by Status"
+  },
+  {
+   "chart_name": "Monthly Visit Expenses",
+   "label": "Monthly Visit Expenses"
+  },
+  {
+   "chart_name": "Expenses by Type",
+   "label": "Expenses by Type"
+  }
+ ],
+ "content": "[{\"id\":\"tp00000001\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the TechPark workspace!!!</span>\",\"col\":12}},{\"id\":\"tp00000002\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"New Visit (DVR)\",\"col\":3}},{\"id\":\"tp00000003\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customers\",\"col\":3}},{\"id\":\"tp00000004\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Plants\",\"col\":3}},{\"id\":\"tp00000005\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Visit Expenses\",\"col\":3}},{\"id\":\"tp00000006\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"tp00000007\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Key Numbers</b></span>\",\"col\":12}},{\"id\":\"tp00000008\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Customers\",\"col\":4}},{\"id\":\"tp00000009\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Prospects\",\"col\":4}},{\"id\":\"tp00000010\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Qualified Leads\",\"col\":4}},{\"id\":\"tp00000011\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Plants\",\"col\":4}},{\"id\":\"tp00000012\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Visits This Month\",\"col\":4}},{\"id\":\"tp00000013\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Follow-ups This Week\",\"col\":4}},{\"id\":\"tp00000014\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Orders Won\",\"col\":4}},{\"id\":\"tp00000015\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Expenses This Month\",\"col\":4}},{\"id\":\"tp00000016\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Expense Approvals\",\"col\":4}},{\"id\":\"tp00000017\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"tp00000018\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Visits & Leads</b></span>\",\"col\":12}},{\"id\":\"tp00000019\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Visits\",\"col\":12}},{\"id\":\"tp00000020\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Visits by Purpose\",\"col\":6}},{\"id\":\"tp00000021\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Lead Pipeline\",\"col\":6}},{\"id\":\"tp00000022\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"tp00000023\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Customers</b></span>\",\"col\":12}},{\"id\":\"tp00000024\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Customers by Region\",\"col\":6}},{\"id\":\"tp00000025\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Customers by Status\",\"col\":6}},{\"id\":\"tp00000026\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"tp00000027\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Expenses</b></span>\",\"col\":12}},{\"id\":\"tp00000028\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Visit Expenses\",\"col\":6}},{\"id\":\"tp00000029\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Expenses by Type\",\"col\":6}}]",
  "creation": "2026-09-16 15:00:00",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +42,7 @@
  "is_hidden": 0,
  "label": "TechPark",
  "links": [],
- "modified": "2026-09-26 12:00:00.000000",
+ "modified": "2026-10-15 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark",
@@ -23,12 +52,36 @@
    "number_card_name": "Active Customers"
   },
   {
+   "label": "Prospects",
+   "number_card_name": "Prospects"
+  },
+  {
    "label": "Qualified Leads",
    "number_card_name": "Qualified Leads"
   },
   {
+   "label": "Total Plants",
+   "number_card_name": "Total Plants"
+  },
+  {
    "label": "Visits This Month",
    "number_card_name": "Visits This Month"
+  },
+  {
+   "label": "Follow-ups This Week",
+   "number_card_name": "Follow-ups This Week"
+  },
+  {
+   "label": "Orders Won",
+   "number_card_name": "Orders Won"
+  },
+  {
+   "label": "Expenses This Month",
+   "number_card_name": "Expenses This Month"
+  },
+  {
+   "label": "Pending Expense Approvals",
+   "number_card_name": "Pending Expense Approvals"
   }
  ],
  "owner": "Administrator",
@@ -37,7 +90,36 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 23,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "New",
+   "label": "New Visit (DVR)",
+   "link_to": "Daily Visit Report",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Customers",
+   "link_to": "TP Customer",
+   "type": "DocType"
+  },
+  {
+   "color": "Cyan",
+   "doc_view": "List",
+   "label": "Plants",
+   "link_to": "Plant",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Visit Expenses",
+   "link_to": "Visit Expense",
+   "type": "DocType"
+  }
+ ],
  "title": "TechPark",
  "type": "Workspace"
 }
