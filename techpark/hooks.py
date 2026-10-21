@@ -25,8 +25,8 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/techpark/css/techpark.css"
-# app_include_js = "/assets/techpark/js/techpark.js"
+app_include_css = "/assets/techpark/css/techpark_workspace_tabs.css"
+app_include_js = "/assets/techpark/js/techpark_workspace_tabs.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/techpark/css/techpark.css"
@@ -77,16 +77,18 @@ app_license = "mit"
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "techpark.utils.jinja_methods",
-# 	"filters": "techpark.utils.jinja_filters"
-# }
+jinja = {
+	"methods": ["techpark.customer_card.get_customer_card"],
+}
 
 # Installation
 # ------------
 
 # before_install = "techpark.install.before_install"
-# after_install = "techpark.install.after_install"
+after_install = "techpark.install.after_install"
+
+# Install / refresh the "TechPark Today" dashboard panel from techpark/dashboard_block/
+after_migrate = ["techpark.dashboard.sync_dashboard_block"]
 
 # Uninstallation
 # ------------
@@ -152,15 +154,22 @@ app_license = "mit"
 # 	}
 # }
 
-# Keep the TP Customer Plants / Production / Commercial / Visits tabs in step with the real records
+on_login = "techpark.login.on_login"
+
+# Keep the TP Customer Contacts / Plants / Production / Commercial / Technical / Visits tabs in step with the real records
 _customer_tab_sync = {
 	"on_update": "techpark.customer_sync.on_record_change",
 	"after_delete": "techpark.customer_sync.on_record_change",
 }
 doc_events = {
+	"Customer Contact": _customer_tab_sync,
 	"Plant": _customer_tab_sync,
 	"Customer Product Production": _customer_tab_sync,
 	"Customer Turnover": _customer_tab_sync,
+	"Customer Segment Application": _customer_tab_sync,
+	"Wheel Specification": _customer_tab_sync,
+	"Wheel Consumption": _customer_tab_sync,
+	"Manufacturing Details": _customer_tab_sync,
 	"Daily Visit Report": {
 		**_customer_tab_sync,
 		"on_submit": "techpark.customer_sync.on_record_change",
@@ -278,4 +287,3 @@ doc_events = {
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-

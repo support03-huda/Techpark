@@ -1,0 +1,115 @@
+{
+ "actions": [],
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "consumption_type",
+  "application",
+  "quantity",
+  "unit",
+  "frequency",
+  "current_supplier",
+  "section_details",
+  "plant",
+  "department",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "Filled in when the customer is saved",
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ID",
+   "no_copy": 1,
+   "options": "Wheel Consumption",
+   "read_only": 1
+  },
+  {
+   "fieldname": "consumption_type",
+   "fieldtype": "Link",
+   "label": "Consumption Type",
+   "options": "Consumption Type",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Customer Application",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Unit",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "label": "Frequency",
+   "options": "Monthly\nQuarterly\nHalf-Yearly\nYearly",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "current_supplier",
+   "fieldtype": "Link",
+   "label": "Current Supplier",
+   "options": "TP Competitor",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "More Details"
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "label": "Plant",
+   "options": "Plant"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Customer Department"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Consumption",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}

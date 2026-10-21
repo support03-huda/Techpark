@@ -1,0 +1,192 @@
+{
+ "actions": [],
+ "autoname": "CON-.####",
+ "creation": "2026-10-21 12:00:00.000000",
+ "description": "A person at a customer (Secondary Contacts Master). Also editable from the customer's Contacts tab.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "customer_name",
+  "person_name",
+  "designation",
+  "department",
+  "column_break_main",
+  "phone",
+  "email",
+  "is_primary",
+  "is_active",
+  "section_notes",
+  "notes",
+  "section_audit",
+  "inactivated_by",
+  "column_break_audit",
+  "inactivated_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "TP Customer",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "person_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Person Name",
+   "length": 50,
+   "reqd": 1
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Designation",
+   "length": 50
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Department",
+   "length": 50
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Phone",
+   "length": 15,
+   "options": "Phone"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "length": 50,
+   "options": "Email"
+  },
+  {
+   "default": "0",
+   "description": "The primary contact is copied to the customer's Contact Name / Phone / Email.",
+   "fieldname": "is_primary",
+   "fieldtype": "Check",
+   "label": "Primary"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Active?"
+  },
+  {
+   "fieldname": "section_notes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Shift timing, contact preferences, …",
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes / Comments",
+   "length": 255
+  },
+  {
+   "collapsible": 1,
+   "depends_on": "eval:!doc.is_active",
+   "fieldname": "section_audit",
+   "fieldtype": "Section Break",
+   "label": "Inactivation"
+  },
+  {
+   "fieldname": "inactivated_by",
+   "fieldtype": "Link",
+   "label": "Inactivated By",
+   "no_copy": 1,
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_audit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inactivated_on",
+   "fieldtype": "Datetime",
+   "label": "Inactivated On",
+   "no_copy": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "Customer Contact",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "person_name,customer_name,designation",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "person_name",
+ "track_changes": 1
+}

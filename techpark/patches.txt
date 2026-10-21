@@ -1,5 +1,6 @@
 [pre_model_sync]
 techpark.patches.rename_customer_to_tp_customer
+techpark.patches.rename_competitor_to_tp_competitor
 # Patches added in this section will be executed before doctypes are migrated
 # Read docs to understand patches: https://frappeframework.com/docs/v14/user/en/database-migrations
 
@@ -8,3 +9,9 @@ techpark.patches.rename_customer_to_tp_customer
 techpark.patches.set_prospect_since
 techpark.patches.fill_customer_tabs
 techpark.patches.fill_customer_visits
+techpark.patches.create_customer_contacts
+techpark.patches.dvr_principal_and_purpose
+techpark.patches.customer_entry_update
+techpark.patches.fix_competitor_table
+techpark.patches.fill_customer_technical_tabs
+techpark.patches.remove_qualified_leads_card

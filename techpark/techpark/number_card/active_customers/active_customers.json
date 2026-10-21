@@ -1,5 +1,6 @@
 {
  "aggregate_function_based_on": "",
+ "color": "#2B9A66",
  "creation": "2026-09-17 16:31:02.723844",
  "currency": "",
  "docstatus": 0,
@@ -9,10 +10,10 @@
  "filters_json": "[[\"TP Customer\",\"customer_status\",\"=\",\"Active Customer\"]]",
  "function": "Count",
  "idx": 0,
- "is_public": 0,
+ "is_public": 1,
  "is_standard": 1,
  "label": "Active Customers",
- "modified": "2026-09-26 16:00:00.000000",
+ "modified": "2026-10-21 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Active Customers",
@@ -20,7 +21,7 @@
  "parent_document_type": "",
  "report_function": "Sum",
  "show_full_number": 0,
- "show_percentage_stats": 1,
+ "show_percentage_stats": 0,
  "stats_time_interval": "Daily",
  "type": "Document Type"
 }

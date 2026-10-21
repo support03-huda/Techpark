@@ -1,16 +1,36 @@
 // Copyright (c) 2026, Techpark International
-// Plants / Production / Commercial / Visits tabs: summary tiles above editable
-// tables. The tables are synced to the real Plant, Customer Product Production,
-// Customer Turnover and Daily Visit Report records on save
-// (techpark/customer_sync.py). The Products tab is a read-only summary.
+// Plants / Production / Commercial / Technical / Visits tabs: summary tiles above
+// editable tables. These and the Contacts table are synced to the real records on
+// save (techpark/customer_sync.py). The Products tab is a read-only summary.
 
 frappe.ui.form.on("TP Customer", {
+	setup(frm) {
+		frm.set_query("territory_region", () => ({ filters: { is_active: 1 } }));
+		// Principals is a Table MultiSelect (no grid): its query is set on the field itself
+		frm.set_query("principals", () => ({ filters: { is_active: 1 } }));
+		frm.set_query("plant", "machines", () => ({ filters: { customer: frm.doc.name || "" } }));
+		frm.set_query("principal", "visits", () => ({ filters: { is_active: 1 } }));
+		// Only the selected principal's product categories
+		frm.set_query("supplier_product_category", "visits", (doc, cdt, cdn) => ({
+			filters: { principal: locals[cdt][cdn].principal || "", is_active: 1 },
+		}));
+	},
+
 	refresh(frm) {
 		const M = techpark.customer_master;
-		// Only this customer's plants in the Production / Commercial / Visits tables
-		for (const table of ["production", "turnovers", "visits"]) {
+		// Only this customer's plants in the tables that point to a plant
+		const plant_fields = {
+			production: "plant",
+			turnovers: "plant",
+			visits: "plant",
+			segment_applications: "address",
+			wheel_specs: "plant",
+			consumptions: "plant",
+			manufacturing_details: "plant",
+		};
+		for (const [table, field] of Object.entries(plant_fields)) {
 			if (frm.fields_dict[table]) {
-				frm.set_query("plant", table, () => ({ filters: { customer: frm.doc.name || "" } }));
+				frm.set_query(field, table, () => ({ filters: { customer: frm.doc.name || "" } }));
 			}
 		}
 		M.set_contact_options(frm);
@@ -19,7 +39,10 @@ frappe.ui.form.on("TP Customer", {
 		M.render_production(frm);
 		M.render_commercial(frm);
 		M.render_products(frm);
+		M.render_technical(frm);
 		M.render_visits(frm);
+		// "Customer Card" is the default print format of TP Customer
+		frm.add_custom_button(__("Print Customer Card"), () => frm.print_doc());
 	},
 });
 
@@ -41,7 +64,7 @@ frappe.ui.form.on("TP Customer Turnover", {
 frappe.ui.form.on("TP Customer Visit", {
 	visits_add(frm, cdt, cdn) {
 		// Pre-fill the primary contact and, if there is only one, the plant
-		const primary = (frm.doc.contacts || []).find((c) => c.is_primary);
+		const primary = (frm.doc.contacts || []).find((c) => c.is_primary && c.is_active);
 		if (primary) frappe.model.set_value(cdt, cdn, "contact_person", techpark.customer_master.contact_label(primary));
 		const active = (frm.doc.plants || []).filter((p) => p.is_active && p.record);
 		if (active.length === 1) frappe.model.set_value(cdt, cdn, "plant", active[0].record);
@@ -53,10 +76,25 @@ frappe.ui.form.on("TP Customer Visit", {
 		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Order Received");
 		techpark.customer_master.render_visits(frm);
 	},
+	principal(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
+	},
 });
+for (const [child, table] of [
+	["TP Customer Segment", "segment_applications"],
+	["TP Customer Wheel Spec", "wheel_specs"],
+	["TP Customer Consumption", "consumptions"],
+	["TP Customer Manufacturing", "manufacturing_details"],
+]) {
+	frappe.ui.form.on(child, {
+		[`${table}_add`]: (frm) => techpark.customer_master.render_technical(frm),
+		[`${table}_remove`]: (frm) => techpark.customer_master.render_technical(frm),
+	});
+}
 frappe.ui.form.on("Company contacts", {
-	name1: (frm) => techpark.customer_master.set_contact_options(frm),
+	person_name: (frm) => techpark.customer_master.set_contact_options(frm),
 	designation: (frm) => techpark.customer_master.set_contact_options(frm),
+	is_active: (frm) => techpark.customer_master.set_contact_options(frm),
 	contacts_remove: (frm) => techpark.customer_master.set_contact_options(frm),
 });
 
@@ -207,14 +245,36 @@ techpark.customer_master.render_products = async function (frm) {
 	wrapper.html(M.wrap(html));
 };
 
-techpark.customer_master.contact_label = function (c) {
-	return c.designation ? `${c.name1} (${c.designation})` : c.name1;
+// Technical tab: tiles counting the Segments / Wheel Specs / Consumption / Manufacturing
+// tables below them (the tables are synced to their records on save)
+techpark.customer_master.TECHNICAL_TABLES = [
+	{ table: "segment_applications", title: __("Segments & Applications") },
+	{ table: "wheel_specs", title: __("Wheel Specifications") },
+	{ table: "consumptions", title: __("Abrasive / Wheel Consumption") },
+	{ table: "manufacturing_details", title: __("Manufacturing") },
+];
+
+techpark.customer_master.render_technical = function (frm) {
+	if (!frm.fields_dict.technical_html) return;
+	const M = techpark.customer_master;
+	const tiles = M.TECHNICAL_TABLES.map((t) => ({ label: t.title, value: (frm.doc[t.table] || []).length }));
+	let html = M.stats_html(tiles);
+	html += `<p class="text-muted small" style="margin:0;">${__(
+		"Add rows below and save the customer — each row is saved as its own record (click its ID to open it). A segment's Applications and Competitors are edited on the segment record."
+	)}</p>`;
+	frm.fields_dict.technical_html.$wrapper.html(M.wrap(html));
 };
 
-// Contact Person in the Visits table picks from this customer's Contacts tab
+techpark.customer_master.contact_label = function (c) {
+	return c.designation ? `${c.person_name} (${c.designation})` : c.person_name;
+};
+
+// Contact Person in the Visits table picks from this customer's active contacts
 techpark.customer_master.set_contact_options = function (frm) {
 	if (!frm.fields_dict.visits) return;
-	const options = (frm.doc.contacts || []).filter((c) => c.name1).map(techpark.customer_master.contact_label);
+	const options = (frm.doc.contacts || [])
+		.filter((c) => c.person_name && c.is_active)
+		.map(techpark.customer_master.contact_label);
 	frm.fields_dict.visits.grid.update_docfield_property("contact_person", "options", options);
 };
 

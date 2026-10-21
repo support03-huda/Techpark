@@ -1,0 +1,62 @@
+<div class="tp-today">
+	<div class="tp-head">
+		<div>
+			<div class="tp-hello">TechPark</div>
+			<div class="tp-sub"></div>
+		</div>
+		<div class="tp-actions">
+			<button class="btn btn-primary btn-sm" data-new="Daily Visit Report">+ Add DVR</button>
+			<button class="btn btn-default btn-sm" data-new="TP Customer">+ New Customer</button>
+		</div>
+	</div>
+
+	<div class="tp-tiles">
+		<button class="tp-tile tp-red" data-open="overdue">
+			<span class="tp-tile-num" data-count="overdue">–</span>
+			<span class="tp-tile-label">Overdue follow-ups</span>
+			<span class="tp-tile-hint">Past their due date</span>
+		</button>
+		<button class="tp-tile tp-orange" data-open="due_today">
+			<span class="tp-tile-num" data-count="due_today">–</span>
+			<span class="tp-tile-label">Follow-ups due today</span>
+			<span class="tp-tile-hint">Plan today's calls</span>
+		</button>
+		<button class="tp-tile tp-yellow" data-open="stale_prospects">
+			<span class="tp-tile-num" data-count="stale_prospects">–</span>
+			<span class="tp-tile-label">Prospects 7+ days</span>
+			<span class="tp-tile-hint">Still not converted</span>
+		</button>
+		<button class="tp-tile tp-blue" data-open="pending_expenses">
+			<span class="tp-tile-num" data-count="pending_expenses">–</span>
+			<span class="tp-tile-label">Expenses awaiting approval</span>
+			<span class="tp-tile-hint">Pending claims</span>
+		</button>
+	</div>
+
+	<section class="tp-card">
+		<div class="tp-tabs" role="tablist">
+			<button class="tp-tab active" role="tab" data-tab="follow_ups">
+				Follow-ups <span class="tp-tab-count" data-tab-count="follow_ups"></span>
+			</button>
+			<button class="tp-tab" role="tab" data-tab="recent_visits">
+				Recent visits <span class="tp-tab-count" data-tab-count="recent_visits"></span>
+			</button>
+		</div>
+
+		<div class="tp-pane" data-pane="follow_ups">
+			<div class="tp-pane-head">
+				<span class="tp-pane-note">Overdue first · tick ✓ Done when the follow-up is finished</span>
+				<a class="tp-link" data-open="all_follow_ups">View all</a>
+			</div>
+			<div class="tp-list" data-list="follow_ups"><div class="tp-empty">Loading…</div></div>
+		</div>
+
+		<div class="tp-pane" data-pane="recent_visits" hidden>
+			<div class="tp-pane-head">
+				<span class="tp-trend"></span>
+				<a class="tp-link" data-open="all_visits">View all</a>
+			</div>
+			<div class="tp-list" data-list="recent_visits"><div class="tp-empty">Loading…</div></div>
+		</div>
+	</section>
+</div>

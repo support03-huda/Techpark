@@ -11,12 +11,16 @@
   "customer_type",
   "industry_domain",
   "segments",
+  "principals",
   "column_break_main",
   "customer_code",
   "customer_status",
   "territory_region",
+  "zone",
   "annual_turnover_cr",
+  "group_turnover_cr",
   "total_employees",
+  "established_year",
   "handled_by",
   "section_primary_contact",
   "primary_contact_name",
@@ -48,6 +52,18 @@
   "tab_commercial",
   "commercial_html",
   "turnovers",
+  "tab_technical",
+  "technical_html",
+  "section_segment_applications",
+  "segment_applications",
+  "section_wheel_specs",
+  "wheel_specs",
+  "section_consumptions",
+  "consumptions",
+  "section_manufacturing_details",
+  "manufacturing_details",
+  "section_machines",
+  "machines",
   "tab_visits",
   "visits_html",
   "visits"
@@ -97,6 +113,13 @@
    "options": "Organizaton Segment"
   },
   {
+   "description": "Principals this customer works with. Added automatically when a visit (DVR) for a new principal is submitted.",
+   "fieldname": "principals",
+   "fieldtype": "Table MultiSelect",
+   "label": "Principals",
+   "options": "Customer Principal"
+  },
+  {
    "fieldname": "column_break_main",
    "fieldtype": "Column Break"
   },
@@ -120,10 +143,18 @@
   },
   {
    "fieldname": "territory_region",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Territory / Region",
-   "options": "\nNorth\nSouth\nEast\nWest\nCentral"
+   "options": "Territory Region"
+  },
+  {
+   "fetch_from": "territory_region.zone",
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Zone",
+   "read_only": 1
   },
   {
    "fieldname": "annual_turnover_cr",
@@ -132,9 +163,22 @@
    "precision": "2"
   },
   {
+   "description": "Turnover of the whole group, if the customer belongs to one",
+   "fieldname": "group_turnover_cr",
+   "fieldtype": "Float",
+   "label": "Group Turnover (₹ Cr)",
+   "precision": "2"
+  },
+  {
    "fieldname": "total_employees",
    "fieldtype": "Int",
    "label": "Total Employees"
+  },
+  {
+   "fieldname": "established_year",
+   "fieldtype": "Int",
+   "label": "Established (Year)",
+   "non_negative": 1
   },
   {
    "fieldname": "handled_by",
@@ -214,6 +258,7 @@
    "label": "Contacts"
   },
   {
+   "description": "Each row is saved as a Customer Contact (CON-0001 …) so visits and expenses can link to the person met.",
    "fieldname": "contacts",
    "fieldtype": "Table",
    "label": "Contacts",
@@ -316,6 +361,72 @@
   },
   {
    "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_technical",
+   "fieldtype": "Tab Break",
+   "label": "Technical"
+  },
+  {
+   "fieldname": "technical_html",
+   "fieldtype": "HTML",
+   "label": "Technical"
+  },
+  {
+   "fieldname": "section_segment_applications",
+   "fieldtype": "Section Break",
+   "label": "Segments & Applications"
+  },
+  {
+   "fieldname": "segment_applications",
+   "fieldtype": "Table",
+   "label": "Segments & Applications",
+   "options": "TP Customer Segment"
+  },
+  {
+   "fieldname": "section_wheel_specs",
+   "fieldtype": "Section Break",
+   "label": "Wheel Specifications"
+  },
+  {
+   "fieldname": "wheel_specs",
+   "fieldtype": "Table",
+   "label": "Wheel Specifications",
+   "options": "TP Customer Wheel Spec"
+  },
+  {
+   "fieldname": "section_consumptions",
+   "fieldtype": "Section Break",
+   "label": "Abrasive / Wheel Consumption"
+  },
+  {
+   "fieldname": "consumptions",
+   "fieldtype": "Table",
+   "label": "Abrasive / Wheel Consumption",
+   "options": "TP Customer Consumption"
+  },
+  {
+   "fieldname": "section_manufacturing_details",
+   "fieldtype": "Section Break",
+   "label": "Manufacturing"
+  },
+  {
+   "fieldname": "manufacturing_details",
+   "fieldtype": "Table",
+   "label": "Manufacturing",
+   "options": "TP Customer Manufacturing"
+  },
+  {
+   "fieldname": "section_machines",
+   "fieldtype": "Section Break",
+   "label": "Machine Details"
+  },
+  {
+   "fieldname": "machines",
+   "fieldtype": "Table",
+   "label": "Machines",
+   "options": "Customer Machine"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
    "fieldname": "tab_visits",
    "fieldtype": "Tab Break",
    "label": "Visits"
@@ -332,9 +443,10 @@
    "options": "TP Customer Visit"
   }
  ],
+ "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-30 13:00:00.000000",
+ "modified": "2026-10-21 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",
