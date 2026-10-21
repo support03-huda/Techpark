@@ -1,0 +1,47 @@
+.tp-dashboard-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin: 0 0 16px;
+	padding: 8px;
+	background: var(--bg-light-gray);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	position: sticky;
+	top: 0;
+	z-index: 5;
+}
+
+.tp-dashboard-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 32px;
+	border-radius: 6px;
+}
+
+.tp-dashboard-tab.active {
+	color: var(--text-on-blue);
+	background: var(--primary);
+	border-color: var(--primary);
+}
+
+.tp-dashboard-tab.active .icon {
+	stroke: currentColor;
+}
+
+.tp-dashboard-hidden {
+	display: none !important;
+}
+
+@media (max-width: 576px) {
+	.tp-dashboard-tabs {
+		position: static;
+	}
+
+	.tp-dashboard-tab {
+		flex: 1 1 calc(50% - 8px);
+		justify-content: center;
+	}
+}

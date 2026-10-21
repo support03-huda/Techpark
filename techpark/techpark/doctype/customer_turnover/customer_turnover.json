@@ -2,7 +2,6 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "CTO-.######",
  "creation": "2026-09-16 14:11:24.239183",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -12,6 +11,7 @@
   "financial_year",
   "amount",
   "unit",
+  "frequency",
   "segment_split",
   "remarks"
  ],
@@ -34,7 +34,9 @@
    "fieldname": "financial_year",
    "fieldtype": "Data",
    "label": "Financial Year",
-   "reqd": 1
+   "reqd": 1,
+   "description": "e.g. 2025-2026",
+   "in_list_view": 1
   },
   {
    "fieldname": "amount",
@@ -46,6 +48,13 @@
    "fieldtype": "Link",
    "label": "Unit",
    "options": "Unit"
+  },
+  {
+   "default": "Annual",
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "label": "Frequency",
+   "options": "Annual\nHalf-Yearly\nQuarterly\nMonthly"
   },
   {
    "fieldname": "segment_split",
@@ -62,11 +71,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-26 16:00:00.000000",
+ "modified": "2026-10-21 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Turnover",
- "naming_rule": "Expression",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {

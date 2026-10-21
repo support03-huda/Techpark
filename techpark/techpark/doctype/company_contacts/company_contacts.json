@@ -8,56 +8,103 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "name1",
+  "record",
+  "person_name",
   "designation",
   "phone",
   "email",
-  "is_primary"
+  "is_primary",
+  "section_details",
+  "department",
+  "is_active",
+  "column_break_details",
+  "notes"
  ],
  "fields": [
   {
-   "fieldname": "name1",
+   "columns": 1,
+   "description": "Filled in when the customer is saved",
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Contact Code",
+   "no_copy": 1,
+   "options": "Customer Contact",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "person_name",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Name",
-   "reqd": 1,
-   "columns": 2
+   "length": 50,
+   "reqd": 1
   },
   {
+   "columns": 2,
    "fieldname": "designation",
    "fieldtype": "Data",
-   "label": "Designation",
    "in_list_view": 1,
-   "columns": 2
+   "label": "Designation",
+   "length": 50
   },
   {
+   "columns": 2,
    "fieldname": "phone",
    "fieldtype": "Data",
-   "label": "Phone",
    "in_list_view": 1,
-   "columns": 2
+   "label": "Phone",
+   "length": 15
   },
   {
+   "columns": 2,
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email",
    "in_list_view": 1,
-   "columns": 3
+   "label": "Email",
+   "length": 50
   },
   {
+   "columns": 1,
    "default": "0",
    "fieldname": "is_primary",
    "fieldtype": "Check",
-   "label": "Primary",
    "in_list_view": 1,
-   "columns": 1
+   "label": "Primary"
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department",
+   "length": 50
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active?"
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes / Comments",
+   "length": 255
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-09-30 13:00:00.000000",
+ "modified": "2026-10-21 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Company contacts",

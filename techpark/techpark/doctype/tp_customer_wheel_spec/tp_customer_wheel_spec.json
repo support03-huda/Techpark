@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "application",
+  "wheel_specification",
+  "wheel_size",
+  "wheel_speed",
+  "pitch_range",
+  "annual_consumption",
+  "consumption_unit",
+  "section_details",
+  "plant",
+  "segment",
+  "competitors",
+  "department",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "Filled in when the customer is saved",
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ID",
+   "no_copy": 1,
+   "options": "Wheel Specification",
+   "read_only": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Customer Application",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "wheel_specification",
+   "fieldtype": "Data",
+   "label": "Specification",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "wheel_size",
+   "fieldtype": "Data",
+   "label": "Size",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "wheel_speed",
+   "fieldtype": "Data",
+   "label": "Speed",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "pitch_range",
+   "fieldtype": "Data",
+   "label": "Pitch Range",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "annual_consumption",
+   "fieldtype": "Float",
+   "label": "Annual Consumption",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "consumption_unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Unit",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "More Details"
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "label": "Plant",
+   "options": "Plant"
+  },
+  {
+   "fieldname": "segment",
+   "fieldtype": "Link",
+   "label": "Segment",
+   "options": "Product Segment"
+  },
+  {
+   "fieldname": "competitors",
+   "fieldtype": "Link",
+   "label": "Competitors",
+   "options": "TP Competitor"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Customer Department"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Wheel Spec",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}

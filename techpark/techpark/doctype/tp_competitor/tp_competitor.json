@@ -15,7 +15,7 @@
    "fieldname": "competitor_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Competitor name",
+   "label": "Competitor Name",
    "reqd": 1,
    "unique": 1
   },
@@ -29,10 +29,10 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-16 12:47:53.974490",
+ "modified": "2026-10-21 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
- "name": "Competitor",
+ "name": "TP Competitor",
  "naming_rule": "Autoincrement",
  "owner": "Administrator",
  "permissions": [
@@ -56,5 +56,6 @@
  "sort_order": "DESC",
  "states": [],
  "title_field": "competitor_name",
- "track_changes": 1
+ "track_changes": 1,
+ "description": "Competitor brands seen on customer lines (Tyrolit, GNO, Cumi, ...). Named TP Competitor because ERPNext has its own Competitor DocType."
 }

@@ -4,7 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, now_datetime, today, validate_email_address
+from frappe.utils import cint, getdate, now_datetime, today, validate_email_address
 
 from techpark.customer_sync import push_to_records
 from techpark.naming import next_numeric_name
@@ -21,12 +21,14 @@ class TPCustomer(Document):
 		self.customer_name = (self.customer_name or "").strip()
 		self.customer_code = self.name
 		self.validate_duplicate_name()
+		self.validate_established_year()
+		self.remove_duplicate_principals()
 		self.validate_contacts()
 		self.track_inactivation()
 		self.track_prospect()
 
 	def on_update(self):
-		# Plants / Production / Commercial tab rows -> real records
+		# Contacts / Plants / Production / Commercial / Visits tab rows -> real records
 		push_to_records(self)
 
 	def validate_duplicate_name(self):
@@ -43,11 +45,24 @@ class TPCustomer(Document):
 				title=_("Duplicate Customer"),
 			)
 
+	def validate_established_year(self):
+		if self.established_year and not (1800 <= cint(self.established_year) <= getdate().year):
+			frappe.throw(_("Established (Year) must be a year between 1800 and {0}.").format(getdate().year))
+
+	def remove_duplicate_principals(self):
+		seen = set()
+		for row in list(self.get("principals") or []):
+			if row.principal in seen:
+				self.remove(row)
+			seen.add(row.principal)
+
 	def validate_contacts(self):
 		primaries = []
 		for row in self.get("contacts") or []:
 			if row.get("email"):
 				validate_email_address(row.email, throw=True)
+			if not cint(row.get("is_active")):
+				row.is_primary = 0
 			if cint(row.get("is_primary")):
 				primaries.append(row)
 
@@ -56,7 +71,7 @@ class TPCustomer(Document):
 
 		if primaries:
 			primary = primaries[0]
-			self.primary_contact_name = primary.get("name1")
+			self.primary_contact_name = primary.get("person_name")
 			self.primary_contact_phone = primary.get("phone")
 			self.primary_contact_email = primary.get("email")
 

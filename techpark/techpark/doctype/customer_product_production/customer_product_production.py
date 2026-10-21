@@ -1,9 +1,13 @@
-# Copyright (c) 2026, SWSPL and contributors
-# For license information, please see license.txt
+# Copyright (c) 2026, Techpark International
+"""Customer Product & Production — code 301, 302 … as per the approved client spec."""
 
-# import frappe
 from frappe.model.document import Document
+
+from techpark.naming import next_numeric_name
+
+PRODUCTION_CODE_START = 301
 
 
 class CustomerProductProduction(Document):
-	pass
+	def autoname(self):
+		self.name = next_numeric_name(self.doctype, PRODUCTION_CODE_START)

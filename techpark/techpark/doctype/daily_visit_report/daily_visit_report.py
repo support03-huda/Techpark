@@ -10,6 +10,8 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate, today
 
+DISTRIBUTOR = "TP"
+
 # Lead stage -> % of the sales cycle completed. Keep in sync with daily_visit_report.js.
 STAGE_PROGRESS = {
 	"Introduction": 10,
@@ -25,8 +27,11 @@ STAGE_PROGRESS = {
 
 class DailyVisitReport(Document):
 	def validate(self):
+		self.distributor = DISTRIBUTOR
 		self.validate_dates()
 		self.validate_plant()
+		self.validate_segment()
+		self.validate_supplier_product_category()
 		self.set_stage_completed()
 
 	def validate_dates(self):
@@ -44,6 +49,32 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def validate_segment(self):
+		if not self.segment_application:
+			return
+		segment_customer = frappe.db.get_value("Customer Segment Application", self.segment_application, "customer")
+		if segment_customer != self.customer:
+			frappe.throw(
+				_("Segment / Line {0} does not belong to customer {1}.").format(
+					frappe.bold(self.segment_application), frappe.bold(self.customer_name or self.customer)
+				)
+			)
+
+	def validate_supplier_product_category(self):
+		if not self.supplier_product_category:
+			return
+		category_principal = frappe.db.get_value(
+			"Supplier Product Category", self.supplier_product_category, "principal"
+		)
+		if category_principal != self.principal:
+			frappe.throw(
+				_("Supplier Product Category {0} belongs to {1}, not {2}.").format(
+					frappe.bold(self.supplier_product_category),
+					frappe.bold(category_principal),
+					frappe.bold(self.principal or _("no principal")),
+				)
+			)
+
 	def set_stage_completed(self):
 		if self.lead_status == "Won":
 			self.lead_stage = "Order Received"
@@ -52,6 +83,7 @@ class DailyVisitReport(Document):
 	def on_submit(self):
 		self.create_follow_up()
 		self.activate_customer()
+		self.add_principal_to_customer()
 
 	# Lead Status / Lead Stage are "Allow on Submit": the lead can move forward on a
 	# submitted visit. Frappe skips validate() for these updates, so recompute here.
@@ -90,3 +122,19 @@ class DailyVisitReport(Document):
 			frappe.get_doc("TP Customer", self.customer).add_comment(
 				"Info", _("Marked Active Customer from won visit {0}").format(self.name)
 			)
+
+	def add_principal_to_customer(self):
+		"""Keep the customer's Principals list (principal-wise customer list) in step with its visits."""
+		if not self.principal:
+			return
+		filters = {"parenttype": "TP Customer", "parentfield": "principals", "parent": self.customer}
+		if frappe.db.exists("Customer Principal", {**filters, "principal": self.principal}):
+			return
+		frappe.get_doc(
+			{
+				"doctype": "Customer Principal",
+				**filters,
+				"principal": self.principal,
+				"idx": frappe.db.count("Customer Principal", filters) + 1,
+			}
+		).db_insert()

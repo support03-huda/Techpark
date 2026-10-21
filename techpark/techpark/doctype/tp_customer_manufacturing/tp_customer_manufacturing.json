@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "plant",
+  "manufacturing_type",
+  "process_name",
+  "process_type",
+  "section_details",
+  "description",
+  "department",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "Filled in when the customer is saved",
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ID",
+   "no_copy": 1,
+   "options": "Manufacturing Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "plant",
+   "fieldtype": "Link",
+   "label": "Plant",
+   "options": "Plant",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "manufacturing_type",
+   "fieldtype": "Data",
+   "label": "Manufacturing Type",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "process_name",
+   "fieldtype": "Data",
+   "label": "Process Name",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "process_type",
+   "fieldtype": "Select",
+   "label": "Process Type",
+   "options": "In-House\nOutsourced\nHybrid",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "More Details"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Customer Department"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Manufacturing",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}

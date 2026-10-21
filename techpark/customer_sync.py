@@ -1,10 +1,11 @@
 # Copyright (c) 2026, Techpark International
 """Two-way sync between the TP Customer tabs and the real records.
 
-The Plants / Production / Commercial / Visits tabs on TP Customer are editable
-child tables. The real Plant, Customer Product Production, Customer Turnover
-and Daily Visit Report records stay the source of truth (reports, links and
-notifications use them):
+The Contacts / Plants / Production / Commercial / Technical / Visits tabs on TP
+Customer are editable child tables. The real Customer Contact, Plant, Customer
+Product Production, Customer Turnover, Customer Segment Application, Wheel
+Specification, Wheel Consumption, Manufacturing Details and Daily Visit Report
+records stay the source of truth (reports, links and notifications use them):
 
 * Saving a TP Customer pushes its rows to the records: new row -> new record,
   edited row -> record updated, removed row -> record deleted.
@@ -12,6 +13,9 @@ notifications use them):
   (doc_events in hooks.py), so the tab never goes stale.
 
 Each child row keeps the id of its record in `record`.
+
+A segment's Applications / Competitors are tables themselves, which a child row
+cannot hold: the row shows them as read-only text and they are edited on the record.
 
 Visits are submittable: a new or draft row is submitted on save when
 "Submit DVR on Save" is ticked; on submitted visits only Lead Status / Lead Stage
@@ -24,6 +28,12 @@ from frappe.utils import cstr, flt, now_datetime
 
 # Order matters: plants first, the other tables may point to them.
 TABLES = {
+	"contacts": {
+		"label": "Contacts",
+		"child": "Company contacts",
+		"doctype": "Customer Contact",
+		"fields": ["person_name", "designation", "department", "phone", "email", "is_primary", "is_active", "notes"],
+	},
 	"plants": {
 		"label": "Plants",
 		"child": "TP Customer Plant",
@@ -40,7 +50,42 @@ TABLES = {
 		"label": "Commercial",
 		"child": "TP Customer Turnover",
 		"doctype": "Customer Turnover",
-		"fields": ["financial_year", "plant", "amount", "unit", "remarks"],
+		"fields": ["financial_year", "plant", "amount", "unit", "frequency", "remarks"],
+	},
+	"segment_applications": {
+		"label": "Segments & Applications",
+		"child": "TP Customer Segment",
+		"doctype": "Customer Segment Application",
+		"fields": [
+			"address", "segment", "sub_category_line", "monthly_vloume", "unit", "segment_turnover_cr",
+			"department", "application_notes", "remarks",
+		],
+		# read-only Applications / Competitors text (lambda: the function is defined below)
+		"display": lambda names: _segment_display(names),
+	},
+	"wheel_specs": {
+		"label": "Wheel Specifications",
+		"child": "TP Customer Wheel Spec",
+		"doctype": "Wheel Specification",
+		"fields": [
+			"application", "wheel_specification", "wheel_size", "wheel_speed", "pitch_range", "annual_consumption",
+			"consumption_unit", "plant", "segment", "competitors", "department", "remarks",
+		],
+	},
+	"consumptions": {
+		"label": "Abrasive / Wheel Consumption",
+		"child": "TP Customer Consumption",
+		"doctype": "Wheel Consumption",
+		"fields": [
+			"consumption_type", "application", "quantity", "unit", "frequency", "current_supplier",
+			"plant", "department", "remarks",
+		],
+	},
+	"manufacturing_details": {
+		"label": "Manufacturing",
+		"child": "TP Customer Manufacturing",
+		"doctype": "Manufacturing Details",
+		"fields": ["plant", "manufacturing_type", "process_name", "process_type", "description", "department", "remarks"],
 	},
 	"visits": {
 		"label": "Visits",
@@ -50,6 +95,8 @@ TABLES = {
 			"visit_date",
 			"plant",
 			"visit_purpose",
+			"principal",
+			"supplier_product_category",
 			"contact_person",
 			"lead_status",
 			"lead_stage",
@@ -150,13 +197,15 @@ def _copy_back(row, record, cfg):
 	changes = {f: record.get(f) for f in cfg["fields"] if _norm(row.get(f)) != _norm(record.get(f))}
 	if cfg.get("submittable"):
 		changes.update(status=DOCSTATUS_LABEL[record.docstatus], stage_completed=record.stage_completed)
+	if cfg.get("display"):
+		changes.update(cfg["display"]([record.name]).get(record.name, {}))
 	if changes:
 		row.update(changes)
 		row.db_set(changes, update_modified=False)
 
 
 def _check_plant(customer, table, row, values):
-	plant = values.get("plant")
+	plant = values.get("plant") or values.get("address")  # segments call their plant "address"
 	if table != "plants" and plant and frappe.db.get_value("Plant", plant, "customer") != customer.name:
 		frappe.throw(
 			_("{0} row #{1}: plant {2} does not belong to this customer.").format(
@@ -173,6 +222,27 @@ def _norm(value):
 	if isinstance(value, (int, float)):
 		return flt(value)
 	return cstr(value)
+
+
+def _segment_display(names):
+	"""Applications / Competitors of each segment as text for the read-only row columns."""
+	names = [n for n in names if n]
+	if not names:
+		return {}
+	text = {n: {"applications_text": [], "competitors_text": []} for n in names}
+	for child, field, master, title, key in (
+		("Customer Application S", "application_name", "Customer Application", "application_name", "applications_text"),
+		("Competitor S", "competitor_name", "TP Competitor", "competitor_name", "competitors_text"),
+	):
+		rows = frappe.get_all(child, filters={"parent": ("in", names)}, fields=["parent", field], order_by="idx asc")
+		ids = list({r[field] for r in rows if r[field]})
+		titles = {
+			str(m.name): m[title] for m in frappe.get_all(master, filters={"name": ("in", ids or [""])}, fields=["name", title])
+		}
+		for r in rows:
+			if r[field]:
+				text[r.parent][key].append(titles.get(str(r[field]), str(r[field])))
+	return {n: {k: ", ".join(v) for k, v in t.items()} for n, t in text.items()}
 
 
 # ---------------------------------------------------------------------------
@@ -204,9 +274,12 @@ def pull_from_records(customer, tables=None):
 			filters["docstatus"] = ("<", 2)  # cancelled visits drop off the tab
 		records = frappe.get_all(cfg["doctype"], filters=filters, fields=fields, order_by="creation asc")
 
+		display = cfg["display"]([r.name for r in records]) if cfg.get("display") else {}
+
 		frappe.db.delete(cfg["child"], {"parent": customer, "parenttype": "TP Customer", "parentfield": table})
 		for idx, r in enumerate(records, 1):
 			row = {f: r.get(f) for f in cfg["fields"]}
+			row.update(display.get(r.name, {}))
 			if submittable:
 				row.update(
 					status=DOCSTATUS_LABEL[r.docstatus],

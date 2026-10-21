@@ -1,6 +1,7 @@
 // Copyright (c) 2026, Techpark International
-// Customer Visit (DVR): plant/contact pickers scoped to the customer, a live
-// stage-progress bar, and Expense / Follow-up cards for the visit.
+// Customer Visit (DVR): plant/contact/segment pickers scoped to the customer,
+// product categories scoped to the principal,
+// a live stage-progress bar, and Expense / Follow-up cards for the visit.
 
 frappe.provide("techpark.dvr");
 
@@ -20,6 +21,15 @@ frappe.ui.form.on("Daily Visit Report", {
 	setup(frm) {
 		frm.set_query("plant", () => ({
 			filters: { customer: frm.doc.customer || "", is_active: 1 },
+		}));
+		frm.set_query("segment_application", () => {
+			const filters = { customer: frm.doc.customer || "" };
+			if (frm.doc.plant) filters.address = frm.doc.plant;
+			return { filters };
+		});
+		frm.set_query("principal", () => ({ filters: { is_active: 1 } }));
+		frm.set_query("supplier_product_category", () => ({
+			filters: { principal: frm.doc.principal || "", is_active: 1 },
 		}));
 	},
 
@@ -43,6 +53,7 @@ frappe.ui.form.on("Daily Visit Report", {
 	async customer(frm) {
 		frm.set_value("plant", "");
 		frm.set_value("contact_person", "");
+		frm.set_value("segment_application", "");
 		if (!frm.doc.customer) return;
 		techpark.dvr.load_contacts(frm);
 
@@ -53,6 +64,14 @@ frappe.ui.form.on("Daily Visit Report", {
 			limit: 2,
 		});
 		if (plants.length === 1) frm.set_value("plant", plants[0].name);
+	},
+
+	plant(frm) {
+		frm.set_value("segment_application", "");
+	},
+
+	principal(frm) {
+		frm.set_value("supplier_product_category", "");
 	},
 
 	lead_status(frm) {
@@ -66,14 +85,16 @@ frappe.ui.form.on("Daily Visit Report", {
 });
 
 techpark.dvr.load_contacts = async function (frm) {
-	const customer = await frappe.db.get_doc("TP Customer", frm.doc.customer);
-	const options = (customer.contacts || []).map((c) =>
-		c.designation ? `${c.name1} (${c.designation})` : c.name1
-	);
-	frm.set_df_property("contact_person", "options", options);
-	const primary = (customer.contacts || []).find((c) => c.is_primary);
+	const contacts = await frappe.db.get_list("Customer Contact", {
+		filters: { customer: frm.doc.customer, is_active: 1 },
+		fields: ["person_name", "designation", "is_primary"],
+		limit: 0,
+	});
+	const label = (c) => (c.designation ? `${c.person_name} (${c.designation})` : c.person_name);
+	frm.set_df_property("contact_person", "options", contacts.map(label));
+	const primary = contacts.find((c) => c.is_primary);
 	if (primary && !frm.doc.contact_person && frm.doc.docstatus === 0) {
-		frm.set_value("contact_person", primary.designation ? `${primary.name1} (${primary.designation})` : primary.name1);
+		frm.set_value("contact_person", label(primary));
 	}
 };
 

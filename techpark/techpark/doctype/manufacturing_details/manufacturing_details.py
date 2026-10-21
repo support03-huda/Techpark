@@ -1,9 +1,13 @@
-# Copyright (c) 2026, SWSPL and contributors
-# For license information, please see license.txt
+# Copyright (c) 2026, Techpark International
+"""Manufacturing Details — code 901, 902 … as per the approved client spec."""
 
-# import frappe
 from frappe.model.document import Document
+
+from techpark.naming import next_numeric_name
+
+MANUFACTURING_CODE_START = 901
 
 
 class ManufacturingDetails(Document):
-	pass
+	def autoname(self):
+		self.name = next_numeric_name(self.doctype, MANUFACTURING_CODE_START)

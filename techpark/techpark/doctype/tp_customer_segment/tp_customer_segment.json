@@ -1,0 +1,131 @@
+{
+ "actions": [],
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "address",
+  "segment",
+  "sub_category_line",
+  "monthly_vloume",
+  "unit",
+  "segment_turnover_cr",
+  "section_details",
+  "department",
+  "application_notes",
+  "remarks",
+  "applications_text",
+  "competitors_text"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "Filled in when the customer is saved",
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ID",
+   "no_copy": 1,
+   "options": "Customer Segment Application",
+   "read_only": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Plant",
+   "options": "Plant",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "segment",
+   "fieldtype": "Link",
+   "label": "Segment",
+   "options": "Product Segment",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "description": "Specific line / machine, e.g. Line 4 - Roller Face Grinding",
+   "fieldname": "sub_category_line",
+   "fieldtype": "Data",
+   "label": "Sub-category / Line",
+   "length": 100,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "monthly_vloume",
+   "fieldtype": "Float",
+   "label": "Monthly Volume",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "label": "Unit",
+   "options": "Unit",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "segment_turnover_cr",
+   "fieldtype": "Float",
+   "label": "Segment Turnover (CR)",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "More Details"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Customer Department"
+  },
+  {
+   "fieldname": "application_notes",
+   "fieldtype": "Text",
+   "label": "Application Notes"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "description": "Edit on the record itself (click the ID)",
+   "fieldname": "applications_text",
+   "fieldtype": "Small Text",
+   "label": "Applications",
+   "read_only": 1
+  },
+  {
+   "description": "Edit on the record itself (click the ID)",
+   "fieldname": "competitors_text",
+   "fieldtype": "Small Text",
+   "label": "Competitors on Line",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Segment",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}
