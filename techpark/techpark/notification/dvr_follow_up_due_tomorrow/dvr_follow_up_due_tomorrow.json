@@ -1,6 +1,6 @@
 {
  "attach_print": 0,
- "channel": "System Notification",
+ "channel": "Email",
  "condition": "doc.docstatus == 1 and (not doc.follow_up or frappe.db.get_value(\"ToDo\", doc.follow_up, \"status\") == \"Open\")",
  "condition_type": "Python",
  "creation": "2026-09-26 18:30:00.000000",
@@ -16,7 +16,7 @@
  "message": "Your follow-up for **{{ doc.customer_name }}** ({{ doc.plant_name }}) is due **tomorrow, {{ frappe.utils.formatdate(doc.next_action_date) }}**.\n\n**Next action:** {{ doc.next_action }}\n\nFrom visit {{ doc.name }} on {{ frappe.utils.formatdate(doc.visit_date) }} ({{ doc.visit_purpose }}).\n",
  "message_type": "Markdown",
  "minutes_offset": 0,
- "modified": "2026-09-26 18:30:00.000000",
+ "modified": "2026-10-24 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "DVR Follow-up Due Tomorrow",
@@ -28,7 +28,7 @@
    "receiver_by_document_field": "visited_by"
   }
  ],
- "send_system_notification": 0,
+ "send_system_notification": 1,
  "send_to_all_assignees": 0,
  "subject": "Follow-up due tomorrow: {{ doc.customer_name }}"
 }

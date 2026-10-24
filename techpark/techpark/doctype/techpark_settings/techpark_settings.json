@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "creation": "2026-10-24 17:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_reminders",
+  "reminder_emails",
+  "follow_up_escalation_days",
+  "column_break_reminders",
+  "prospect_cold_days",
+  "not_visited_days",
+  "section_lock",
+  "lock_days"
+ ],
+ "fields": [
+  {
+   "description": "Daily: overdue follow-ups escalated to managers. Weekly (Monday): cold prospects, customers not visited, principal-wise pending actions. Quarterly: customer data still missing. Each goes as a bell notification and an email.",
+   "fieldname": "section_reminders",
+   "fieldtype": "Section Break",
+   "label": "Reminders"
+  },
+  {
+   "default": "1",
+   "description": "Untick to send the reminders as bell notifications only.",
+   "fieldname": "reminder_emails",
+   "fieldtype": "Check",
+   "label": "Also Send Reminders by Email"
+  },
+  {
+   "default": "3",
+   "description": "A follow-up still open this many days after its date is escalated to the managers.",
+   "fieldname": "follow_up_escalation_days",
+   "fieldtype": "Int",
+   "label": "Escalate Follow-ups After (Days)"
+  },
+  {
+   "fieldname": "column_break_reminders",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "description": "A Prospect with no visit for this many days is reported as gone cold.",
+   "fieldname": "prospect_cold_days",
+   "fieldtype": "Int",
+   "label": "Prospect Gone Cold After (Days)"
+  },
+  {
+   "default": "60",
+   "description": "An Active Customer with no visit for this many days is reported as not visited.",
+   "fieldname": "not_visited_days",
+   "fieldtype": "Int",
+   "label": "Customer Not Visited After (Days)"
+  },
+  {
+   "fieldname": "section_lock",
+   "fieldtype": "Section Break",
+   "label": "Edit Lock"
+  },
+  {
+   "default": "15",
+   "description": "Visit Reports older than this (from the day they were entered) can be changed only by a Sales Manager or an admin.",
+   "fieldname": "lock_days",
+   "fieldtype": "Int",
+   "label": "Lock Entries for Salespeople After (Days)"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-24 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TechPark Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "TechPark Approver",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Sales Manager"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

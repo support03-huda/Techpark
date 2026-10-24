@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/techpark/css/techpark_workspace_tabs.css"
-app_include_js = "/assets/techpark/js/techpark_workspace_tabs.js"
+app_include_js = ["/assets/techpark/js/techpark.js", "/assets/techpark/js/techpark_workspace_tabs.js"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/techpark/css/techpark.css"
@@ -134,13 +134,22 @@ after_migrate = ["techpark.dashboard.sync_dashboard_block"]
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+# A Sales User sees only their own DVRs; managers and admins see all of them.
+permission_query_conditions = {
+	"Daily Visit Report": "techpark.permission.dvr_query_conditions",
+}
+
+has_permission = {
+	"Daily Visit Report": "techpark.permission.dvr_has_permission",
+}
+
+# Refuse changes to entries locked for salespeople.
+_lock = {
+	"validate": "techpark.permission.check_lock",
+	"before_update_after_submit": "techpark.permission.check_lock",
+	"before_cancel": "techpark.permission.check_lock",
+	"on_trash": "techpark.permission.check_lock",
+}
 
 # Document Events
 # ---------------
@@ -154,7 +163,8 @@ after_migrate = ["techpark.dashboard.sync_dashboard_block"]
 # 	}
 # }
 
-on_login = "techpark.login.on_login"
+# A login made through Sign Up waits for an approver before it can be used.
+on_login = ["techpark.registration.check_approval", "techpark.login.on_login"]
 
 # Keep the TP Customer Contacts / Plants / Production / Commercial / Technical / Visits tabs in step with the real records
 _customer_tab_sync = {
@@ -162,6 +172,11 @@ _customer_tab_sync = {
 	"after_delete": "techpark.customer_sync.on_record_change",
 }
 doc_events = {
+	# Sign Up: no set-password email yet, and a TP Registration for the approvers.
+	"User": {
+		"before_insert": "techpark.registration.on_user_before_insert",
+		"after_insert": "techpark.registration.on_user_insert",
+	},
 	"Customer Contact": _customer_tab_sync,
 	"Plant": _customer_tab_sync,
 	"Customer Product Production": _customer_tab_sync,
@@ -172,6 +187,7 @@ doc_events = {
 	"Manufacturing Details": _customer_tab_sync,
 	"Daily Visit Report": {
 		**_customer_tab_sync,
+		**_lock,
 		"on_submit": "techpark.customer_sync.on_record_change",
 		"on_cancel": "techpark.customer_sync.on_record_change",
 		"on_update_after_submit": "techpark.customer_sync.on_record_change",
@@ -180,6 +196,18 @@ doc_events = {
 
 # Scheduled Tasks
 # ---------------
+
+# Reminder digests: bell notification + email to each salesperson / manager.
+scheduler_events = {
+	"cron": {
+		# Every day at 09:00: overdue follow-ups escalated to managers.
+		"0 9 * * *": ["techpark.reminders.daily"],
+		# Mondays at 09:00: cold prospects, customers not visited, pending actions by principal.
+		"0 9 * * 1": ["techpark.reminders.weekly"],
+		# 09:00 on the first day of every quarter: customer data still missing.
+		"0 9 1 1,4,7,10 *": ["techpark.reminders.quarterly"],
+	},
+}
 
 # scheduler_events = {
 # 	"all": [

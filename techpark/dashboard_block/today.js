@@ -141,10 +141,6 @@ function open_list(key) {
 		due_today: ["ToDo", { reference_type: "Daily Visit Report", status: "Open", date: data.today, ...mine }],
 		all_follow_ups: ["ToDo", { reference_type: "Daily Visit Report", status: "Open", ...mine }],
 		stale_prospects: ["TP Customer", { customer_status: "Prospect", prospect_since: ["<=", data.prospect_cutoff] }],
-		pending_expenses: [
-			"Visit Expense",
-			{ approval_status: "Pending", ...(data.team ? {} : { employee: frappe.session.user }) },
-		],
 		all_visits: ["Daily Visit Report", data.team ? {} : { visited_by: frappe.session.user }],
 	};
 	const [doctype, filters] = routes[key];

@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Techpark International
 """Customer Contact — a person at a customer (Secondary Contacts Master), code CON-0001 …
 
-Standalone so expenses and visits can link to the person met. The customer's
+Standalone so visits can link to the person met. The customer's
 Contacts tab mirrors these records (techpark/customer_sync.py).
 """
 

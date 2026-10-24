@@ -1,6 +1,6 @@
 {
  "attach_print": 0,
- "channel": "System Notification",
+ "channel": "Email",
  "condition": "doc.customer_status == \"Prospect\"",
  "condition_type": "Python",
  "creation": "2026-09-26 18:30:00.000000",
@@ -16,7 +16,7 @@
  "message": "**{{ doc.customer_name }}** ({{ doc.name }}) has been a Prospect since **{{ frappe.utils.formatdate(doc.prospect_since) }}**.\n\nPlease plan a follow-up visit or call to move it forward.\n",
  "message_type": "Markdown",
  "minutes_offset": 0,
- "modified": "2026-09-26 18:30:00.000000",
+ "modified": "2026-10-24 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Prospect Over 7 Days",
@@ -28,7 +28,7 @@
    "receiver_by_document_field": "agent,handled_by"
   }
  ],
- "send_system_notification": 0,
+ "send_system_notification": 1,
  "send_to_all_assignees": 0,
  "subject": "{{ doc.customer_name }} has been a Prospect for over 7 days"
 }

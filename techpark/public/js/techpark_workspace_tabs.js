@@ -6,7 +6,6 @@
 		{ key: "overview", label: "Overview", icon: "layout-dashboard" },
 		{ key: "visits", label: "Visits & Leads", icon: "map-pin" },
 		{ key: "customers", label: "Customers", icon: "users" },
-		{ key: "expenses", label: "Expenses", icon: "wallet" },
 	];
 
 	let enhance_timer = null;
@@ -47,7 +46,6 @@
 
 		if (text.includes("Visits & Leads")) return "visits";
 		if (text === "Customers") return "customers";
-		if (text === "Expenses") return "expenses";
 
 		return "overview";
 	}

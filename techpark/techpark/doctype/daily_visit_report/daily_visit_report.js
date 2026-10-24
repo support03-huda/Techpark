@@ -1,7 +1,7 @@
 // Copyright (c) 2026, Techpark International
 // Customer Visit (DVR): plant/contact/segment pickers scoped to the customer,
 // product categories scoped to the principal,
-// a live stage-progress bar, and Expense / Follow-up cards for the visit.
+// a live stage-progress bar, and a Follow-up card for the visit.
 
 frappe.provide("techpark.dvr");
 
@@ -27,6 +27,9 @@ frappe.ui.form.on("Daily Visit Report", {
 			if (frm.doc.plant) filters.address = frm.doc.plant;
 			return { filters };
 		});
+		frm.set_query("contact", () => ({
+			filters: { customer: frm.doc.customer || "", is_active: 1 },
+		}));
 		frm.set_query("principal", () => ({ filters: { is_active: 1 } }));
 		frm.set_query("supplier_product_category", () => ({
 			filters: { principal: frm.doc.principal || "", is_active: 1 },
@@ -34,17 +37,18 @@ frappe.ui.form.on("Daily Visit Report", {
 	},
 
 	onload(frm) {
-		if (frm.doc.customer) techpark.dvr.load_contacts(frm);
+		if (frm.is_new() && frm.doc.customer) techpark.dvr.load_contacts(frm);
 	},
 
 	refresh(frm) {
+		// Only managers and admins may file a visit for someone else.
+		const is_manager = ["Sales Manager", "TechPark Approver", "System Manager"].some((r) => frappe.user.has_role(r));
+		frm.set_df_property("visited_by", "read_only", is_manager ? 0 : 1);
+		techpark.show_lock(frm);
 		frm.toggle_display("stage_completed", false);
 		techpark.dvr.render_stage(frm);
 		if (!frm.is_new()) techpark.dvr.render_actions(frm);
 
-		if (frm.doc.docstatus < 2 && !frm.is_new()) {
-			frm.add_custom_button(__("Expense"), () => techpark.dvr.new_expense(frm), __("Create"));
-		}
 		if (frm.doc.customer) {
 			frm.add_custom_button(__("Open Customer"), () => frappe.set_route("Form", "TP Customer", frm.doc.customer));
 		}
@@ -52,7 +56,7 @@ frappe.ui.form.on("Daily Visit Report", {
 
 	async customer(frm) {
 		frm.set_value("plant", "");
-		frm.set_value("contact_person", "");
+		frm.set_value("contact", "");
 		frm.set_value("segment_application", "");
 		if (!frm.doc.customer) return;
 		techpark.dvr.load_contacts(frm);
@@ -84,18 +88,15 @@ frappe.ui.form.on("Daily Visit Report", {
 	},
 });
 
+// A new visit starts with the customer's primary contact.
 techpark.dvr.load_contacts = async function (frm) {
-	const contacts = await frappe.db.get_list("Customer Contact", {
-		filters: { customer: frm.doc.customer, is_active: 1 },
-		fields: ["person_name", "designation", "is_primary"],
-		limit: 0,
+	if (frm.doc.contact || frm.doc.docstatus !== 0) return;
+	const primary = await frappe.db.get_list("Customer Contact", {
+		filters: { customer: frm.doc.customer, is_active: 1, is_primary: 1 },
+		fields: ["name"],
+		limit: 1,
 	});
-	const label = (c) => (c.designation ? `${c.person_name} (${c.designation})` : c.person_name);
-	frm.set_df_property("contact_person", "options", contacts.map(label));
-	const primary = contacts.find((c) => c.is_primary);
-	if (primary && !frm.doc.contact_person && frm.doc.docstatus === 0) {
-		frm.set_value("contact_person", label(primary));
-	}
+	if (primary.length) frm.set_value("contact", primary[0].name);
 };
 
 techpark.dvr.update_progress = function (frm) {
@@ -122,12 +123,6 @@ techpark.dvr.render_stage = function (frm) {
 
 techpark.dvr.render_actions = async function (frm) {
 	const wrapper = frm.fields_dict.actions_html.$wrapper;
-	const expenses = await frappe.db.get_list("Visit Expense", {
-		filters: { daily_visit_report: frm.doc.name },
-		fields: ["amount"],
-		limit: 0,
-	});
-	const spent = expenses.reduce((s, e) => s + (e.amount || 0), 0);
 
 	let follow = __("Set a Next Action to track it");
 	if (frm.doc.follow_up) {
@@ -145,21 +140,11 @@ techpark.dvr.render_actions = async function (frm) {
 		</div>`;
 
 	wrapper.html(`<div style="display:flex; gap:12px; flex-wrap:wrap;">
-		${card("expense", __("Expense"), expenses.length ? __("{0} claimed · {1}", [expenses.length, format_currency(spent)]) : __("Link expense to DVR"))}
 		${card("followup", __("Follow-up"), frappe.utils.escape_html(follow))}
 	</div>`);
 
 	wrapper.find(".tp-dvr-card").on("click", function () {
 		const key = $(this).data("key");
-		if (key === "expense") techpark.dvr.new_expense(frm);
 		if (key === "followup" && frm.doc.follow_up) frappe.set_route("Form", "ToDo", frm.doc.follow_up);
-	});
-};
-
-techpark.dvr.new_expense = function (frm) {
-	frappe.new_doc("Visit Expense", {
-		daily_visit_report: frm.doc.name,
-		expense_date: frm.doc.visit_date,
-		employee: frm.doc.visited_by,
 	});
 };

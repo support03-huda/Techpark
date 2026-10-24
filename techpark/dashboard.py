@@ -53,7 +53,6 @@ def get_today():
 			"overdue": sum(1 for f in follow_ups if f["state"] == "overdue"),
 			"due_today": sum(1 for f in follow_ups if f["state"] == "today"),
 			"stale_prospects": _stale_prospects(user, team, now),
-			"pending_expenses": _pending_expenses(user, team),
 		},
 		"follow_ups": follow_ups[:8],
 		"follow_ups_total": len(follow_ups),
@@ -134,13 +133,6 @@ def _stale_prospects(user, team, now):
 		mine = frappe.get_all("Customer Agent", filters={"parenttype": "TP Customer", "agent": user}, pluck="parent")
 		filters["name"] = ("in", mine or [""])
 	return frappe.db.count("TP Customer", filters)
-
-
-def _pending_expenses(user, team):
-	filters = {"approval_status": "Pending"}
-	if not team:
-		filters["employee"] = user
-	return frappe.db.count("Visit Expense", filters)
 
 
 def _recent_visits(user, team):

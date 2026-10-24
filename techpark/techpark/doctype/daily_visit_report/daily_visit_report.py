@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Techpark International
 """Daily Visit Report (DVR) — one record per customer visit.
 
-Captures the visit once; demand and expense records are created from it, and
+Captures the visit once; demand records are created from it, and
 the next action becomes a ToDo for the employee so the follow-up is tracked.
 """
 
@@ -9,6 +9,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate, today
+
+from techpark.permission import is_locked, is_manager
 
 DISTRIBUTOR = "TP"
 
@@ -25,14 +27,76 @@ STAGE_PROGRESS = {
 }
 
 
+def contact_label(contact):
+	"""How a contact is shown on the customer's Visits tab: "Name (Designation)"."""
+	return f"{contact.person_name} ({contact.designation})" if contact.designation else contact.person_name
+
+
+def find_contact(customer, label):
+	"""Customer Contact of this customer whose name or "Name (Designation)" is `label`."""
+	label = (label or "").strip()
+	contacts = frappe.get_all(
+		"Customer Contact",
+		filters={"customer": customer},
+		fields=["name", "person_name", "designation"],
+		order_by="is_active desc, is_primary desc, creation",
+	)
+	for contact in contacts:
+		if label in (contact_label(contact), contact.person_name):
+			return contact.name
+	return None
+
+
 class DailyVisitReport(Document):
+	def onload(self):
+		self.set_onload("locked", is_locked(self))
+
 	def validate(self):
 		self.distributor = DISTRIBUTOR
+		self.validate_visited_by()
 		self.validate_dates()
 		self.validate_plant()
+		self.set_contact()
 		self.validate_segment()
 		self.validate_supplier_product_category()
 		self.set_stage_completed()
+
+	def set_contact(self):
+		"""Contact Person links the Customer Contact; Contact Person Name (also set from the
+		customer's Visits tab) is kept in step with it."""
+		# has_value_changed() is always true on a new visit, so only an existing one can be "cleared".
+		existing = not self.is_new()
+		if existing and self.has_value_changed("contact") and not self.contact:
+			self.contact_person = None
+		elif not self.contact or (
+			existing and not self.has_value_changed("contact") and self.has_value_changed("contact_person")
+		):
+			self.contact = find_contact(self.customer, self.contact_person) if self.contact_person else None
+
+		if not self.contact:
+			self.contact_designation = self.contact_phone = None
+			return
+		contact = frappe.db.get_value(
+			"Customer Contact", self.contact, ["customer", "person_name", "designation", "phone"], as_dict=True
+		)
+		if contact.customer != self.customer:
+			frappe.throw(
+				_("Contact {0} does not belong to customer {1}.").format(
+					frappe.bold(contact.person_name), frappe.bold(self.customer_name or self.customer)
+				)
+			)
+		self.contact_person = contact_label(contact)
+		self.contact_designation = contact.designation
+		self.contact_phone = contact.phone
+
+	def validate_visited_by(self):
+		"""A Sales User files visits only for themselves; managers may pick anyone."""
+		if is_manager():
+			return
+		if self.is_new():
+			self.visited_by = frappe.session.user
+		elif self.has_value_changed("visited_by"):
+			frappe.throw(_("Only a manager can change the Employee of a visit."))
 
 	def validate_dates(self):
 		if getdate(self.visit_date) > getdate(today()):

@@ -27,9 +27,42 @@ REGIONS = {
 }
 
 
+# Industries in the client's customer and demand-survey sheets.
+INDUSTRIES = [
+	"Automotive",
+	"Automotive & Industrial",
+	"Auto Parts",
+	"Balls & Rollers",
+	"Bearing",
+	"Camshafts",
+	"Foil",
+	"Gears",
+	"Industrial",
+	"Steel",
+	"Tools & Dies",
+]
+
+# Product ID starts at 201 (approved spec, Product Master).
+PRODUCT_ID_START = 201
+
+
 def after_install():
 	seed_principals()
 	seed_regions()
+	seed_industries()
+
+	from techpark.naming import start_autoincrement_at
+	from techpark.registration import setup
+
+	start_autoincrement_at("Customer Product", PRODUCT_ID_START)
+	setup()
+
+
+def seed_industries(extra=()):
+	for industry in [*INDUSTRIES, *extra]:
+		industry = (industry or "").strip()
+		if industry and not frappe.db.exists("Industry Domain", industry):
+			frappe.get_doc({"doctype": "Industry Domain", "industry_name": industry}).insert(ignore_permissions=True)
 
 
 def seed_regions():

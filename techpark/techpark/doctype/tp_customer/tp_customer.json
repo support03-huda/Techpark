@@ -99,12 +99,12 @@
    "options": "Company\nIndividual"
   },
   {
-   "description": "e.g. Automotive & Industrial",
+   "description": "Pick or add an industry (Bearing, Automotive, Steel …)",
    "fieldname": "industry_domain",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Industry Domain",
-   "length": 50
+   "options": "Industry Domain"
   },
   {
    "fieldname": "segments",
@@ -258,7 +258,7 @@
    "label": "Contacts"
   },
   {
-   "description": "Each row is saved as a Customer Contact (CON-0001 …) so visits and expenses can link to the person met.",
+   "description": "Each row is saved as a Customer Contact (CON-0001 …) so visits can link to the person met.",
    "fieldname": "contacts",
    "fieldtype": "Table",
    "label": "Contacts",
@@ -446,7 +446,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-21 12:00:00.000000",
+ "modified": "2026-10-24 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

@@ -15,3 +15,8 @@ techpark.patches.customer_entry_update
 techpark.patches.fix_competitor_table
 techpark.patches.fill_customer_technical_tabs
 techpark.patches.remove_qualified_leads_card
+techpark.patches.setup_registration
+techpark.patches.industry_domain_master
+techpark.patches.product_id_from_201
+techpark.patches.dvr_contact_link
+techpark.patches.remove_visit_expense

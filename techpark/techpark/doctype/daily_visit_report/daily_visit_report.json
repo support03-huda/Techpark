@@ -10,6 +10,9 @@
   "visit_time",
   "customer",
   "customer_name",
+  "contact",
+  "contact_designation",
+  "contact_phone",
   "contact_person",
   "visit_purpose",
   "column_break_visit",
@@ -85,10 +88,36 @@
    "read_only": 1
   },
   {
-   "description": "Picked from the customer's Contacts tab",
+   "description": "Picked from the customer's contacts",
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Customer Contact"
+  },
+  {
+   "depends_on": "contact",
+   "fetch_from": "contact.designation",
+   "fieldname": "contact_designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "read_only": 1
+  },
+  {
+   "depends_on": "contact",
+   "fetch_from": "contact.phone",
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone",
+   "read_only": 1
+  },
+  {
+   "description": "Name (designation) of the contact; kept in step with Contact Person",
    "fieldname": "contact_person",
-   "fieldtype": "Autocomplete",
-   "label": "Contact Person"
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Contact Person Name",
+   "read_only": 1
   },
   {
    "fieldname": "visit_purpose",
@@ -309,14 +338,8 @@
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [
-  {
-   "group": "Created from this visit",
-   "link_doctype": "Visit Expense",
-   "link_fieldname": "daily_visit_report"
-  }
- ],
- "modified": "2026-10-21 12:00:00.000000",
+ "links": [],
+ "modified": "2026-10-24 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

@@ -8,14 +8,48 @@ from frappe.utils import cint, getdate, now_datetime, today, validate_email_addr
 
 from techpark.customer_sync import push_to_records
 from techpark.naming import next_numeric_name
+from techpark.permission import is_manager
 
 CUSTOMER_CODE_START = 10001
+
+
+def own_visits(customer, user=None):
+	"""DVRs of this customer that the user filed or made."""
+	user = user or frappe.session.user
+	return set(
+		frappe.get_all(
+			"Daily Visit Report",
+			filters={"customer": customer},
+			or_filters={"visited_by": user, "owner": user},
+			pluck="name",
+		)
+	)
 
 
 class TPCustomer(Document):
 	def autoname(self):
 		self.name = next_numeric_name(self.doctype, CUSTOMER_CODE_START)
 		self.customer_code = self.name
+
+	def onload(self):
+		# A Sales User sees only their own visits on the Visits tab.
+		if is_manager():
+			return
+		own = own_visits(self.name)
+		self.visits = [row for row in self.visits if not row.record or row.record in own]
+
+	def before_validate(self):
+		# The Visits tab hid other users' visits; put them back so saving does not delete them.
+		if is_manager() or self.is_new():
+			return
+		before = self.get_doc_before_save()
+		if not before:
+			return
+		own = own_visits(self.name)
+		present = {row.record for row in self.visits if row.record}
+		for row in before.visits:
+			if row.record and row.record not in own and row.record not in present:
+				self.append("visits", row.as_dict(no_default_fields=True))
 
 	def validate(self):
 		self.customer_name = (self.customer_name or "").strip()

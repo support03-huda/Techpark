@@ -45,3 +45,21 @@
 		justify-content: center;
 	}
 }
+
+/* Phone: Frappe opens the notifications panel inside the side menu and then collapses
+   that menu to 0px width (overflow: hidden), so the panel never shows. Pin the open
+   panel to the screen so it is no longer clipped by the collapsed menu. */
+@media (max-width: 767.98px) {
+	.body-sidebar .dropdown-notifications:not(.hidden) .notifications-list {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		width: 100vw;
+		min-width: 100vw;
+		height: 100vh;
+		height: 100dvh;
+		max-height: none;
+		z-index: 1040;
+	}
+}
