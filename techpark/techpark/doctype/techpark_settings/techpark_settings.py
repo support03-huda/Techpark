@@ -7,6 +7,8 @@ from frappe.model.document import Document
 from frappe.utils import cint
 
 DEFAULTS = {
+	# Master switch for every reminder; off until turned on in TechPark Settings.
+	"enable_reminders": 0,
 	"reminder_emails": 1,
 	"follow_up_escalation_days": 3,
 	"prospect_cold_days": 30,
@@ -18,7 +20,7 @@ DEFAULTS = {
 class TechParkSettings(Document):
 	def validate(self):
 		for field in DEFAULTS:
-			if field != "reminder_emails" and cint(self.get(field)) < 1:
+			if field not in ("enable_reminders", "reminder_emails") and cint(self.get(field)) < 1:
 				frappe.throw(_("{0} must be at least 1 day.").format(_(self.meta.get_label(field))))
 
 

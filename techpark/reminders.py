@@ -1,6 +1,7 @@
 # Copyright (c) 2026, Techpark International
 """Reminder digests, sent as a bell notification and an email (from the site's outgoing
-account) to each salesperson and manager. Limits come from TechPark Settings.
+account) to each salesperson and manager. Limits come from TechPark Settings, and nothing
+is sent while "Enable Reminders" there is off.
 
 Daily     - follow-ups overdue by N days, escalated to the managers.
 Weekly    - prospects gone cold, customers not visited, pending actions by principal.
@@ -284,7 +285,8 @@ def render(user, sections):
 
 
 def deliver(digests, subject, link_to, dry_run=False):
-	if dry_run:
+	# A preview still shows what would go out while reminders are switched off.
+	if dry_run or not get_setting("enable_reminders"):
 		return digests
 	from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 

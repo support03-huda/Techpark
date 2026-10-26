@@ -1,7 +1,7 @@
 {
  "attach_print": 0,
  "channel": "Email",
- "condition": "doc.customer_status == \"Prospect\"",
+ "condition": "frappe.db.get_single_value(\"TechPark Settings\", \"enable_reminders\") and (doc.customer_status == \"Prospect\")",
  "condition_type": "Python",
  "creation": "2026-09-26 18:30:00.000000",
  "date_changed": "prospect_since",
@@ -16,7 +16,7 @@
  "message": "**{{ doc.customer_name }}** ({{ doc.name }}) has been a Prospect since **{{ frappe.utils.formatdate(doc.prospect_since) }}**.\n\nPlease plan a follow-up visit or call to move it forward.\n",
  "message_type": "Markdown",
  "minutes_offset": 0,
- "modified": "2026-10-24 17:00:00.000000",
+ "modified": "2026-10-26 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Prospect Over 7 Days",

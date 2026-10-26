@@ -5,6 +5,7 @@
  "engine": "InnoDB",
  "field_order": [
   "section_reminders",
+  "enable_reminders",
   "reminder_emails",
   "follow_up_escalation_days",
   "column_break_reminders",
@@ -21,18 +22,27 @@
    "label": "Reminders"
   },
   {
+   "default": "0",
+   "description": "Master switch for every TechPark reminder: follow-up due tomorrow / overdue, prospect over 7 days, and the daily, weekly and quarterly digests. Off = nothing is sent.",
+   "fieldname": "enable_reminders",
+   "fieldtype": "Check",
+   "label": "Enable Reminders"
+  },
+  {
    "default": "1",
    "description": "Untick to send the reminders as bell notifications only.",
    "fieldname": "reminder_emails",
    "fieldtype": "Check",
-   "label": "Also Send Reminders by Email"
+   "label": "Also Send Reminders by Email",
+   "depends_on": "enable_reminders"
   },
   {
    "default": "3",
    "description": "A follow-up still open this many days after its date is escalated to the managers.",
    "fieldname": "follow_up_escalation_days",
    "fieldtype": "Int",
-   "label": "Escalate Follow-ups After (Days)"
+   "label": "Escalate Follow-ups After (Days)",
+   "depends_on": "enable_reminders"
   },
   {
    "fieldname": "column_break_reminders",
@@ -43,14 +53,16 @@
    "description": "A Prospect with no visit for this many days is reported as gone cold.",
    "fieldname": "prospect_cold_days",
    "fieldtype": "Int",
-   "label": "Prospect Gone Cold After (Days)"
+   "label": "Prospect Gone Cold After (Days)",
+   "depends_on": "enable_reminders"
   },
   {
    "default": "60",
    "description": "An Active Customer with no visit for this many days is reported as not visited.",
    "fieldname": "not_visited_days",
    "fieldtype": "Int",
-   "label": "Customer Not Visited After (Days)"
+   "label": "Customer Not Visited After (Days)",
+   "depends_on": "enable_reminders"
   },
   {
    "fieldname": "section_lock",
@@ -67,7 +79,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-24 17:00:00.000000",
+ "modified": "2026-10-26 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark Settings",
