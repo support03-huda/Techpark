@@ -21,3 +21,4 @@ techpark.patches.product_id_from_201
 techpark.patches.dvr_contact_link
 techpark.patches.remove_visit_expense
 techpark.patches.reminders_off
+techpark.patches.settings_defaults
