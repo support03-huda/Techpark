@@ -62,18 +62,47 @@ def get_today():
 	}
 
 
+# Number cards on the TechPark workspace ("Custom" type). Counted with the same helpers as get_today(),
+# so a card never disagrees with the follow-up list (follow-ups of cancelled visits are left out).
+# Sales users see their own work, managers the whole team.
+
+
 @frappe.whitelist()
 def get_overdue_follow_ups_card(filters=None):
-	"""'Overdue Follow-ups' number card: counted the same way as the overdue tile in the panel,
-	so the two never disagree (follow-ups of cancelled visits are left out)."""
+	return _follow_up_card("overdue", "<")
+
+
+@frappe.whitelist()
+def get_follow_ups_due_today_card(filters=None):
+	return _follow_up_card("today", "=")
+
+
+@frappe.whitelist()
+def get_stale_prospects_card(filters=None):
+	user, team, now = _scope()
+	return {
+		"value": _stale_prospects(user, team, now),
+		"fieldtype": "Int",
+		"route": ["List", "TP Customer"],
+		"route_options": {
+			"customer_status": "Prospect",
+			"prospect_since": ["<=", str(add_days(now, -PROSPECT_STALE_DAYS))],
+		},
+	}
+
+
+def _scope():
 	user = frappe.session.user
-	team = bool(MANAGER_ROLES & set(frappe.get_roles(user)))
-	now = getdate(today())
-	route_options = {"reference_type": "Daily Visit Report", "status": "Open", "date": ["<", str(now)]}
+	return user, bool(MANAGER_ROLES & set(frappe.get_roles(user))), getdate(today())
+
+
+def _follow_up_card(state, date_operator):
+	user, team, now = _scope()
+	route_options = {"reference_type": "Daily Visit Report", "status": "Open", "date": [date_operator, str(now)]}
 	if not team:
 		route_options["allocated_to"] = user
 	return {
-		"value": sum(1 for f in _open_follow_ups(user, team, now) if f["state"] == "overdue"),
+		"value": sum(1 for f in _open_follow_ups(user, team, now) if f["state"] == state),
 		"fieldtype": "Int",
 		"route": ["List", "ToDo"],
 		"route_options": route_options,
