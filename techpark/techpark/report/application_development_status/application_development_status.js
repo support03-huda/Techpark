@@ -5,6 +5,8 @@ frappe.query_reports["Application Development Status"] = {
 		{ fieldname: "customer", label: __("Customer"), fieldtype: "Link", options: "TP Customer" },
 		{ fieldname: "principal", label: __("Principal"), fieldtype: "Link", options: "Principal" },
 		{ fieldname: "visited_by", label: __("Salesperson"), fieldtype: "Link", options: "User" },
+		{ fieldname: "stage", label: __("Stage"), fieldtype: "Select", options: "\nDevelopment\nSales" },
+		{ fieldname: "department", label: __("Department"), fieldtype: "Select", options: "\nSales\nApplication" },
 		{
 			fieldname: "lead_status",
 			label: __("Lead Status"),
@@ -19,6 +21,9 @@ frappe.query_reports["Application Development Status"] = {
 		if (column.fieldname === "follow_up" && data) {
 			const color = { Overdue: "red", "Due Soon": "orange", Planned: "blue" }[data.follow_up];
 			if (color) value = `<span class="indicator-pill ${color}">${value}</span>`;
+		}
+		if (column.fieldname === "stage" && data && data.stage) {
+			value = `<span class="indicator-pill ${data.stage === "Sales" ? "green" : "blue"}">${value}</span>`;
 		}
 		return value;
 	},

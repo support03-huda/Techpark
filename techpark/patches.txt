@@ -22,3 +22,5 @@ techpark.patches.dvr_contact_link
 techpark.patches.remove_visit_expense
 techpark.patches.reminders_off
 techpark.patches.settings_defaults
+techpark.patches.setup_expenses
+techpark.patches.dvr_principal_rows

@@ -192,7 +192,7 @@ def _delete_removed_rows(before, table, kept):
 
 
 def _copy_back(row, record, cfg):
-	"""The record may adjust values on save (trimmed names, Won -> Order Received, …).
+	"""The record may adjust values on save (trimmed names, Won -> Order Won, …).
 	Copy them back so the row matches its record, plus a DVR's status and stage %."""
 	changes = {f: record.get(f) for f in cfg["fields"] if _norm(row.get(f)) != _norm(record.get(f))}
 	if cfg.get("submittable"):

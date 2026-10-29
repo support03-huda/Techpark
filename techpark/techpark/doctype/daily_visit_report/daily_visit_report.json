@@ -15,6 +15,8 @@
   "contact_phone",
   "contact_person",
   "visit_purpose",
+  "dvr_type",
+  "department",
   "column_break_visit",
   "distributor",
   "visited_by",
@@ -23,6 +25,8 @@
   "plant_name",
   "segment_application",
   "section_principal",
+  "principals",
+  "principal_list",
   "principal",
   "column_break_principal",
   "supplier_product_category",
@@ -125,8 +129,27 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Visit Purpose",
-   "options": "Routine\nTrial\nIssue\nCommercial\nStock",
+   "options": "Routine\nTrial\nIssue\nCommercial\nStock\nOrder Follow-up",
    "reqd": 1
+  },
+  {
+   "fieldname": "dvr_type",
+   "fieldtype": "Select",
+   "label": "DVR Type",
+   "options": "Visit\nPhone Call\nEmail\nVideo Call\nWhatsApp\nMeeting",
+   "default": "Visit",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Select",
+   "label": "Department",
+   "options": "Sales\nApplication",
+   "default": "Sales",
+   "reqd": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "column_break_visit",
@@ -182,7 +205,26 @@
   {
    "fieldname": "section_principal",
    "fieldtype": "Section Break",
-   "label": "Principal & Application"
+   "label": "Principals (Development → Sales)"
+  },
+  {
+   "fieldname": "principals",
+   "fieldtype": "Table",
+   "label": "Principals",
+   "options": "DVR Principal",
+   "reqd": 1,
+   "allow_on_submit": 1,
+   "description": "One row per principal discussed. Sales Status opens once the trial is successful for that customer, principal and product category."
+  },
+  {
+   "fieldname": "principal_list",
+   "fieldtype": "Data",
+   "label": "Principals",
+   "read_only": 1,
+   "hidden": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 0,
+   "allow_on_submit": 1
   },
   {
    "fieldname": "principal",
@@ -190,20 +232,26 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Principal",
-   "mandatory_depends_on": "eval:doc.docstatus == 0",
    "options": "Principal",
-   "search_index": 1
+   "search_index": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "allow_on_submit": 1
   },
   {
    "fieldname": "column_break_principal",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "hidden": 1
   },
   {
    "fieldname": "supplier_product_category",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Supplier Product Category",
-   "options": "Supplier Product Category"
+   "options": "Supplier Product Category",
+   "read_only": 1,
+   "hidden": 1,
+   "allow_on_submit": 1
   },
   {
    "fieldname": "section_application",
@@ -229,7 +277,8 @@
   {
    "fieldname": "section_lead",
    "fieldtype": "Section Break",
-   "label": "Lead"
+   "label": "Lead",
+   "hidden": 1
   },
   {
    "default": "Prospect",
@@ -240,8 +289,8 @@
    "in_standard_filter": 1,
    "label": "Lead Status",
    "options": "Prospect\nWon\nLost\nOn Hold",
-   "reqd": 1,
-   "allow_on_submit": 1
+   "allow_on_submit": 1,
+   "read_only": 1
   },
   {
    "fieldname": "column_break_lead",
@@ -252,8 +301,9 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Lead Stage",
-   "options": "\nIntroduction\nReceived Enquiry\nRequirement Shared\nTechnical Discussion\nTrial / Sample\nQuotation Submitted\nNegotiation\nOrder Received",
-   "allow_on_submit": 1
+   "options": "\nIntroduction\nRequirement Shared\nSample / Trial Planned\nTrial in Progress\nSuccessful Trial\nTrial Failed\nQuotation Submitted\nNegotiation\nOrder Won\nRegularization\nOrder Lost\nOn Hold",
+   "allow_on_submit": 1,
+   "read_only": 1
   },
   {
    "fieldname": "section_progress",
@@ -271,7 +321,7 @@
   {
    "fieldname": "stage_html",
    "fieldtype": "HTML",
-   "label": "Stage Progress"
+   "label": "Principal-wise Progress"
   },
   {
    "fieldname": "section_notes",
@@ -338,8 +388,17 @@
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-10-24 18:00:00.000000",
+ "links": [
+  {
+   "group": "Created from this visit",
+   "is_child_table": 1,
+   "link_doctype": "TP Expense Item",
+   "link_fieldname": "visit",
+   "parent_doctype": "TP Expense",
+   "table_fieldname": "items"
+  }
+ ],
+ "modified": "2026-10-29 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

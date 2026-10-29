@@ -73,7 +73,7 @@ frappe.ui.form.on("TP Customer Visit", {
 	visits_remove: (frm) => techpark.customer_master.render_visits(frm),
 	visit_date: (frm) => techpark.customer_master.render_visits(frm),
 	lead_status(frm, cdt, cdn) {
-		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Order Received");
+		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Order Won");
 		techpark.customer_master.render_visits(frm);
 	},
 	principal(frm, cdt, cdn) {

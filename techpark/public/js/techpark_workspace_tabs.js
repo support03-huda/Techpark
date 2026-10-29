@@ -6,6 +6,7 @@
 		{ key: "overview", label: "Overview", icon: "layout-dashboard" },
 		{ key: "visits", label: "Visits & Leads", icon: "map-pin" },
 		{ key: "customers", label: "Customers", icon: "users" },
+		{ key: "expenses", label: "Expenses", icon: "wallet" },
 	];
 
 	let enhance_timer = null;
@@ -46,6 +47,7 @@
 
 		if (text.includes("Visits & Leads")) return "visits";
 		if (text === "Customers") return "customers";
+		if (text === "Expenses") return "expenses";
 
 		return "overview";
 	}
@@ -58,6 +60,15 @@
 		return current_tab;
 	}
 
+	// Blocks some users must not see: put on a tab that is never active.
+	function is_hidden_block(block) {
+		return (
+			block?.type === "shortcut" &&
+			block.data?.shortcut_name === "Expense Approvals" &&
+			!frappe.boot.techpark_expense_approver
+		);
+	}
+
 	function get_tab_map(content) {
 		let current_tab = "overview";
 
@@ -68,7 +79,7 @@
 				current_tab = tab;
 			}
 
-			return tab;
+			return is_hidden_block(block) ? "hidden" : tab;
 		});
 	}
 

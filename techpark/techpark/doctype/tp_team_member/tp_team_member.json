@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:user",
+ "creation": "2026-10-29 14:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "full_name",
+  "column_break_team",
+  "reports_to",
+  "reports_to_name",
+  "inactive"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "fetch_from": "user.full_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_team",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reports_to",
+   "fieldtype": "Link",
+   "label": "Reports To",
+   "options": "User",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Approves this person's expenses first; a TechPark Approver gives the final approval. Leave empty to send expenses straight to the approver."
+  },
+  {
+   "fieldname": "reports_to_name",
+   "fieldtype": "Data",
+   "label": "Reports To Name",
+   "fetch_from": "reports_to.full_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "inactive",
+   "fieldtype": "Check",
+   "label": "Inactive",
+   "default": "0",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-29 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Team Member",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "role": "TechPark Approver",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Sales User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "search_fields": "full_name,reports_to_name",
+ "show_title_field_in_link": 1,
+ "sort_field": "full_name",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "full_name",
+ "track_changes": 1
+}

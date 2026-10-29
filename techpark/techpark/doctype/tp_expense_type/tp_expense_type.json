@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:expense_type",
+ "creation": "2026-10-29 14:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "expense_type",
+  "tally_account",
+  "inactive"
+ ],
+ "fields": [
+  {
+   "fieldname": "expense_type",
+   "fieldtype": "Data",
+   "label": "Expense Type",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "tally_account",
+   "fieldtype": "Data",
+   "label": "Tally Account Name",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "inactive",
+   "fieldtype": "Check",
+   "label": "Inactive",
+   "default": "0",
+   "in_list_view": 1,
+   "description": "No longer offered on new bills."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-29 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Expense Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "role": "TechPark Approver",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Sales User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "expense_type",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "expense_type",
+ "track_changes": 1
+}

@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-29 14:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "expense_date",
+  "expense_type",
+  "visit",
+  "customer",
+  "customer_name",
+  "column_break_item",
+  "bill_no",
+  "amount",
+  "passed_amount",
+  "description",
+  "section_attachments",
+  "bill",
+  "column_break_attachments",
+  "other_attachment"
+ ],
+ "fields": [
+  {
+   "fieldname": "expense_date",
+   "fieldtype": "Date",
+   "label": "Expense Date",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "expense_type",
+   "fieldtype": "Link",
+   "label": "Expense Type",
+   "options": "TP Expense Type",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "visit",
+   "fieldtype": "Link",
+   "label": "Visit (DVR)",
+   "options": "Daily Visit Report",
+   "in_list_view": 1,
+   "columns": 2,
+   "search_index": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "TP Customer",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "customer.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_item",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bill_no",
+   "fieldtype": "Data",
+   "label": "Bill No",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "passed_amount",
+   "fieldtype": "Currency",
+   "label": "Passed Amount",
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "Set by the approver at the final step; until then the full amount is passed."
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Detail Description"
+  },
+  {
+   "fieldname": "section_attachments",
+   "fieldtype": "Section Break",
+   "label": "Attachments"
+  },
+  {
+   "fieldname": "bill",
+   "fieldtype": "Attach",
+   "label": "Bill"
+  },
+  {
+   "fieldname": "column_break_attachments",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "other_attachment",
+   "fieldtype": "Attach",
+   "label": "Other Attachment"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-29 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Expense Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

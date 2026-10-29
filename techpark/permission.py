@@ -1,7 +1,10 @@
 # Copyright (c) 2026, Techpark International
 """Record-level access: a Sales User sees only their own Daily Visit Reports;
 Sales Managers and admins see everyone's. Visit Reports lock for salespeople a set
-number of days after they were entered (TechPark Settings)."""
+number of days after they were entered (TechPark Settings).
+
+Expenses follow the reporting line (TP Team Member): approvers and admins see all of them,
+a manager sees their own and those of the people reporting to them, everybody else only their own."""
 
 import frappe
 from frappe import _
@@ -11,6 +14,10 @@ from frappe.utils import date_diff, getdate, today
 MANAGER_ROLES = {"Sales Manager", "TechPark Approver", "System Manager"}
 # Actions the lock takes away from a salesperson.
 LOCKED_PTYPES = {"write", "submit", "cancel", "delete", "amend"}
+# Roles that give the final approval of expenses and see everybody's.
+EXPENSE_ADMIN_ROLES = {"TechPark Approver", "System Manager"}
+# Kinds of access that only read a record.
+READ_PTYPES = (None, "read", "print", "email", "report", "export")
 
 
 def is_manager(user=None):
@@ -56,3 +63,56 @@ def dvr_has_permission(doc, ptype=None, user=None):
 	if user not in (doc.visited_by, doc.owner):
 		return False
 	return not (ptype in LOCKED_PTYPES and is_locked(doc, user))
+
+
+def is_expense_admin(user=None):
+	user = user or frappe.session.user
+	return user == "Administrator" or bool(EXPENSE_ADMIN_ROLES & set(frappe.get_roles(user)))
+
+
+def get_team(user):
+	"""The user first, then the active people whose Reports To is the user."""
+	if not user:
+		return []
+	members = frappe.get_all(
+		"TP Team Member", filters={"reports_to": user, "inactive": 0, "user": ["!=", user]}, pluck="user"
+	)
+	return [user, *members]
+
+
+def can_approve_expenses(user=None):
+	"""Approvers and admins, and anybody somebody reports to."""
+	user = user or frappe.session.user
+	return is_expense_admin(user) or len(get_team(user)) > 1
+
+
+def get_visible_users(user=None):
+	"""Whose expenses the user may see: None means everybody (expense admin)."""
+	user = user or frappe.session.user
+	if is_expense_admin(user):
+		return None
+	return get_team(user)
+
+
+def sql_list(values):
+	return "(" + ", ".join(frappe.db.escape(v) for v in values) + ")"
+
+
+def expense_query_conditions(user=None, doctype=None):
+	team = get_visible_users(user)
+	if team is None:
+		return ""
+	return f"`tabTP Expense`.employee in {sql_list(team)}"
+
+
+def expense_has_permission(doc, ptype=None, user=None):
+	# Anyone with the role may create an expense (it is always their own).
+	if ptype == "create" or doc.is_new():
+		return True
+	team = get_visible_users(user)
+	if team is None:
+		return True
+	# A manager may look at the team's expenses; they approve through TPExpense.approve.
+	if ptype in READ_PTYPES:
+		return doc.employee in team
+	return doc.employee == team[0]

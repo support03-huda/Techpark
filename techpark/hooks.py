@@ -28,6 +28,9 @@ app_license = "mit"
 app_include_css = "/assets/techpark/css/techpark_workspace_tabs.css"
 app_include_js = ["/assets/techpark/js/techpark.js", "/assets/techpark/js/techpark_workspace_tabs.js"]
 
+# Expense Approvals menu only for users who can approve (see techpark/boot.py).
+extend_bootinfo = "techpark.boot.extend_bootinfo"
+
 # include js, css files in header of web template
 # web_include_css = "/assets/techpark/css/techpark.css"
 # web_include_js = "/assets/techpark/js/techpark.js"
@@ -135,12 +138,15 @@ after_migrate = ["techpark.dashboard.sync_dashboard_block"]
 # Permissions evaluated in scripted ways
 
 # A Sales User sees only their own DVRs; managers and admins see all of them.
+# Expenses follow the reporting line (TP Team Member): own, the team's, or all for approvers.
 permission_query_conditions = {
 	"Daily Visit Report": "techpark.permission.dvr_query_conditions",
+	"TP Expense": "techpark.permission.expense_query_conditions",
 }
 
 has_permission = {
 	"Daily Visit Report": "techpark.permission.dvr_has_permission",
+	"TP Expense": "techpark.permission.expense_has_permission",
 }
 
 # Refuse changes to entries locked for salespeople.
