@@ -82,7 +82,7 @@ function render_visits() {
 
 	const list = root.querySelector('[data-list="recent_visits"]');
 	if (!data.recent_visits.length) {
-		list.innerHTML = `<div class="tp-empty">${__("No visits yet. Use + New Visit to log one.")}</div>`;
+		list.innerHTML = `<div class="tp-empty">${__("No visits yet. Use + Add DVR to log one.")}</div>`;
 		return;
 	}
 	list.innerHTML = data.recent_visits
@@ -129,6 +129,13 @@ function load() {
 		callback: (r) => {
 			data = r.message;
 			render();
+		},
+		error: () => {
+			// Without this the lists say "Loading…" for ever when the call fails
+			if (data) return;
+			root.querySelectorAll("[data-list]").forEach(
+				(list) => (list.innerHTML = `<div class="tp-empty tp-error">${__("Could not load. Refresh the page to try again.")}</div>`)
+			);
 		},
 	});
 }

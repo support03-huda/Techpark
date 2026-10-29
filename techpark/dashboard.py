@@ -63,6 +63,24 @@ def get_today():
 
 
 @frappe.whitelist()
+def get_overdue_follow_ups_card(filters=None):
+	"""'Overdue Follow-ups' number card: counted the same way as the overdue tile in the panel,
+	so the two never disagree (follow-ups of cancelled visits are left out)."""
+	user = frappe.session.user
+	team = bool(MANAGER_ROLES & set(frappe.get_roles(user)))
+	now = getdate(today())
+	route_options = {"reference_type": "Daily Visit Report", "status": "Open", "date": ["<", str(now)]}
+	if not team:
+		route_options["allocated_to"] = user
+	return {
+		"value": sum(1 for f in _open_follow_ups(user, team, now) if f["state"] == "overdue"),
+		"fieldtype": "Int",
+		"route": ["List", "ToDo"],
+		"route_options": route_options,
+	}
+
+
+@frappe.whitelist()
 def close_follow_up(todo):
 	"""'Done' on a follow-up in the panel: close its ToDo (only the assignee or a manager)."""
 	doc = frappe.get_doc("ToDo", todo)

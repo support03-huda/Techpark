@@ -47,8 +47,16 @@
 	border-left-width: 4px;
 	border-radius: var(--tp-radius);
 	background: var(--card-bg, var(--fg-color));
+	/* buttons don't inherit text colour / font: without this the labels stay black in dark mode */
+	color: inherit;
+	font: inherit;
+	min-width: 0;
 	cursor: pointer;
 	transition: box-shadow 0.15s, transform 0.15s;
+}
+.tp-tile:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
 }
 .tp-tile:hover {
 	box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.08));
@@ -89,6 +97,7 @@
 	border-bottom: 2px solid transparent;
 	margin-bottom: -1px;
 	padding: 8px 12px;
+	font-family: inherit;
 	font-size: 14px;
 	font-weight: 600;
 	color: var(--text-muted);
@@ -227,11 +236,25 @@
 	text-align: center;
 }
 
-@media (max-width: 991px) {
-	.tp-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tp-empty.tp-error { color: var(--red-600, #ce2c31); }
+
+/* Three tiles stay on one row down to phone width (two + one left a lone tile on its own row) */
+@media (max-width: 767px) {
+	.tp-tiles { gap: 8px; }
+	.tp-tile { padding: 10px 12px; }
+	.tp-tile-num { font-size: 22px; }
+	.tp-tile-hint { display: none; }
 }
 @media (max-width: 480px) {
+	.tp-tiles { grid-template-columns: minmax(0, 1fr); }
+	.tp-tile {
+		flex-direction: row;
+		align-items: baseline;
+		gap: 10px;
+	}
+	.tp-tile-num { min-width: 32px; }
 	.tp-actions { width: 100%; }
 	.tp-actions .btn { flex: 1; }
 	.tp-badge { min-width: 64px; }
+	.tp-pane-note { display: none; }
 }
