@@ -13,7 +13,9 @@
   "is_active",
   "column_break_1",
   "country",
-  "plant_address"
+  "plant_address",
+  "gstin",
+  "gst_registration_type"
  ],
  "fields": [
   {
@@ -83,11 +85,21 @@
    "fieldname": "plant_address",
    "fieldtype": "Small Text",
    "label": "Plant Address"
+  },
+  {
+   "fieldname": "gstin",
+   "fieldtype": "Data",
+   "label": "GSTIN"
+  },
+  {
+   "fieldname": "gst_registration_type",
+   "fieldtype": "Data",
+   "label": "GST Registration Type"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-09-30 12:00:00.000000",
+ "modified": "2026-10-30 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer Plant",

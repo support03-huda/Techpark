@@ -38,7 +38,10 @@ TABLES = {
 		"label": "Plants",
 		"child": "TP Customer Plant",
 		"doctype": "Plant",
-		"fields": ["plant_name", "plant_location", "state", "pincode", "is_active", "country", "plant_address"],
+		"fields": [
+			"plant_name", "plant_location", "state", "pincode", "is_active", "country", "plant_address",
+			"gstin", "gst_registration_type",
+		],
 	},
 	"production": {
 		"label": "Production",
@@ -95,6 +98,9 @@ TABLES = {
 			"visit_date",
 			"plant",
 			"visit_purpose",
+			"dvr_type",
+			"department",
+			"principal_summary",
 			"principal",
 			"supplier_product_category",
 			"contact_person",

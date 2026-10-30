@@ -31,6 +31,18 @@ class TPCustomer(Document):
 		self.name = next_numeric_name(self.doctype, CUSTOMER_CODE_START)
 		self.customer_code = self.name
 
+	def before_insert(self):
+		self.set_customer_no()
+
+	def set_customer_no(self):
+		"""Customer No. of the client's customer list; a new customer gets the next number."""
+		if (self.customer_no or "").strip():
+			return
+		last = frappe.db.sql(
+			"""select max(cast(customer_no as unsigned)) from `tabTP Customer` where customer_no regexp '^[0-9]+$'"""
+		)[0][0]
+		self.customer_no = str(cint(last) + 1)
+
 	def onload(self):
 		# A Sales User sees only their own visits on the Visits tab.
 		if is_manager():

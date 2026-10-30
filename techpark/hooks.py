@@ -90,9 +90,6 @@ jinja = {
 # before_install = "techpark.install.before_install"
 after_install = "techpark.install.after_install"
 
-# Install / refresh the "TechPark Today" dashboard panel from techpark/dashboard_block/
-after_migrate = ["techpark.dashboard.sync_dashboard_block"]
-
 # Uninstallation
 # ------------
 

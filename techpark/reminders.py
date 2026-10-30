@@ -211,7 +211,7 @@ def open_follow_ups():
 		"""
 		select todo.allocated_to as salesperson, todo.date as due, dvr.name as dvr,
 			dvr.customer_name, coalesce(nullif(dvr.principal_list, ''), dvr.principal) as principal,
-			coalesce(dvr.next_action, todo.description) as action
+			case when todo.name = dvr.follow_up then dvr.next_action else todo.description end as action
 		from `tabToDo` todo
 		join `tabDaily Visit Report` dvr on dvr.name = todo.reference_name
 		where todo.reference_type = 'Daily Visit Report' and todo.status = 'Open' and dvr.docstatus = 1

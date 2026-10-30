@@ -150,6 +150,7 @@ techpark.dvr.load_contacts = async function (frm) {
 techpark.dvr.render_stage = function (frm) {
 	const esc = frappe.utils.escape_html;
 	const rows = (frm.doc.principals || []).filter((row) => row.principal);
+	techpark.dvr.render_headline(frm, rows);
 	if (!rows.length) {
 		frm.fields_dict.stage_html.$wrapper.html(
 			`<div class="text-muted small">${__("Add the principals discussed to track their Development and Sales stage.")}</div>`
@@ -165,11 +166,11 @@ techpark.dvr.render_stage = function (frm) {
 		.map((row) => {
 			const status = (row.stage === "Sales" && row.sales_status) || row.development_status || "";
 			const pct = row.progress || 0;
-			const label = [row.principal, row.supplier_product_category].filter(Boolean).map(esc).join(" · ");
+			const label = [row.principal, row.category_name].filter(Boolean).map(esc).join(" · ");
 			return `<div style="margin-bottom:10px;">
 				<div style="display:flex; justify-content:space-between; gap:8px; font-size:12px; margin-bottom:4px;">
 					<span><b>${label}</b></span>
-					<span class="text-muted">${esc(__(row.stage || "Development"))}${status ? " · " + esc(__(status)) : ""} · ${pct}%</span>
+					<span>${techpark.dvr.stage_pill(row.stage)} <span class="text-muted">${status ? esc(__(status)) + " · " : ""}${pct}%</span></span>
 				</div>
 				<div style="position:relative; height:8px; border-radius:4px; background:var(--gray-200); overflow:hidden;">
 					<div style="height:100%; width:${pct}%; background:${color(status)}; transition:width .3s;"></div>
@@ -183,6 +184,40 @@ techpark.dvr.render_stage = function (frm) {
 			<div class="control-label" style="margin-bottom:8px;">${__("Development")} → ${__("Sales")}</div>
 			${bars}
 		</div>`);
+};
+
+// Keep in sync with dvr_stage() in daily_visit_report.py and the list view.
+techpark.dvr.STAGE_COLORS = { Development: "orange", Sales: "blue", "Development + Sales": "yellow" };
+
+techpark.dvr.stage_pill = function (stage) {
+	stage = stage || "Development";
+	return `<span class="indicator-pill ${techpark.dvr.STAGE_COLORS[stage]}">${frappe.utils.escape_html(__(stage + " Stage"))}</span>`;
+};
+
+// Banner at the top of the form: which stage this visit is at, and each principal's stage.
+techpark.dvr.render_headline = function (frm, rows) {
+	// Own block in the form's message area, so other messages (e.g. the lock notice) stay.
+	const $area = frm.layout.message;
+	$area.find(".tp-stage-banner").remove();
+	if (!$area.children().length) $area.addClass("hidden");
+	if (!rows.length) return;
+	const esc = frappe.utils.escape_html;
+	const stages = new Set(rows.map((row) => row.stage || "Development"));
+	const stage = stages.size > 1 ? "Development + Sales" : [...stages][0];
+	const principals = rows
+		.map((row) => {
+			const label = [row.principal, row.category_name].filter(Boolean).map(esc).join(" · ");
+			const status = (row.stage === "Sales" && row.sales_status) || row.development_status || "";
+			return `<span style="margin-right:12px; white-space:nowrap;">${techpark.dvr.stage_pill(row.stage)} <b>${label}</b>${status ? ": " + esc(__(status)) : ""}</span>`;
+		})
+		.join("");
+	$(`<div class="form-message border-bottom tp-stage-banner ${techpark.dvr.STAGE_COLORS[stage]}">
+		<div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+			<span style="font-size:14px; font-weight:700; margin-right:12px;">${esc(__(stage + " Stage").toUpperCase())}</span>
+			${principals}
+		</div>
+	</div>`).prependTo($area);
+	$area.removeClass("hidden");
 };
 
 techpark.dvr.render_actions = async function (frm) {
@@ -210,10 +245,23 @@ techpark.dvr.render_actions = async function (frm) {
 		${card("followup", __("Follow-up"), frappe.utils.escape_html(follow))}
 	</div>`);
 
+	// Principal rows with their own Next Action get their own follow-up.
+	const principal_follow_ups = (frm.doc.principals || []).filter((row) => row.follow_up).length;
+	if (principal_follow_ups) {
+		wrapper.find('[data-key="followup"] .text-muted').append(
+			` · ${__("{0} principal follow-up(s)", [principal_follow_ups])}`
+		);
+	}
+
 	wrapper.find(".tp-dvr-card").on("click", function () {
 		const key = $(this).data("key");
 		if (key === "expense") techpark.dvr.new_expense(frm);
-		if (key === "followup" && frm.doc.follow_up) frappe.set_route("Form", "ToDo", frm.doc.follow_up);
+		if (key !== "followup") return;
+		if (principal_follow_ups) {
+			frappe.set_route("List", "ToDo", { reference_type: frm.doctype, reference_name: frm.doc.name });
+		} else if (frm.doc.follow_up) {
+			frappe.set_route("Form", "ToDo", frm.doc.follow_up);
+		}
 	});
 };
 

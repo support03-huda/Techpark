@@ -19,6 +19,8 @@ from frappe.utils import getdate, today
 from techpark.permission import is_locked, is_manager
 
 DISTRIBUTOR = "TP"
+# DVR types that happen at the customer's plant; the others (calls, emails, messages) need no plant.
+PLANT_DVR_TYPES = ("Visit", "Meeting")
 
 # Status -> % of the whole cycle (Development up to 50%, Sales after). Keep in sync with daily_visit_report.js.
 DEVELOPMENT_PROGRESS = {
@@ -74,6 +76,14 @@ def row_from_lead(lead_stage, lead_status):
 	elif lead_status == "On Hold" and stage == "Sales":
 		sales = "On Hold"
 	return {"stage": stage, "development_status": development, "sales_status": sales}
+
+
+def dvr_stage(stages):
+	"""Stage of the whole visit from its principal rows' stages."""
+	stages = set(stages)
+	if stages == {"Development", "Sales"}:
+		return "Development + Sales"
+	return "Sales" if "Sales" in stages else "Development"
 
 
 @frappe.whitelist()
@@ -181,6 +191,12 @@ class DailyVisitReport(Document):
 			frappe.throw(_("Next Action By cannot be before the Visit Date."))
 
 	def validate_plant(self):
+		"""A visit or meeting happens at a plant; a call, email or message may have none."""
+		if not self.plant:
+			if self.dvr_type in PLANT_DVR_TYPES:
+				frappe.throw(_("Select the Plant for a {0}.").format(_(self.dvr_type)))
+			self.plant_name = None
+			return
 		plant_customer = frappe.db.get_value("Plant", self.plant, "customer")
 		if plant_customer != self.customer:
 			frappe.throw(
@@ -207,15 +223,15 @@ class DailyVisitReport(Document):
 			frappe.throw(_("Add at least one Principal discussed on this visit."))
 		seen = set()
 		for row in self.principals:
-			key = (row.principal, row.supplier_product_category or "")
+			self.validate_category(row)
+			key = (row.principal, str(row.supplier_product_category or ""))
 			if key in seen:
 				frappe.throw(
 					_("Principals row {0}: {1} is entered twice.").format(
-						row.idx, " / ".join(p for p in key if p)
+						row.idx, " / ".join(p for p in (row.principal, row.category_name) if p)
 					)
 				)
 			seen.add(key)
-			self.validate_category(row)
 			self.set_row_stage(row)
 		self.set_summary()
 
@@ -243,6 +259,12 @@ class DailyVisitReport(Document):
 			)
 
 	def validate_category(self, row):
+		# Product categories are numbered (autoincrement): the name is what people read.
+		row.category_name = (
+			frappe.db.get_value("Supplier Product Category", row.supplier_product_category, "category_name")
+			if row.supplier_product_category
+			else None
+		)
 		if not row.supplier_product_category:
 			return
 		category_principal = frappe.db.get_value("Supplier Product Category", row.supplier_product_category, "principal")
@@ -250,7 +272,7 @@ class DailyVisitReport(Document):
 			frappe.throw(
 				_("Principals row {0}: Product Category {1} belongs to {2}, not {3}.").format(
 					row.idx,
-					frappe.bold(row.supplier_product_category),
+					frappe.bold(row.category_name or row.supplier_product_category),
 					frappe.bold(category_principal),
 					frappe.bold(row.principal),
 				)
@@ -274,6 +296,12 @@ class DailyVisitReport(Document):
 				)
 			)
 		row.progress = STAGE_PROGRESS.get(row.sales_status or row.development_status, 0)
+		if row.next_action_date and getdate(row.next_action_date) < getdate(self.visit_date):
+			frappe.throw(
+				_("Principals row {0} ({1}): Next Action By cannot be before the Visit Date.").format(
+					row.idx, frappe.bold(row.principal)
+				)
+			)
 
 	def set_summary(self):
 		"""The single fields other screens read: first principal, the furthest status, overall lead status."""
@@ -281,6 +309,15 @@ class DailyVisitReport(Document):
 		self.principal = rows[0].principal
 		self.supplier_product_category = rows[0].supplier_product_category
 		self.principal_list = ", ".join(dict.fromkeys(row.principal for row in rows))
+		# "Noritake · Super Abrasive: Trial in Progress" per line, for the customer's Visits tab
+		self.principal_summary = "\n".join(
+			"{0}: {1}".format(
+				" · ".join(p for p in (row.principal, row.category_name) if p),
+				row.sales_status or row.development_status,
+			)
+			for row in rows
+		)
+		self.dvr_stage = dvr_stage(row.stage for row in rows)
 		furthest = max(rows, key=lambda row: row.progress or 0)
 		self.lead_stage = furthest.sales_status or furthest.development_status
 		self.stage_completed = furthest.progress or 0
@@ -308,24 +345,35 @@ class DailyVisitReport(Document):
 		self.activate_customer()
 
 	def on_cancel(self):
-		if self.follow_up and frappe.db.get_value("ToDo", self.follow_up, "status") == "Open":
-			frappe.db.set_value("ToDo", self.follow_up, "status", "Cancelled")
+		for todo in [self.follow_up, *(row.follow_up for row in self.principals)]:
+			if todo and frappe.db.get_value("ToDo", todo, "status") == "Open":
+				frappe.db.set_value("ToDo", todo, "status", "Cancelled")
 
 	def create_follow_up(self):
-		if not self.next_action:
-			return
-		todo = frappe.get_doc(
-			{
-				"doctype": "ToDo",
-				"allocated_to": self.visited_by,
-				"date": self.next_action_date,
-				"description": _("{0} — {1}").format(self.customer_name, self.next_action),
-				"reference_type": self.doctype,
-				"reference_name": self.name,
-				"assigned_by": frappe.session.user,
-			}
-		).insert(ignore_permissions=True)
-		self.db_set("follow_up", todo.name)
+		"""A ToDo for the visit's Next Action, and one per principal row with its own Next Action."""
+		if self.next_action:
+			self.db_set("follow_up", self.make_todo(self.next_action, self.next_action_date))
+		for row in self.principals:
+			if row.next_action and not row.follow_up:
+				action = _("{0}: {1}").format(row.principal, row.next_action)
+				row.db_set("follow_up", self.make_todo(action, row.next_action_date))
+
+	def make_todo(self, action, date):
+		return (
+			frappe.get_doc(
+				{
+					"doctype": "ToDo",
+					"allocated_to": self.visited_by,
+					"date": date,
+					"description": _("{0} — {1}").format(self.customer_name, action),
+					"reference_type": self.doctype,
+					"reference_name": self.name,
+					"assigned_by": frappe.session.user,
+				}
+			)
+			.insert(ignore_permissions=True)
+			.name
+		)
 
 	def activate_customer(self):
 		"""A won visit turns a Prospect into an Active Customer."""

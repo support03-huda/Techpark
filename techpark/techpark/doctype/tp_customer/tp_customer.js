@@ -320,8 +320,9 @@ techpark.customer_master.render_visits = function (frm) {
 		{ label: __("Last Visit"), value: latest ? frappe.datetime.str_to_user(latest.visit_date) : "—" },
 		{ label: __("Latest Lead Status"), value: latest ? latest.lead_status : "—" },
 	]);
+	html += `<div class="tp-principal-status" style="margin-bottom:12px;"></div>`;
 	html += `<p class="text-muted small" style="margin:0;">${__(
-		"Add a row to log a visit — it is saved as a Daily Visit Report. On submitted visits you can still update Lead Status and Lead Stage as the lead progresses; anything else is changed from the DVR itself (click its DVR ID)."
+		"Add a row to log a visit — it is saved as a Daily Visit Report. Principals and their Development / Sales status are updated on the Visit Report itself (click its DVR ID)."
 	)}</p>`;
 
 	const wrapper = frm.fields_dict.visits_html.$wrapper;
@@ -331,6 +332,52 @@ techpark.customer_master.render_visits = function (frm) {
 		M.render_visits(frm);
 	});
 	M.filter_visit_rows(frm);
+	M.render_principal_status(frm, wrapper.find(".tp-principal-status"), visits);
+};
+
+// Latest Development / Sales status of each principal (and product category) over the visits shown.
+techpark.customer_master.render_principal_status = async function (frm, $target, visits) {
+	const dates = Object.fromEntries(visits.filter((v) => v.record).map((v) => [v.record, v.visit_date || ""]));
+	const records = Object.keys(dates);
+	if (!records.length) return;
+	const rows = await frappe.xcall("frappe.client.get_list", {
+		doctype: "DVR Principal",
+		parent: "Daily Visit Report",
+		filters: [["parent", "in", records]],
+		fields: ["parent", "principal", "supplier_product_category", "category_name", "stage", "development_status", "sales_status", "progress"],
+		limit_page_length: 0,
+	});
+	const latest = {};
+	for (const r of rows.sort((a, b) => (dates[a.parent] < dates[b.parent] ? 1 : -1))) {
+		const key = `${r.principal}|${r.supplier_product_category || ""}`;
+		if (!latest[key]) latest[key] = r;
+	}
+	const esc = frappe.utils.escape_html;
+	const color = (s) =>
+		["Order Won", "Regularization"].includes(s) ? "green"
+		: ["Order Lost", "Trial Failed"].includes(s) ? "red"
+		: s === "On Hold" ? "gray"
+		: s === "Successful Trial" ? "purple"
+		: "blue";
+	const body = Object.values(latest)
+		.map((r) => {
+			const status = (r.stage === "Sales" && r.sales_status) || r.development_status || "";
+			return `<tr>
+				<td>${esc(r.principal)}</td>
+				<td>${esc(r.category_name || "")}</td>
+				<td>${esc(__(r.stage || ""))}</td>
+				<td><span class="indicator-pill ${color(status)}">${esc(__(status))}</span></td>
+				<td style="text-align:right;">${r.progress || 0}%</td>
+				<td><a href="/desk/daily-visit-report/${encodeURIComponent(r.parent)}">${frappe.datetime.str_to_user(dates[r.parent])}</a></td>
+			</tr>`;
+		})
+		.join("");
+	$target.html(`<div class="control-label" style="margin-bottom:6px;">${__("Principal-wise Status")}</div>
+		<div style="overflow-x:auto;"><table class="table table-bordered table-sm" style="font-size:12px; margin:0;">
+			<thead><tr><th>${__("Principal")}</th><th>${__("Product Category")}</th><th>${__("Stage")}</th>
+				<th>${__("Status")}</th><th style="text-align:right;">${__("Progress")}</th><th>${__("Last Visit")}</th></tr></thead>
+			<tbody>${body}</tbody>
+		</table></div>`);
 };
 
 techpark.customer_master.filter_visit_rows = function (frm) {

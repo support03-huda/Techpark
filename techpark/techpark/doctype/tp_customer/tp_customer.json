@@ -14,6 +14,7 @@
   "principals",
   "column_break_main",
   "customer_code",
+  "customer_no",
   "customer_status",
   "territory_region",
   "zone",
@@ -130,6 +131,15 @@
    "length": 6,
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "customer_no",
+   "fieldtype": "Data",
+   "label": "Customer No.",
+   "bold": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "search_index": 1
   },
   {
    "default": "Prospect",
@@ -446,7 +456,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-24 15:00:00.000000",
+ "modified": "2026-10-30 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

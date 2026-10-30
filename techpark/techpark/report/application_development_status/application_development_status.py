@@ -80,7 +80,7 @@ def get_data(filters):
 	principal_rows = frappe.get_all(
 		"DVR Principal",
 		filters=row_filters,
-		fields=["parent", "principal", "supplier_product_category", "stage", "development_status", "sales_status", "progress"],
+		fields=["parent", "principal", "supplier_product_category", "category_name", "stage", "development_status", "sales_status", "progress"],
 	)
 	# Newest visit first, so the first row seen per application is its latest.
 	principal_rows.sort(key=lambda r: (visits[r.parent].visit_date, visits[r.parent].creation), reverse=True)
@@ -109,6 +109,8 @@ def get_data(filters):
 			continue
 		if filters.stage and r.stage != filters.stage:
 			continue
+		if filters.status and status != filters.status:
+			continue
 		if filters.open_only and lead_status in ("Won", "Lost"):
 			continue
 		rows.append(
@@ -118,7 +120,7 @@ def get_data(filters):
 				"application": lines.get(v.segment_application) or "",
 				"plant_name": v.plant_name,
 				"principal": r.principal,
-				"supplier_product_category": r.supplier_product_category,
+				"supplier_product_category": r.category_name or r.supplier_product_category,
 				"stage": r.stage,
 				"lead_stage": status,
 				"stage_completed": r.progress or STAGE_PROGRESS.get(status, 0),

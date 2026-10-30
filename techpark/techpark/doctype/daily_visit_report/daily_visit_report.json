@@ -17,6 +17,7 @@
   "visit_purpose",
   "dvr_type",
   "department",
+  "dvr_stage",
   "column_break_visit",
   "distributor",
   "visited_by",
@@ -27,6 +28,7 @@
   "section_principal",
   "principals",
   "principal_list",
+  "principal_summary",
   "principal",
   "column_break_principal",
   "supplier_product_category",
@@ -152,6 +154,16 @@
    "in_standard_filter": 1
   },
   {
+   "fieldname": "dvr_stage",
+   "fieldtype": "Select",
+   "label": "Stage",
+   "options": "\nDevelopment\nSales\nDevelopment + Sales",
+   "bold": 1,
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "in_standard_filter": 1
+  },
+  {
    "fieldname": "column_break_visit",
    "fieldtype": "Column Break"
   },
@@ -185,7 +197,7 @@
    "in_standard_filter": 1,
    "label": "Plant",
    "options": "Plant",
-   "reqd": 1
+   "mandatory_depends_on": "eval:['Visit', 'Meeting'].includes(doc.dvr_type)"
   },
   {
    "fetch_from": "plant.plant_name",
@@ -224,6 +236,14 @@
    "hidden": 1,
    "in_list_view": 1,
    "in_standard_filter": 0,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "principal_summary",
+   "fieldtype": "Small Text",
+   "label": "Principal-wise Status",
+   "read_only": 1,
+   "hidden": 1,
    "allow_on_submit": 1
   },
   {
@@ -398,7 +418,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-10-29 16:00:00.000000",
+ "modified": "2026-10-30 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
