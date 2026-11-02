@@ -19,8 +19,6 @@ from frappe.utils import getdate, today
 from techpark.permission import is_locked, is_manager
 
 DISTRIBUTOR = "TP"
-# DVR types that happen at the customer's plant; the others (calls, emails, messages) need no plant.
-PLANT_DVR_TYPES = ("Visit", "Meeting")
 
 # Status -> % of the whole cycle (Development up to 50%, Sales after). Keep in sync with daily_visit_report.js.
 DEVELOPMENT_PROGRESS = {
@@ -191,10 +189,8 @@ class DailyVisitReport(Document):
 			frappe.throw(_("Next Action By cannot be before the Visit Date."))
 
 	def validate_plant(self):
-		"""A visit or meeting happens at a plant; a call, email or message may have none."""
+		"""One customer = one site: the (hidden) plant is the customer's, set in before_validate."""
 		if not self.plant:
-			if self.dvr_type in PLANT_DVR_TYPES:
-				frappe.throw(_("Select the Plant for a {0}.").format(_(self.dvr_type)))
 			self.plant_name = None
 			return
 		plant_customer = frappe.db.get_value("Plant", self.plant, "customer")

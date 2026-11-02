@@ -29,7 +29,6 @@ def get_columns():
 		{"fieldname": "customer", "label": _("Customer Code"), "fieldtype": "Link", "options": "TP Customer", "width": 105},
 		{"fieldname": "customer_name", "label": _("Customer"), "fieldtype": "Data", "width": 190},
 		{"fieldname": "application", "label": _("Application / Line"), "fieldtype": "Data", "width": 190},
-		{"fieldname": "plant_name", "label": _("Plant"), "fieldtype": "Data", "width": 120},
 		{"fieldname": "principal", "label": _("Principal"), "fieldtype": "Link", "options": "Principal", "width": 100},
 		{"fieldname": "supplier_product_category", "label": _("Product Category"), "fieldtype": "Data", "width": 160},
 		{"fieldname": "stage", "label": _("Stage"), "fieldtype": "Data", "width": 100},

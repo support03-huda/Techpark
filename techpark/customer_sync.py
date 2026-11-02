@@ -120,6 +120,29 @@ DOCSTATUS_LABEL = {0: "Draft", 1: "Submitted", 2: "Cancelled"}
 
 
 # ---------------------------------------------------------------------------
+# One customer = one site: its Plant is filled from the customer and hidden on
+# every form; records that point to a plant get the customer's plant.
+# ---------------------------------------------------------------------------
+
+
+def default_plant(customer):
+	"""The customer's plant (the first active one)."""
+	if not customer:
+		return None
+	plants = frappe.get_all(
+		"Plant", filters={"customer": customer}, fields=["name"], order_by="is_active desc, creation asc", limit=1
+	)
+	return plants[0].name if plants else None
+
+
+def set_default_plant(doc, method=None):
+	"""doc_events before_validate: an empty plant becomes the customer's plant."""
+	field = "address" if doc.doctype == "Customer Segment Application" else "plant"
+	if doc.docstatus == 0 and not doc.get(field):
+		doc.set(field, default_plant(doc.get("customer")))
+
+
+# ---------------------------------------------------------------------------
 # TP Customer -> records
 # ---------------------------------------------------------------------------
 

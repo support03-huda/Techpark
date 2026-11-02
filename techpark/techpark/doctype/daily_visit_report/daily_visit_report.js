@@ -24,14 +24,7 @@ techpark.dvr.TRIAL_DONE = "Successful Trial";
 
 frappe.ui.form.on("Daily Visit Report", {
 	setup(frm) {
-		frm.set_query("plant", () => ({
-			filters: { customer: frm.doc.customer || "", is_active: 1 },
-		}));
-		frm.set_query("segment_application", () => {
-			const filters = { customer: frm.doc.customer || "" };
-			if (frm.doc.plant) filters.address = frm.doc.plant;
-			return { filters };
-		});
+		frm.set_query("segment_application", () => ({ filters: { customer: frm.doc.customer || "" } }));
 		frm.set_query("contact", () => ({
 			filters: { customer: frm.doc.customer || "", is_active: 1 },
 		}));
@@ -62,7 +55,8 @@ frappe.ui.form.on("Daily Visit Report", {
 		}
 	},
 
-	async customer(frm) {
+	customer(frm) {
+		// The (hidden) plant is set to the customer's on save.
 		frm.set_value("plant", "");
 		frm.set_value("contact", "");
 		frm.set_value("segment_application", "");
@@ -70,18 +64,6 @@ frappe.ui.form.on("Daily Visit Report", {
 		(frm.doc.principals || []).forEach((row) => techpark.dvr.check_development(frm, row));
 		if (!frm.doc.customer) return;
 		techpark.dvr.load_contacts(frm);
-
-		// Only one active plant? Pick it.
-		const plants = await frappe.db.get_list("Plant", {
-			filters: { customer: frm.doc.customer, is_active: 1 },
-			fields: ["name"],
-			limit: 2,
-		});
-		if (plants.length === 1) frm.set_value("plant", plants[0].name);
-	},
-
-	plant(frm) {
-		frm.set_value("segment_application", "");
 	},
 
 	principals_remove(frm) {

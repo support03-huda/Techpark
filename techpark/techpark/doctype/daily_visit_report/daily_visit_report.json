@@ -194,18 +194,17 @@
   {
    "fieldname": "plant",
    "fieldtype": "Link",
-   "in_standard_filter": 1,
    "label": "Plant",
    "options": "Plant",
-   "mandatory_depends_on": "eval:['Visit', 'Meeting'].includes(doc.dvr_type)"
+   "hidden": 1
   },
   {
    "fetch_from": "plant.plant_name",
    "fieldname": "plant_name",
    "fieldtype": "Data",
-   "in_list_view": 1,
    "label": "Plant Name",
-   "read_only": 1
+   "read_only": 1,
+   "hidden": 1
   },
   {
    "description": "The customer line / segment worked on in this visit",
@@ -418,7 +417,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-10-30 15:00:00.000000",
+ "modified": "2026-11-02 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
@@ -469,7 +468,7 @@
   }
  ],
  "row_format": "Dynamic",
- "search_fields": "customer_name,plant_name,principal,visit_purpose,lead_status",
+ "search_fields": "customer_name,principal,visit_purpose,lead_status",
  "show_title_field_in_link": 1,
  "sort_field": "visit_date",
  "sort_order": "DESC",

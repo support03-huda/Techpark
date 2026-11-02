@@ -70,6 +70,7 @@ class TPCustomer(Document):
 		self.validate_established_year()
 		self.remove_duplicate_principals()
 		self.validate_contacts()
+		self.sync_plant()
 		self.track_inactivation()
 		self.track_prospect()
 
@@ -120,6 +121,25 @@ class TPCustomer(Document):
 			self.primary_contact_name = primary.get("person_name")
 			self.primary_contact_phone = primary.get("phone")
 			self.primary_contact_email = primary.get("email")
+
+	def sync_plant(self):
+		"""One customer = one site. Its Plant (still used by visits and the technical tabs) is hidden
+		and kept in step with the customer's address and GST details."""
+		values = {
+			"plant_address": self.customer_address,
+			"plant_location": self.plant_location,
+			"state": self.state,
+			"pincode": self.pincode,
+			"gstin": self.gstin,
+			"gst_registration_type": self.gst_registration_type,
+			"is_active": 1,
+		}
+		plants = self.get("plants") or []
+		row = next((p for p in plants if cint(p.is_active)), None) or (plants[0] if plants else None)
+		if row:
+			row.update(values)
+		else:
+			self.append("plants", {"plant_name": (self.plant_location or "").strip() or "Main", "country": "India", **values})
 
 	def track_inactivation(self):
 		if self.customer_status != "Inactive":

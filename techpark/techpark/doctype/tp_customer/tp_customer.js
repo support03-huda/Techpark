@@ -150,11 +150,6 @@ techpark.customer_master.link = function (doctype, name, label) {
 	return `<a href="/app/${frappe.router.slug(doctype)}/${encodeURIComponent(name)}">${frappe.utils.escape_html(label || name)}</a>`;
 };
 
-techpark.customer_master.plant_names = function (frm) {
-	const names = {};
-	(frm.doc.plants || []).forEach((p) => p.record && (names[p.record] = p.plant_name));
-	return names;
-};
 
 techpark.customer_master.render_plants = function (frm) {
 	if (!frm.fields_dict.plants_html) return;
@@ -176,7 +171,6 @@ techpark.customer_master.render_production = function (frm) {
 	frm.fields_dict.production_html.$wrapper.html(
 		M.wrap(
 			M.stats_html([
-				{ label: "Active Plants", value: (frm.doc.plants || []).filter((p) => p.is_active).length },
 				{ label: "Production Lines", value: (frm.doc.production || []).length },
 				{
 					label: "Annual Turnover",
@@ -207,13 +201,7 @@ techpark.customer_master.render_products = async function (frm) {
 	if (!frm.fields_dict.products_html) return;
 	const M = techpark.customer_master;
 	const wrapper = frm.fields_dict.products_html.$wrapper;
-	const plant_names = M.plant_names(frm);
-
-	const seen = {};
-	(frm.doc.production || []).forEach((r) => {
-		if (r.product && !seen[r.product]) seen[r.product] = r.plant;
-	});
-	const product_ids = Object.keys(seen);
+	const product_ids = [...new Set((frm.doc.production || []).map((r) => r.product).filter(Boolean))];
 
 	const products = product_ids.length
 		? await M.get_list("Customer Product", { name: ["in", product_ids] }, ["name", "product_name", "product_category", "active"])
@@ -230,13 +218,12 @@ techpark.customer_master.render_products = async function (frm) {
 
 	let html = M.stats_html([{ label: "Distinct Products", value: product_ids.length }]);
 	html += M.table_html(
-		["Product", "Category", "Plant", "Status"],
+		["Product", "Category", "Status"],
 		product_ids.map((pid) => {
 			const prod = product_map[pid] || {};
 			return [
 				M.link("Customer Product", pid, prod.product_name || pid),
 				frappe.utils.escape_html(category_map[prod.product_category] || ""),
-				frappe.utils.escape_html(plant_names[seen[pid]] || seen[pid] || ""),
 				M.badge(prod.active ? "Active" : "Inactive", prod.active ? "green" : "gray"),
 			];
 		})

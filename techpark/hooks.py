@@ -174,6 +174,8 @@ _customer_tab_sync = {
 	"on_update": "techpark.customer_sync.on_record_change",
 	"after_delete": "techpark.customer_sync.on_record_change",
 }
+# The Plant field is hidden (one customer = one site): fill it with the customer's plant
+_default_plant = {"before_validate": "techpark.customer_sync.set_default_plant"}
 doc_events = {
 	# Sign Up: no set-password email yet, and a TP Registration for the approvers.
 	"User": {
@@ -182,14 +184,15 @@ doc_events = {
 	},
 	"Customer Contact": _customer_tab_sync,
 	"Plant": _customer_tab_sync,
-	"Customer Product Production": _customer_tab_sync,
-	"Customer Turnover": _customer_tab_sync,
-	"Customer Segment Application": _customer_tab_sync,
-	"Wheel Specification": _customer_tab_sync,
-	"Wheel Consumption": _customer_tab_sync,
-	"Manufacturing Details": _customer_tab_sync,
+	"Customer Product Production": {**_customer_tab_sync, **_default_plant},
+	"Customer Turnover": {**_customer_tab_sync, **_default_plant},
+	"Customer Segment Application": {**_customer_tab_sync, **_default_plant},
+	"Wheel Specification": {**_customer_tab_sync, **_default_plant},
+	"Wheel Consumption": {**_customer_tab_sync, **_default_plant},
+	"Manufacturing Details": {**_customer_tab_sync, **_default_plant},
 	"Daily Visit Report": {
 		**_customer_tab_sync,
+		**_default_plant,
 		**_lock,
 		"on_submit": "techpark.customer_sync.on_record_change",
 		"on_cancel": "techpark.customer_sync.on_record_change",
