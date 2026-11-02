@@ -25,6 +25,12 @@ def is_manager(user=None):
 	return user == "Administrator" or bool(MANAGER_ROLES & set(frappe.get_roles(user)))
 
 
+def has_app_permission():
+	"""TechPark tile on the apps screen: salespeople, managers and admins."""
+	user = frappe.session.user
+	return user == "Administrator" or bool((MANAGER_ROLES | {"Sales User"}) & set(frappe.get_roles(user)))
+
+
 def is_locked(doc, user=None):
 	"""True when `user` (a salesperson) may no longer change this entry."""
 	if doc.is_new() or is_manager(user):

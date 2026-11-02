@@ -10,16 +10,15 @@ app_license = "mit"
 
 # required_apps = []
 
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "techpark",
-# 		"logo": "/assets/techpark/logo.png",
-# 		"title": "TechPark",
-# 		"route": "/techpark",
-# 		"has_permission": "techpark.api.permission.has_app_permission"
-# 	}
-# ]
+# TechPark tile on the /desk apps screen
+add_to_apps_screen = [
+	{
+		"name": "techpark",
+		"title": "TechPark",
+		"route": "/desk/techpark",
+		"has_permission": "techpark.permission.has_app_permission",
+	}
+]
 
 # Includes in <head>
 # ------------------

@@ -78,6 +78,17 @@ class TPCustomer(Document):
 		# Contacts / Plants / Production / Commercial / Visits tab rows -> real records
 		push_to_records(self)
 
+	def on_trash(self):
+		"""The plant is hidden and cannot be deleted on its own: it goes with its customer.
+		(Visits and other records using it still keep the customer from being deleted.)"""
+		frappe.flags.tp_customer_sync = True
+		try:
+			frappe.db.delete("TP Customer Plant", {"parent": self.name, "parenttype": self.doctype})
+			for plant in frappe.get_all("Plant", filters={"customer": self.name}, pluck="name"):
+				frappe.delete_doc("Plant", plant, ignore_permissions=True)
+		finally:
+			frappe.flags.tp_customer_sync = False
+
 	def validate_duplicate_name(self):
 		duplicate = frappe.db.get_value(
 			self.doctype,
