@@ -23,6 +23,10 @@
   "total_employees",
   "established_year",
   "handled_by",
+  "section_visiting_card",
+  "visiting_card",
+  "column_break_card",
+  "visiting_card_back",
   "section_primary_contact",
   "primary_contact_name",
   "column_break_pc1",
@@ -197,6 +201,25 @@
    "fieldtype": "Table MultiSelect",
    "label": "Handled By (Agents)",
    "options": "Customer Agent"
+  },
+  {
+   "fieldname": "section_visiting_card",
+   "fieldtype": "Section Break",
+   "label": "Visiting Card"
+  },
+  {
+   "fieldname": "visiting_card",
+   "fieldtype": "Attach Image",
+   "label": "Visiting Card (Front)"
+  },
+  {
+   "fieldname": "column_break_card",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "visiting_card_back",
+   "fieldtype": "Attach Image",
+   "label": "Visiting Card (Back)"
   },
   {
    "fieldname": "section_primary_contact",
@@ -472,7 +495,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-02 12:00:00.000000",
+ "modified": "2026-11-03 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

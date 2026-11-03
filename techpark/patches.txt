@@ -30,3 +30,4 @@ techpark.patches.fill_plant_gst_on_customer_tab
 techpark.patches.fill_visit_tab_principals
 techpark.patches.fill_dvr_stage
 techpark.patches.customer_details_from_plant
+techpark.patches.sync_techpark_sidebar

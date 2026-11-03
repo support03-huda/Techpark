@@ -12,7 +12,10 @@
   "prospect_cold_days",
   "not_visited_days",
   "section_lock",
-  "lock_days"
+  "lock_days",
+  "section_card_scan",
+  "openai_api_key",
+  "openai_model"
  ],
  "fields": [
   {
@@ -75,11 +78,28 @@
    "fieldname": "lock_days",
    "fieldtype": "Int",
    "label": "Lock Entries for Salespeople After (Days)"
+  },
+  {
+   "fieldname": "section_card_scan",
+   "fieldtype": "Section Break",
+   "label": "Visiting Card Scan"
+  },
+  {
+   "fieldname": "openai_api_key",
+   "fieldtype": "Password",
+   "label": "OpenAI API Key",
+   "length": 255
+  },
+  {
+   "default": "gpt-4.1-mini",
+   "fieldname": "openai_model",
+   "fieldtype": "Data",
+   "label": "OpenAI Model"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-26 12:00:00.000000",
+ "modified": "2026-11-03 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark Settings",

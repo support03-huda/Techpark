@@ -35,6 +35,9 @@ frappe.ui.form.on("TP Customer", {
 		}
 		M.set_contact_options(frm);
 		M.render_plants(frm);
+		if (frm.perm[0]?.write) {
+			frm.add_custom_button(__("Scan Visiting Card"), () => M.upload_card(frm));
+		}
 		if (frm.is_new()) return;
 		M.render_production(frm);
 		M.render_commercial(frm);
@@ -263,6 +266,157 @@ techpark.customer_master.set_contact_options = function (frm) {
 		.filter((c) => c.person_name && c.is_active)
 		.map(techpark.customer_master.contact_label);
 	frm.fields_dict.visits.grid.update_docfield_property("contact_person", "options", options);
+};
+
+// Visiting card: take a photo (or upload) of the front and back, OpenAI reads both, the
+// user checks the details and they are filled into the form (techpark/visiting_card.py)
+techpark.customer_master.upload_card = function (frm) {
+	const dialog = new frappe.ui.Dialog({
+		title: __("Scan Visiting Card"),
+		fields: [
+			{
+				fieldname: "front",
+				fieldtype: "Attach Image",
+				label: __("Front"),
+				reqd: 1,
+				default: frm.doc.visiting_card,
+			},
+			{
+				fieldname: "back",
+				fieldtype: "Attach Image",
+				label: __("Back"),
+				description: __("Optional"),
+				default: frm.doc.visiting_card_back,
+			},
+		],
+		primary_action_label: __("Read Card"),
+		primary_action(v) {
+			dialog.hide();
+			frm.set_value({ visiting_card: v.front, visiting_card_back: v.back || "" });
+			techpark.customer_master.scan_card(frm);
+		},
+	});
+	dialog.show();
+};
+
+techpark.customer_master.scan_card = function (frm) {
+	frappe
+		.call({
+			method: "techpark.visiting_card.scan_card",
+			args: { file_url: frm.doc.visiting_card, back_url: frm.doc.visiting_card_back || null },
+			freeze: true,
+			freeze_message: __("Reading visiting card..."),
+		})
+		.then((r) => r.message && techpark.customer_master.review_card(frm, r.message));
+};
+
+// Form field each card detail goes to (contact details also go to the Contacts table)
+techpark.customer_master.CARD_TARGETS = {
+	customer_name: "customer_name",
+	person_name: "primary_contact_name",
+	phone: "primary_contact_phone",
+	email: "primary_contact_email",
+	address: "customer_address",
+	city: "plant_location",
+	state: "state",
+	pincode: "pincode",
+	gstin: "gstin",
+};
+
+techpark.customer_master.review_card = function (frm, card) {
+	const phones = card.phones || [];
+	const values = {
+		customer_name: card.company_name,
+		person_name: card.person_name,
+		designation: card.designation,
+		department: card.department,
+		phone: phones[0] || "",
+		other_phones: phones.slice(1).join(", "),
+		email: card.email,
+		website: card.website,
+		address: card.address,
+		city: card.city,
+		state: card.state,
+		pincode: card.pincode,
+		gstin: card.gstin,
+	};
+	const labels = {
+		customer_name: __("Customer Name"),
+		person_name: __("Contact Name"),
+		designation: __("Designation"),
+		department: __("Department"),
+		phone: __("Phone"),
+		other_phones: __("Other Phones"),
+		email: __("Email"),
+		website: __("Website"),
+		address: __("Address"),
+		city: __("Location / City"),
+		state: __("State"),
+		pincode: __("Pincode"),
+		gstin: __("GSTIN"),
+	};
+	const targets = techpark.customer_master.CARD_TARGETS;
+	const fields = Object.keys(labels).map((key) => {
+		const current = targets[key] && frm.doc[targets[key]];
+		return {
+			fieldname: key,
+			label: labels[key],
+			fieldtype: key === "address" ? "Small Text" : "Data",
+			default: values[key] || "",
+			// Show what the form has now when the card says something else
+			description: current && current !== values[key] ? __("Now: {0}", [frappe.utils.escape_html(current)]) : "",
+		};
+	});
+	fields.splice(7, 0, { fieldtype: "Column Break" });
+
+	const dialog = new frappe.ui.Dialog({
+		title: __("Visiting Card Details"),
+		size: "large",
+		fields: [
+			{
+				fieldtype: "HTML",
+				options: `<p class="text-muted">${__(
+					"Check the details read from the card. Clear a field to keep what the form has now."
+				)}</p>`,
+			},
+			...fields,
+		],
+		primary_action_label: __("Fill Form"),
+		primary_action(v) {
+			dialog.hide();
+			techpark.customer_master.fill_from_card(frm, v);
+		},
+	});
+	dialog.show();
+};
+
+techpark.customer_master.fill_from_card = function (frm, v) {
+	const targets = techpark.customer_master.CARD_TARGETS;
+	// Phone field takes one number: digits and a leading +
+	if (v.phone) v.phone = v.phone.replace(/(?!^\+)[^\d]/g, "").slice(0, 15);
+	for (const [key, field] of Object.entries(targets)) {
+		if (v[key]) frm.set_value(field, v[key]);
+	}
+
+	if (!v.person_name) return;
+	const phones = [v.phone, v.other_phones].filter(Boolean).join(", ");
+	const name = v.person_name.trim().toLowerCase();
+	let row = (frm.doc.contacts || []).find((c) => (c.person_name || "").trim().toLowerCase() === name);
+	if (!row) {
+		row = frm.add_child("contacts", {
+			person_name: v.person_name,
+			is_active: 1,
+			is_primary: (frm.doc.contacts || []).some((c) => c.is_primary) ? 0 : 1,
+		});
+	}
+	const details = { designation: v.designation, department: v.department, phone: phones, email: v.email };
+	if (v.website && !row.notes) details.notes = v.website;
+	for (const [field, value] of Object.entries(details)) {
+		if (value) row[field] = value;
+	}
+	frm.refresh_field("contacts");
+	techpark.customer_master.set_contact_options(frm);
+	frappe.show_alert({ message: __("Filled from the visiting card. Save the customer."), indicator: "green" });
 };
 
 techpark.customer_master.VISIT_PERIODS = {
