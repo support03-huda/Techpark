@@ -293,17 +293,18 @@ techpark.customer_master.upload_card = function (frm) {
 		primary_action(v) {
 			dialog.hide();
 			frm.set_value({ visiting_card: v.front, visiting_card_back: v.back || "" });
-			techpark.customer_master.scan_card(frm);
+			// set_value is async: pass the images, not frm.doc
+			techpark.customer_master.scan_card(frm, v.front, v.back);
 		},
 	});
 	dialog.show();
 };
 
-techpark.customer_master.scan_card = function (frm) {
+techpark.customer_master.scan_card = function (frm, front, back) {
 	frappe
 		.call({
 			method: "techpark.visiting_card.scan_card",
-			args: { file_url: frm.doc.visiting_card, back_url: frm.doc.visiting_card_back || null },
+			args: { file_url: front, back_url: back || null },
 			freeze: true,
 			freeze_message: __("Reading visiting card..."),
 		})
