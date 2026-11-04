@@ -3,19 +3,14 @@ only Reports To has to be filled in. Leaves sites that already have them alone."
 
 import frappe
 
+# The client's expense heads (2026-11-04)
 EXPENSE_TYPES = [
-	"Travel / Fares",
-	"Local Conveyance",
+	"Food Exp.",
+	"Lodging",
 	"Fuel",
-	"Toll / Parking",
-	"Food",
-	"Lodging & Boarding",
-	"Daily Allowance",
-	"Courier",
-	"Postage & Telephone",
-	"Business Promotion",
-	"Gifts",
-	"Miscellaneous",
+	"Local Conveyance",
+	"Fares",
+	"Misc.",
 ]
 
 

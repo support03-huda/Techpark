@@ -31,7 +31,8 @@ app_include_js = ["/assets/techpark/js/techpark.js", "/assets/techpark/js/techpa
 extend_bootinfo = "techpark.boot.extend_bootinfo"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/techpark/css/techpark.css"
+# Bigger TechPark logo on the login page (the logo itself: patches/set_login_logo.py)
+web_include_css = "/assets/techpark/css/techpark_web.css"
 # web_include_js = "/assets/techpark/js/techpark.js"
 
 # include custom scss in every website theme (without file extension ".scss")

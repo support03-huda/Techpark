@@ -1,0 +1,13 @@
+/* TechPark logo on the login page: big, across the login box.
+   !important: the login page's own CSS (max-height 32px) loads after this. */
+body .page-card-head img.app-logo {
+	max-height: none !important;
+	width: 100% !important;
+	max-width: 340px !important;
+	height: auto !important;
+	display: block;
+	margin: 0 auto 8px;
+}
+body .page-card-head {
+	align-items: stretch !important;
+}
