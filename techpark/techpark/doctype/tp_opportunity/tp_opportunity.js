@@ -14,6 +14,7 @@ frappe.ui.form.on("TP Opportunity", {
 				supplier_product_category: frm.doc.supplier_product_category,
 				spec: frm.doc.spec,
 				size: frm.doc.size,
+				stage: frm.doc.stage,
 			};
 			frappe.new_doc("Daily Visit Report", { customer: frm.doc.customer });
 		});

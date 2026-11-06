@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "principal",
+  "technical_lead",
   "application",
   "spec",
   "size",
@@ -37,13 +38,21 @@
    "columns": 2
   },
   {
+   "columns": 2,
+   "fieldname": "technical_lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Application",
+   "options": "TP Technical Lead",
+   "description": "The customer's application for this principal. Not in the list? Pick \"Create a new TP Technical Lead\" — you come back here after saving it."
+  },
+  {
    "fieldname": "application",
    "fieldtype": "Data",
-   "label": "Application / Line",
-   "in_list_view": 1,
-   "columns": 2,
+   "label": "Application Name",
    "bold": 1,
-   "description": "e.g. Ch-6 O/R Grove, TRB T-5 IR Bore"
+   "description": "e.g. Ch-6 O/R Grove, TRB T-5 IR Bore",
+   "read_only_depends_on": "eval:doc.technical_lead"
   },
   {
    "fieldname": "spec",
@@ -168,7 +177,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-11-07 12:00:00.000000",
+ "modified": "2026-11-06 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "DVR Principal",

@@ -1,0 +1,277 @@
+{
+ "actions": [],
+ "creation": "2026-11-06 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "record",
+  "principal",
+  "application",
+  "grinding_process",
+  "supplier_product_category",
+  "product",
+  "production_line",
+  "column_break_tl1",
+  "distribution_channel",
+  "contact_person",
+  "progress",
+  "section_demand",
+  "annual_demand_amount",
+  "annual_quantity",
+  "unit_price",
+  "column_break_share",
+  "share_noritake",
+  "share_tyrolit",
+  "share_asahi",
+  "share_tvmk",
+  "column_break_share2",
+  "share_gno",
+  "share_cumi",
+  "share_other",
+  "other_competitors",
+  "section_machine",
+  "machine_maker",
+  "machine_quantity",
+  "wheel_speed",
+  "column_break_size",
+  "size_od",
+  "size_t",
+  "size_id",
+  "x_layer",
+  "section_plan",
+  "issue",
+  "column_break_plan",
+  "action_plan",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "record",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "ID",
+   "options": "TP Technical Lead",
+   "read_only": 1
+  },
+  {
+   "fieldname": "principal",
+   "fieldtype": "Link",
+   "label": "Principal",
+   "options": "Principal",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Data",
+   "label": "Application",
+   "in_list_view": 1,
+   "columns": 2,
+   "reqd": 1
+  },
+  {
+   "fieldname": "grinding_process",
+   "fieldtype": "Data",
+   "label": "Process",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "supplier_product_category",
+   "fieldtype": "Link",
+   "label": "Principal Product Category",
+   "options": "Supplier Product Category",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "product",
+   "fieldtype": "Link",
+   "label": "Product",
+   "options": "Customer Product"
+  },
+  {
+   "fieldname": "production_line",
+   "fieldtype": "Data",
+   "label": "Production Line"
+  },
+  {
+   "fieldname": "column_break_tl1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "distribution_channel",
+   "fieldtype": "Select",
+   "label": "Distribution Channel",
+   "options": "\nDirect (Commission)\nIndirect Business"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Data",
+   "label": "Contact Person"
+  },
+  {
+   "fieldname": "progress",
+   "fieldtype": "Select",
+   "label": "Progress",
+   "options": "\nNot Started\nQuoted\nTrial Order Received\nUnder Trial\nApproved\nEvaluation Failed",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "section_demand",
+   "fieldtype": "Section Break",
+   "label": "Annual Demand"
+  },
+  {
+   "fieldname": "annual_demand_amount",
+   "fieldtype": "Currency",
+   "label": "Annual Demand Amount (INR)",
+   "options": "INR",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "annual_quantity",
+   "fieldtype": "Float",
+   "label": "Annual Quantity (pcs)"
+  },
+  {
+   "fieldname": "unit_price",
+   "fieldtype": "Data",
+   "label": "Unit Price (INR)"
+  },
+  {
+   "fieldname": "column_break_share",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "share_noritake",
+   "fieldtype": "Percent",
+   "label": "Share: Noritake (N)",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "share_tyrolit",
+   "fieldtype": "Percent",
+   "label": "Share: Tyrolit"
+  },
+  {
+   "fieldname": "share_asahi",
+   "fieldtype": "Percent",
+   "label": "Share: Asahi"
+  },
+  {
+   "fieldname": "share_tvmk",
+   "fieldtype": "Percent",
+   "label": "Share: TVMK"
+  },
+  {
+   "fieldname": "column_break_share2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "share_gno",
+   "fieldtype": "Percent",
+   "label": "Share: GNO"
+  },
+  {
+   "fieldname": "share_cumi",
+   "fieldtype": "Percent",
+   "label": "Share: Cumi"
+  },
+  {
+   "fieldname": "share_other",
+   "fieldtype": "Percent",
+   "label": "Share: Other"
+  },
+  {
+   "fieldname": "other_competitors",
+   "fieldtype": "Data",
+   "label": "Other Competitors"
+  },
+  {
+   "fieldname": "section_machine",
+   "fieldtype": "Section Break",
+   "label": "Machine & Wheel Size"
+  },
+  {
+   "fieldname": "machine_maker",
+   "fieldtype": "Data",
+   "label": "M/C Maker"
+  },
+  {
+   "fieldname": "machine_quantity",
+   "fieldtype": "Int",
+   "label": "M/C Qty"
+  },
+  {
+   "fieldname": "wheel_speed",
+   "fieldtype": "Data",
+   "label": "Wheel Speed (m/min)"
+  },
+  {
+   "fieldname": "column_break_size",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "size_od",
+   "fieldtype": "Data",
+   "label": "Size OD (mm)"
+  },
+  {
+   "fieldname": "size_t",
+   "fieldtype": "Data",
+   "label": "Size T (mm)"
+  },
+  {
+   "fieldname": "size_id",
+   "fieldtype": "Data",
+   "label": "Size ID (mm)"
+  },
+  {
+   "fieldname": "x_layer",
+   "fieldtype": "Data",
+   "label": "X Layer"
+  },
+  {
+   "fieldname": "section_plan",
+   "fieldtype": "Section Break",
+   "label": "Issue & Action Plan"
+  },
+  {
+   "fieldname": "issue",
+   "fieldtype": "Small Text",
+   "label": "Issue"
+  },
+  {
+   "fieldname": "column_break_plan",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "action_plan",
+   "fieldtype": "Small Text",
+   "label": "Action Plan"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-06 21:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Customer Technical Lead",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 0
+}

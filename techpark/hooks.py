@@ -175,7 +175,7 @@ _lock = {
 # A login made through Sign Up waits for an approver before it can be used.
 on_login = ["techpark.registration.check_approval", "techpark.login.on_login"]
 
-# Keep the TP Customer Contacts / Plants / Production / Commercial / Technical / Visits tabs in step with the real records
+# Keep the TP Customer Contacts / Plants / Production / Commercial / Visits tabs in step with the real records
 _customer_tab_sync = {
 	"on_update": "techpark.customer_sync.on_record_change",
 	"after_delete": "techpark.customer_sync.on_record_change",
@@ -192,10 +192,11 @@ doc_events = {
 	"Plant": _customer_tab_sync,
 	"Customer Product Production": {**_customer_tab_sync, **_default_plant},
 	"Customer Turnover": {**_customer_tab_sync, **_default_plant},
-	"Customer Segment Application": {**_customer_tab_sync, **_default_plant},
+	"TP Technical Lead": _customer_tab_sync,
+	"Customer Segment Application": _default_plant,
 	"Wheel Specification": {**_customer_tab_sync, **_default_plant},
-	"Wheel Consumption": {**_customer_tab_sync, **_default_plant},
-	"Manufacturing Details": {**_customer_tab_sync, **_default_plant},
+	"Wheel Consumption": _default_plant,
+	"Manufacturing Details": _default_plant,
 	"Daily Visit Report": {
 		**_customer_tab_sync,
 		**_default_plant,

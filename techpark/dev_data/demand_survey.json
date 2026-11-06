@@ -1,0 +1,1959 @@
+[
+ {
+  "customer_name": "SKF India Ltd - PUNE",
+  "state": "Maharashtra",
+  "location": "PUNE",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "BB OR Grove",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_demand_amount": 8688901,
+    "annual_quantity": 27549,
+    "unit_price": "114-1196",
+    "share_noritake": 60,
+    "share_tyrolit": 10,
+    "share_gno": 30,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "Ball Bearing",
+    "production_line": "Chanel 1",
+    "machine_maker": "Izumi/Lidkopping/Arkmek/Famir",
+    "machine_quantity": 22,
+    "size_od": "38 -114",
+    "size_t": "7 - 33",
+    "size_id": "10,16 & 30",
+    "wheel_speed": "3600",
+    "progress": "Approved",
+    "issue": "New Tyrolit, Miester wheel performance and price is very good.."
+   },
+   {
+    "application": "BB ID Gr",
+    "grinding_process": "IR Bore",
+    "category": "Vit Conv",
+    "annual_demand_amount": 5098650,
+    "annual_quantity": 29894,
+    "unit_price": "59 - 636",
+    "share_noritake": 20,
+    "share_gno": 80,
+    "distribution_channel": "Indirect Business",
+    "product_text": "Ball Bearing",
+    "production_line": "Chanel 1",
+    "machine_maker": "Lidkoping/Arkmek",
+    "machine_quantity": 13,
+    "size_od": "19.5 - 59",
+    "size_t": "14 - 67",
+    "size_id": "10,16",
+    "wheel_speed": "3600",
+    "progress": "Approved",
+    "issue": "Price V. high, 3 -4 times against GNO"
+   },
+   {
+    "application": "C'less & Face",
+    "grinding_process": "OD & Face Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 8902840,
+    "annual_quantity": 1539,
+    "unit_price": "4663-257220",
+    "share_tyrolit": 40,
+    "share_cumi": 50,
+    "share_other": 10,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "Ball Bearing",
+    "production_line": "Chanel 1",
+    "machine_maker": "LidkopingSPD-80/SPC-62A/CL660/DG300",
+    "machine_quantity": 4,
+    "size_od": "300 - 610",
+    "size_t": "50 - 610",
+    "size_id": "210 - 330",
+    "wheel_speed": "2700-3600",
+    "progress": "Not Started",
+    "issue": "Never Tried - NTK to decide .."
+   },
+   {
+    "application": "ROller Dept - ( End Face & OD Gr.)",
+    "grinding_process": "OD & Face Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 21738827,
+    "annual_quantity": 816,
+    "unit_price": "2826 - 145390",
+    "share_other": 100,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "Ball Bearing",
+    "production_line": "Chanel 1",
+    "machine_maker": "Lidkoping RFC 40 B / Lidkoping RFC 40 B/SAIBU/MRK OLD",
+    "machine_quantity": 15,
+    "size_od": "130 - 508",
+    "size_t": "95 - 300",
+    "size_id": "90 - 270",
+    "wheel_speed": "2400",
+    "issue": "Noritake Rejected Face / Never tried"
+   },
+   {
+    "application": "TRB OR Track",
+    "grinding_process": "OR Track",
+    "category": "Vit Conv",
+    "annual_demand_amount": 11418672,
+    "annual_quantity": 26212,
+    "unit_price": "63 - 4000",
+    "share_noritake": 50,
+    "share_tyrolit": 5,
+    "share_gno": 30,
+    "share_cumi": 10,
+    "share_other": 5,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "TRB",
+    "production_line": "Chanel T1",
+    "machine_maker": "ORREPI / IZUMI / Lidkopping /Rabbit",
+    "machine_quantity": 17,
+    "size_od": "36- 120",
+    "size_t": "15 - 74",
+    "size_id": "10 , 30",
+    "wheel_speed": "3600 , 4800",
+    "progress": "Approved",
+    "issue": "Cumi/GNO Prices very less ... Need to prove performance against Tyrolit and Miester"
+   },
+   {
+    "application": "TRB OR Track",
+    "grinding_process": "OR Track",
+    "category": "VCBN",
+    "annual_demand_amount": 3925165,
+    "annual_quantity": 103,
+    "unit_price": "17565 - 56954",
+    "share_gno": 100,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "TRB",
+    "machine_maker": "Lidkoping - STI",
+    "machine_quantity": 2,
+    "size_od": "33 - 62",
+    "size_t": "17 - 25",
+    "size_id": "10 , 13",
+    "wheel_speed": "3600",
+    "progress": "Evaluation Failed",
+    "issue": "Need to Prove NTK Wheels against GNO"
+   },
+   {
+    "application": "TRB Flange",
+    "grinding_process": "IR Flange",
+    "category": "Vit Conv",
+    "annual_demand_amount": 4692297,
+    "annual_quantity": 5715,
+    "unit_price": "503 - 1665",
+    "share_noritake": 20,
+    "share_tyrolit": 20,
+    "share_gno": 20,
+    "share_cumi": 40,
+    "distribution_channel": "Direct (Commission)",
+    "product_text": "TRB",
+    "machine_maker": "Lidkoping / Izumi",
+    "machine_quantity": 11,
+    "size_od": "114mm - 225mm",
+    "size_t": "6 - 13",
+    "size_id": "32, 50.8 , 80",
+    "wheel_speed": "3600-4800",
+    "progress": "Approved",
+    "issue": "CUMI/GNO/Tyrolit Prices are very less.."
+   },
+   {
+    "application": "BBHUB - IR Bore",
+    "grinding_process": "IR Bore",
+    "category": "Vit Conv",
+    "annual_demand_amount": 4065642,
+    "annual_quantity": 19981,
+    "unit_price": "200- 350",
+    "share_noritake": 100,
+    "distribution_channel": "Direct (Commission)",
+    "machine_maker": "Lidkoping / Izumi",
+    "machine_quantity": 8,
+    "size_od": "18.5 - 38",
+    "size_t": "15 -20 mm",
+    "size_id": "8 & 10 mm",
+    "wheel_speed": "3600",
+    "progress": "Approved"
+   },
+   {
+    "application": "DRESSER",
+    "distribution_channel": "Direct (Commission)"
+   }
+  ]
+ },
+ {
+  "customer_name": "SKF India Ltd - Bangalore",
+  "state": "Karnataka",
+  "location": "Bangalore",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "BB IR Bore",
+    "grinding_process": "Internal Gr.",
+    "category": "VCBN",
+    "annual_demand_amount": 30000000,
+    "annual_quantity": 2100,
+    "unit_price": "4000-28000",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "SHG",
+    "machine_quantity": 16,
+    "size_od": "5.5 - 30",
+    "size_id": "(J)",
+    "x_layer": "Full",
+    "wheel_speed": "3600",
+    "progress": "Not Started",
+    "issue": "GNO has very good relation .. Price very cheap and NTK Failed few years back.",
+    "action_plan": "First Need to prove at SKF-P, Ch-12"
+   },
+   {
+    "application": "Honing",
+    "grinding_process": "Honing",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "IR-FGC , OR-FSF, FSC",
+    "machine_quantity": 24
+   }
+  ]
+ },
+ {
+  "customer_name": "SKF India Ltd - Haridwar",
+  "state": "Uttarakhand",
+  "location": "Haridwar",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "BB OR Grove",
+    "grinding_process": "Internal Gr.",
+    "category": "Vit Conv",
+    "annual_demand_amount": 2500000,
+    "annual_quantity": 8000,
+    "unit_price": "200 - 300/-",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "SSB62",
+    "machine_quantity": 8
+   },
+   {
+    "application": "BB IR Grove",
+    "grinding_process": "Cylindrical",
+    "category": "Vit Conv",
+    "annual_demand_amount": 5000000,
+    "annual_quantity": 420,
+    "unit_price": "10,000-15000",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "SGB",
+    "machine_quantity": 4
+   }
+  ]
+ },
+ {
+  "customer_name": "SKF India Ltd - Bawla Ahmedabad",
+  "state": "Gujrat",
+  "location": "Bawla Ahmedabad",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 20,
+    "share_gno": 80,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "LIDKOPING",
+    "machine_quantity": 5,
+    "size_od": "610",
+    "size_t": "26-350",
+    "size_id": "305",
+    "wheel_speed": "3600"
+   }
+  ]
+ },
+ {
+  "customer_name": "NRB Bearings Ltd. - Chikalthana",
+  "state": "Ch.Sambhaji Nagar",
+  "location": "Chikalthana",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Regulating Wheels",
+    "grinding_process": "C'less Gr.",
+    "annual_quantity": 44,
+    "share_cumi": 95,
+    "share_other": 5,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Mr. Kalekar",
+    "machine_quantity": 24,
+    "size_od": "305/350",
+    "size_t": "205/254/300",
+    "size_id": "177.8/152/4",
+    "progress": "Trial Order Received"
+   },
+   {
+    "application": "Needle Chamfer Gr",
+    "grinding_process": "Cylindrical",
+    "category": "Vit Conv",
+    "annual_demand_amount": 1920000,
+    "annual_quantity": 480,
+    "unit_price": "4000",
+    "share_gno": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Mr. Kalekar",
+    "machine_maker": "x",
+    "machine_quantity": 8,
+    "progress": "Evaluation Failed"
+   }
+  ]
+ },
+ {
+  "customer_name": "NRB Bearings Ltd. - Waluj",
+  "state": "Ch.Sambhaji Nagar",
+  "location": "Waluj",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "OD Grinding",
+    "grinding_process": "C'less Gr.",
+    "category": "Vit Conv",
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Mr.Mukadam"
+   }
+  ]
+ },
+ {
+  "customer_name": "NRB Bearings Ltd. - Jalna",
+  "state": "Maharashtra",
+  "location": "Jalna",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ring OR ID Gr.( Sleev)",
+    "category": "Vit Conv",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Patni",
+    "machine_maker": "Heald(3)/ Parishud(2)/Cimet(4)",
+    "machine_quantity": 9,
+    "wheel_speed": "3600"
+   },
+   {
+    "application": "RIng OR OD C'less.( Sleeve)",
+    "category": "Vit Conv",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Patni",
+    "machine_maker": "Micron / HMT",
+    "machine_quantity": 2,
+    "wheel_speed": "2700"
+   },
+   {
+    "application": "TRB IR ID",
+    "category": "Vit Conv",
+    "share_tyrolit": 20,
+    "share_cumi": 20,
+    "share_other": 60,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Patni"
+   },
+   {
+    "application": "TRB Lip Gr",
+    "category": "Vit Conv",
+    "annual_demand_amount": 335000,
+    "annual_quantity": 290,
+    "share_noritake": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Patni"
+   }
+  ]
+ },
+ {
+  "customer_name": "NIBC - Shendra , Ch.Sambhaji Nagar",
+  "state": "Maharashtra",
+  "location": "Shendra , Ch.Sambhaji Nagar",
+  "industry": "",
+  "leads": []
+ },
+ {
+  "customer_name": "Schaeffler India Ltd. - (INA) Pune",
+  "state": "Maharashtra",
+  "location": "(INA) Pune",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Rocker Arm Ring ID Gr.",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "annual_demand_amount": 15000000,
+    "annual_quantity": 2400,
+    "unit_price": "2400 - 3000",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sujit Patil",
+    "machine_maker": "NOVA",
+    "machine_quantity": 14,
+    "size_od": "10.5",
+    "size_t": "11.5 & 12.5",
+    "size_id": "5.5",
+    "wheel_speed": "3600",
+    "issue": "Prices and performace",
+    "action_plan": "Need to submit our sample on FOC basis with best price"
+   },
+   {
+    "application": "Waterpump - OR ID Gr.",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sujit Patil",
+    "machine_maker": "NOVA",
+    "machine_quantity": 4
+   }
+  ]
+ },
+ {
+  "customer_name": "Schaeffler India Ltd. - Maneja",
+  "state": "Gujrat",
+  "location": "Maneja",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Bearing IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "annual_demand_amount": 14030400,
+    "annual_quantity": 1776,
+    "unit_price": "7000 - 8800",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gajendra Chaud - 09722973510",
+    "machine_maker": "MEG Familly",
+    "machine_quantity": 9,
+    "size_od": "508",
+    "size_t": "12mm - 22mm",
+    "size_id": "250 mm",
+    "wheel_speed": "4800 m/min",
+    "issue": "Wheel Speed"
+   },
+   {
+    "application": "Ball Bearing OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_demand_amount": 43068168,
+    "annual_quantity": 152724,
+    "unit_price": "20 - 27",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gajendra Chaud - 09722973510",
+    "machine_maker": "FAG+ARROW Make",
+    "machine_quantity": 18,
+    "size_od": "22mm - 45 mm",
+    "size_t": "4 mm - 10 mm",
+    "size_id": "6.5 mm - 10 mm",
+    "wheel_speed": "3600 m/min",
+    "issue": "JOTO Price very less"
+   },
+   {
+    "application": "BB 2 IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gajendra Chaud - 09722973510",
+    "machine_maker": "FAG+ARROW Make",
+    "machine_quantity": 10
+   },
+   {
+    "application": "BB2 IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gajendra Chaud - 09722973510",
+    "machine_maker": "MEG Familly",
+    "machine_quantity": 10
+   },
+   {
+    "application": "BB2 OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gajendra Chaud - 09722973510",
+    "machine_maker": "FAG+ARROW Make",
+    "machine_quantity": 10
+   },
+   {
+    "application": "CRB",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Gorkar"
+   },
+   {
+    "application": "HUB Breaing ID HUG Gen 1&2 Gr.",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 12000,
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 5
+   },
+   {
+    "application": "HUB Breaing ID HUG Gen 1&2 OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 12000,
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 5
+   },
+   {
+    "application": "HUB Breaing ID HUG Gen 1&2 IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "annual_quantity": 180,
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "MEG Familly",
+    "machine_quantity": 5
+   },
+   {
+    "application": "HUB 3 Gen IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 2400,
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 1
+   },
+   {
+    "application": "HUB 3 Gen OR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 2400,
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 3
+   },
+   {
+    "application": "HUB 3 IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "annual_quantity": 120,
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "MEG Familly",
+    "machine_quantity": 1
+   },
+   {
+    "application": "HUB 3 IR Flange",
+    "grinding_process": "IR Flange",
+    "category": "Vit Conv",
+    "annual_quantity": 2400,
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. J Chavan - 09727744954",
+    "machine_maker": "MEG Familly",
+    "machine_quantity": 1
+   },
+   {
+    "application": "Dressers",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Aditya Moholkar"
+   }
+  ]
+ },
+ {
+  "customer_name": "Schaeffler India Ltd. - (FAG-Savali) Baroda",
+  "state": "Gujrat",
+  "location": "(FAG-Savali) Baroda",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Bearing OR",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "annual_quantity": 2700,
+    "unit_price": "1900 - 4800",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Bhupesh Giri",
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 14,
+    "wheel_speed": "3600 m/min"
+   },
+   {
+    "application": "Ball Bearing IR",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "annual_quantity": 2700,
+    "share_other": 100,
+    "machine_maker": "ARROW Family",
+    "machine_quantity": 14,
+    "wheel_speed": "3600 m/min"
+   },
+   {
+    "application": "Ball Bearing IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 1320,
+    "unit_price": "9000-15000",
+    "share_tyrolit": 100,
+    "machine_maker": "MEG Germany",
+    "machine_quantity": 14,
+    "wheel_speed": "4800 m/min"
+   },
+   {
+    "application": "ARACBB - IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "annual_demand_amount": 12000000,
+    "unit_price": "2000 - 4000",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Ashish Waghela",
+    "machine_maker": "NOVA",
+    "machine_quantity": 6,
+    "size_od": "6 mm - 28 mm",
+    "size_t": "7 mm - 27 mm",
+    "size_id": "3 mm - 16 mm",
+    "x_layer": "Full CBN",
+    "wheel_speed": "60 m/s"
+   },
+   {
+    "application": "ARACBB - IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA",
+    "machine_quantity": 1
+   },
+   {
+    "application": "ARACBB - OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_demand_amount": 4200000,
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA",
+    "machine_quantity": 7,
+    "size_od": "20 mm - 100 mm",
+    "size_t": "8 mm - 50 mm",
+    "size_id": "6mm - 32mm",
+    "wheel_speed": "60 m/s"
+   },
+   {
+    "application": "ARACBB - IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "annual_demand_amount": 4200000,
+    "unit_price": "6000- 15000",
+    "share_tyrolit": 80,
+    "share_cumi": 20,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA",
+    "machine_quantity": 7,
+    "size_od": "508 mm - 610 mm",
+    "size_t": "5 mm - 45 mm",
+    "size_id": "203mm & 254 mm",
+    "wheel_speed": "80 m/s"
+   },
+   {
+    "application": "TRB IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_demand_amount": 36000000,
+    "annual_quantity": 20580,
+    "share_gno": 10,
+    "share_other": 90,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA, ARROW",
+    "machine_quantity": 10,
+    "size_od": "20 mm -90 mm",
+    "size_id": "6mm - 32mm"
+   },
+   {
+    "application": "TRB OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "annual_quantity": 20580,
+    "share_tyrolit": 20,
+    "share_other": 80,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA, ARROW",
+    "machine_quantity": 10,
+    "size_od": "35 mm - 100 mm",
+    "size_id": "10 mm - 32 mm"
+   },
+   {
+    "application": "TRB IR Track",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "annual_quantity": 720,
+    "unit_price": "6000 - 16000",
+    "share_tyrolit": 50,
+    "share_gno": 30,
+    "share_cumi": 20,
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "NOVA",
+    "machine_quantity": 10
+   },
+   {
+    "application": "TRB Lip",
+    "grinding_process": "IR Lip",
+    "category": "Vit Conv",
+    "distribution_channel": "Indirect Business",
+    "machine_maker": "MEG Germany",
+    "machine_quantity": 10
+   },
+   {
+    "application": "SRB",
+    "distribution_channel": "Indirect Business"
+   },
+   {
+    "application": "LARGE Bearings",
+    "distribution_channel": "Indirect Business"
+   }
+  ]
+ },
+ {
+  "customer_name": "Texspin Bearings Ltd. - Plant-1",
+  "state": "Gujrat",
+  "location": "Plant-1",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_other": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   },
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "ID Gr.",
+    "category": "VCBN",
+    "other_competitors": "CBN _ Shinhan 100%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   },
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_noritake": 60,
+    "share_gno": 40,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   },
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "OR Track Gr.",
+    "category": "Vit Conv",
+    "other_competitors": "Joto 100%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   },
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "OR Track Gr.",
+    "category": "VCBN",
+    "other_competitors": "Shinhan 100%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   },
+   {
+    "application": "Clutch release Bearing",
+    "grinding_process": "OD Centerless",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Sureshchandra Doshi",
+    "machine_maker": "Texspin Make"
+   }
+  ]
+ },
+ {
+  "customer_name": "Texspin Bearings Ltd. - Plant-2",
+  "state": "Gujrat",
+  "location": "Plant-2",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "TRB IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 10,
+    "other_competitors": "Joto - 70% & Shinhan 20%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 7
+   },
+   {
+    "application": "TRB OR Track Gr.",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 10,
+    "other_competitors": "Joto - 70% & Shinhan 20%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 7
+   },
+   {
+    "application": "TRB IR Track Gr.",
+    "grinding_process": "IR Track",
+    "category": "Vit Conv",
+    "share_noritake": 50,
+    "share_gno": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 7
+   },
+   {
+    "application": "TRB IR Flange Gr..",
+    "grinding_process": "IR Flange",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 7
+   },
+   {
+    "application": "ACB IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "70% joto",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3
+   },
+   {
+    "application": "ACB OR Track",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "70% joto",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3
+   },
+   {
+    "application": "ACB IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3
+   },
+   {
+    "application": "CBR IR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "Joto - 70%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 2,
+    "issue": "Shinhan _ Just Development Starting & Achived 40% Dress Interval in waterbase coolant",
+    "action_plan": "Need to submit FOC sample"
+   },
+   {
+    "application": "CRB OR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "Joto - 70%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 2
+   },
+   {
+    "application": "CRB IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 2
+   },
+   {
+    "application": "CRB IR Flange",
+    "grinding_process": "IR Flange Gr.",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 2
+   },
+   {
+    "application": "BB IR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 10,
+    "other_competitors": "Joto - 60% Shinhan - 20%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make + China Line",
+    "machine_quantity": 6,
+    "wheel_speed": "3600 m/min",
+    "issue": "Shinhan _ Just Development Starting & Achived 40% Dress Interval in waterbase coolant"
+   },
+   {
+    "application": "BB OR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 10,
+    "other_competitors": "Joto - 60% Shinhan - 20%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make + China Line",
+    "machine_quantity": 6,
+    "wheel_speed": "3600 m/min",
+    "issue": "Shinhan _ Just Development Starting & Achived 40% Dress Interval in waterbase coolant"
+   },
+   {
+    "application": "BB IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_noritake": 50,
+    "share_gno": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make + China Line",
+    "machine_quantity": 6,
+    "wheel_speed": "3600 m/min"
+   },
+   {
+    "application": "BHUB IR Bore",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "Joto - 70%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3,
+    "wheel_speed": "3600 m/min",
+    "issue": "Shinhan _ Just Development Starting & Achived 40% Dress Interval in waterbase coolant"
+   },
+   {
+    "application": "BHUB OR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_gno": 30,
+    "other_competitors": "Joto - 70%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3,
+    "wheel_speed": "3600 m/min",
+    "issue": "Shinhan _ Just Development Starting & Achived 40% Dress Interval in waterbase coolant"
+   },
+   {
+    "application": "BHUB IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_noritake": 50,
+    "share_gno": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 3,
+    "wheel_speed": "3600 m/min"
+   },
+   {
+    "application": "THUB IR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "other_competitors": "100% Joto",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_quantity": 2
+   },
+   {
+    "application": "THUB OR",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "other_competitors": "100% Joto",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_quantity": 2
+   },
+   {
+    "application": "THUB IR Track",
+    "grinding_process": "IR Track Gr.",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_quantity": 2
+   },
+   {
+    "application": "THUB IR Flange",
+    "grinding_process": "IR Flange Gr.",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_quantity": 2
+   },
+   {
+    "application": "HUB 3 Gen Shaft OD",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar"
+   },
+   {
+    "application": "HUB 3 Gen IR Track",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar"
+   },
+   {
+    "application": "HUB 3 Gen IR Bore",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar"
+   },
+   {
+    "application": "HUB 3 Gen OR",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar"
+   },
+   {
+    "application": "All Bearing OD Gr.",
+    "grinding_process": "C'less gr.",
+    "category": "Vit Conv",
+    "share_gno": 50,
+    "share_cumi": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Mak",
+    "machine_quantity": 10,
+    "size_od": "600",
+    "size_t": "80",
+    "size_id": "304.8"
+   },
+   {
+    "application": "All Bearing DDG Gr.",
+    "grinding_process": "DDG",
+    "category": "Vit Conv",
+    "share_gno": 50,
+    "share_cumi": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Munjal Parmar",
+    "machine_maker": "Texspin Make",
+    "machine_quantity": 6,
+    "size_od": "600-720",
+    "size_t": "60",
+    "size_id": "20"
+   }
+  ]
+ },
+ {
+  "customer_name": "TIMKEN India Ltd. - Jamshedpur",
+  "state": "Jharkhand",
+  "location": "Jamshedpur",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "TRB for Automotive",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 30,
+    "share_gno": 40,
+    "share_cumi": 30,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht"
+   },
+   {
+    "application": "TRB for Automotive",
+    "grinding_process": "ID Truck Gr.",
+    "category": "Vit Conv",
+    "share_gno": 60,
+    "share_cumi": 40,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht"
+   },
+   {
+    "application": "TRB for Automotive",
+    "grinding_process": "OD Truck Gr.",
+    "category": "Vit Conv",
+    "share_gno": 60,
+    "share_cumi": 40,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht"
+   },
+   {
+    "application": "TRB for Automotive",
+    "grinding_process": "Super finishing",
+    "category": "Vit Conv",
+    "other_competitors": "Dramann100%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht"
+   },
+   {
+    "application": "TRB for Railway",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht",
+    "machine_maker": "Nova"
+   },
+   {
+    "application": "TRB for Railway",
+    "grinding_process": "ID Truck Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht",
+    "machine_maker": "Nova"
+   },
+   {
+    "application": "TRB for Railway",
+    "grinding_process": "OD Truck Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht",
+    "machine_maker": "Nova"
+   },
+   {
+    "application": "TRB for Railway",
+    "grinding_process": "Super finishing",
+    "category": "Vit Conv",
+    "other_competitors": "Dramann100%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Rohit Bisht"
+   }
+  ]
+ },
+ {
+  "customer_name": "TIMKEN India Ltd. - Bharuch",
+  "state": "Gujrat",
+  "location": "Bharuch",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "TSL (TATA Bearings) - Kharagpur",
+  "state": "West Bengal",
+  "location": "Kharagpur",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "BB,TRB",
+    "grinding_process": "ID Gr.",
+    "category": "Vit Conv",
+    "share_cumi": 20,
+    "other_competitors": "Joto 80%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy",
+    "machine_maker": "Nova, others"
+   },
+   {
+    "application": "BB,TRB",
+    "grinding_process": "ID Truck Gr.",
+    "category": "Vit Conv",
+    "share_tyrolit": 75,
+    "share_gno": 25,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy",
+    "machine_maker": "Nova, others",
+    "wheel_speed": "65m/s"
+   },
+   {
+    "application": "BB,TRB",
+    "grinding_process": "OD Truck Gr.",
+    "category": "Vit Conv",
+    "other_competitors": "Joyo 80%",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy",
+    "machine_maker": "Nova, others"
+   },
+   {
+    "application": "BB,TRB",
+    "grinding_process": "OD Centerless",
+    "category": "Vit Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy",
+    "machine_maker": "Cincinati"
+   },
+   {
+    "application": "BB,TRB",
+    "grinding_process": "Face Gr.",
+    "category": "Res Conv",
+    "share_gno": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy",
+    "machine_maker": "Gardner"
+   },
+   {
+    "application": "BB,TRB",
+    "grinding_process": "Super finishing",
+    "category": "Vit Conv",
+    "share_noritake": 30,
+    "share_tyrolit": 70,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Suresh Kumar Padhy"
+   }
+  ]
+ },
+ {
+  "customer_name": "Orbit Bearings India Pvt. Ltd. - Rajkot",
+  "state": "Gujrat",
+  "location": "Rajkot",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "Turbo Bearings Pvt. Ltd. - Rajkot",
+  "state": "Gujrat",
+  "location": "Rajkot",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "Menon Bearings Ltd. - Kolhapur",
+  "state": "Gujrat",
+  "location": "Kolhapur",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "ILJIN - Pune",
+  "state": "Maharashtra",
+  "location": "Pune",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "KCI Bearings Ltd. - Surendranagar",
+  "state": "Gujrat",
+  "location": "Surendranagar",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "Rings Plus Aqua - Ahilyanagar",
+  "state": "Maharashtra",
+  "location": "Ahilyanagar",
+  "industry": "Bearing",
+  "leads": []
+ },
+ {
+  "customer_name": "NHB Ball & Roller Ltd. - Amalsad",
+  "state": "Gujrat",
+  "location": "Amalsad",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 9000000,
+    "annual_quantity": 300,
+    "unit_price": "30000",
+    "share_cumi": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Tushar Desai",
+    "machine_quantity": 30,
+    "size_od": "915",
+    "size_t": "100",
+    "issue": "Never Tried may be due to Price"
+   },
+   {
+    "application": "Ball Lapping L1",
+    "grinding_process": "Lapping L1",
+    "category": "Res Conv",
+    "annual_demand_amount": 18000000,
+    "annual_quantity": 360,
+    "unit_price": "50000",
+    "share_cumi": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Tushar Desai",
+    "machine_quantity": 30,
+    "size_od": "800",
+    "size_t": "50",
+    "size_id": "420/440",
+    "issue": "Price 2.5 - 3 times .. against Cumi",
+    "action_plan": "Must Aggressively Establish for performance first"
+   },
+   {
+    "application": "Ball Lapping L2, L3",
+    "grinding_process": "Lapping L2, L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 37056600,
+    "annual_quantity": 324,
+    "unit_price": "USD 1110,1230",
+    "share_noritake": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Tushar Desai",
+    "machine_quantity": 80,
+    "size_od": "800",
+    "size_t": "50",
+    "size_id": "420/440",
+    "progress": "Approved",
+    "remarks": "Production and Consumption may Increase"
+   },
+   {
+    "application": "Diamond Groving",
+    "grinding_process": "Groving",
+    "category": "Dresser",
+    "annual_demand_amount": 4200000,
+    "annual_quantity": 4200,
+    "unit_price": "1000",
+    "share_other": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Tushar Desai"
+   }
+  ]
+ },
+ {
+  "customer_name": "NHB Ball & Roller Ltd. - Billimora",
+  "state": "Gujrat",
+  "location": "Billimora",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 900000,
+    "annual_quantity": 30,
+    "unit_price": "30000",
+    "share_cumi": 100,
+    "distribution_channel": "Direct (Commission)",
+    "contact_person": "Tushar Desai",
+    "machine_quantity": 6,
+    "size_od": "915",
+    "size_t": "100"
+   }
+  ]
+ },
+ {
+  "customer_name": "TSUBAKI Nakashima - Silvasa",
+  "state": "Gujrat",
+  "location": "Silvasa",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 17550000,
+    "annual_quantity": 600,
+    "unit_price": "29250",
+    "share_other": 100,
+    "contact_person": "Pankaj Sonawane",
+    "issue": "Noritake has to decide against TAYU"
+   },
+   {
+    "application": "Ball Lapping L1",
+    "grinding_process": "Lapping L1",
+    "category": "Res Conv",
+    "annual_demand_amount": 12672000,
+    "annual_quantity": 96,
+    "unit_price": "132000",
+    "share_noritake": 100,
+    "contact_person": "Pankaj Sonawane",
+    "size_od": "800",
+    "size_t": "100",
+    "size_id": "420",
+    "issue": "Already 100% N , But direct from TN Japan",
+    "action_plan": "Need good prices to TP or to check",
+    "remarks": "New Plant Capacity is aroun 1000 T/M"
+   },
+   {
+    "application": "Ball Lapping L2, L3",
+    "grinding_process": "Lapping L2, L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 8064000,
+    "annual_quantity": 84,
+    "unit_price": "96000",
+    "share_noritake": 100,
+    "contact_person": "Pankaj Sonawane",
+    "size_od": "660",
+    "size_t": "50",
+    "size_id": "370",
+    "issue": "Prices are Higher through TP ..",
+    "action_plan": "for Direct comm. Business with them ..",
+    "remarks": "Production increasing slowly ..."
+   }
+  ]
+ },
+ {
+  "customer_name": "Skill Precision Balls Pvt. Ltd. - Rajkot",
+  "state": "Gujrat",
+  "location": "Rajkot",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 3240000,
+    "annual_quantity": 108,
+    "unit_price": "30000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara",
+    "machine_quantity": 9,
+    "size_od": "800",
+    "size_t": "140",
+    "size_id": "400"
+   },
+   {
+    "application": "Ball Lapping L1",
+    "grinding_process": "Lapping L1",
+    "category": "Res Conv",
+    "annual_demand_amount": 2400000,
+    "annual_quantity": 48,
+    "unit_price": "50000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara",
+    "machine_maker": "NTN , NEI & Schaeffler Germany",
+    "machine_quantity": 4
+   },
+   {
+    "application": "Ball Lapping L2, L3",
+    "grinding_process": "Lapping L2, L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 875000,
+    "annual_quantity": 15,
+    "unit_price": "4500085000",
+    "share_noritake": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara",
+    "machine_quantity": 13,
+    "size_od": "660 / 800"
+   }
+  ]
+ },
+ {
+  "customer_name": "Skill Precision Balls Pvt. Ltd. - Baroda",
+  "state": "Gujrat",
+  "location": "Baroda",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 4680000,
+    "annual_quantity": 156,
+    "unit_price": "30000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara"
+   },
+   {
+    "application": "Ball Lapping L1",
+    "grinding_process": "Lapping L1",
+    "category": "Res Conv",
+    "annual_demand_amount": 5400000,
+    "annual_quantity": 108,
+    "unit_price": "50000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara",
+    "machine_quantity": 9,
+    "size_od": "700 --- 800",
+    "size_t": "80",
+    "size_id": "390"
+   },
+   {
+    "application": "Ball Lapping L2, L3",
+    "grinding_process": "Lapping L2, L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 1320000,
+    "annual_quantity": 20,
+    "unit_price": "66000",
+    "share_noritake": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ankit Kansagara",
+    "size_od": "705 --- 800",
+    "size_t": "50",
+    "size_id": "395"
+   }
+  ]
+ },
+ {
+  "customer_name": "SKP Bearing Industries Ltd. - Surendranagar",
+  "state": "Gujrat",
+  "location": "Surendranagar",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Grinding",
+    "grinding_process": "Grinding",
+    "category": "Vit Conv",
+    "annual_demand_amount": 360000,
+    "annual_quantity": 12,
+    "unit_price": "30000",
+    "share_gno": 50,
+    "share_cumi": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mitul Vashi",
+    "machine_quantity": 6,
+    "size_od": "915",
+    "size_t": "100"
+   },
+   {
+    "application": "Ball Lapping L1 , L2",
+    "grinding_process": "Lapping L1,L2",
+    "category": "Res Conv",
+    "annual_demand_amount": 1560000,
+    "annual_quantity": 24,
+    "unit_price": "50000, 80000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mitul Vashi",
+    "machine_quantity": 12,
+    "size_od": "800",
+    "size_t": "50",
+    "size_id": "420",
+    "issue": "Presently only upto L2 with Cumi .."
+   },
+   {
+    "application": "Ball Lapping L3",
+    "grinding_process": "Lapping L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 1164000,
+    "annual_quantity": 12,
+    "unit_price": "97000",
+    "share_noritake": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mitul Vashi",
+    "machine_quantity": 6,
+    "size_od": "800",
+    "size_t": "50",
+    "size_id": "420",
+    "issue": "L3 sampling in proess.. Price probelm"
+   }
+  ]
+ },
+ {
+  "customer_name": "VIKMAN Balls - Thane",
+  "state": "Maharashtra",
+  "location": "Thane",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Lapping L3",
+    "grinding_process": "Lapping L3",
+    "category": "Res Conv",
+    "annual_demand_amount": 120000,
+    "annual_quantity": 2,
+    "unit_price": "60000",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Darshan Shah",
+    "machine_quantity": 38,
+    "size_od": "720",
+    "size_t": "30",
+    "size_id": "290",
+    "issue": "They mainly produce SS and use only for Brg Balls",
+    "action_plan": "Noritake need to confirm if hv Special wheels for SS ?"
+   }
+  ]
+ },
+ {
+  "customer_name": "TOLIA Ball & Rollers - Thane",
+  "state": "Maharashtra",
+  "location": "Thane",
+  "industry": "Bearing",
+  "leads": [
+   {
+    "application": "Ball Lapping L3",
+    "grinding_process": "Lapping L3",
+    "category": "Res Conv",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Viresh Tolia",
+    "size_od": "410, 660, 720,800",
+    "size_t": "50, 100",
+    "size_id": "240, 290, 440",
+    "issue": "We had failed long back for SS Ball lapp.",
+    "action_plan": "Noritake need to confirm if hv Special wheels for SS & Al.?"
+   }
+  ]
+ },
+ {
+  "customer_name": "Mahle Engine Components India Pvt Ltd. - Pithampur",
+  "state": "M.P.",
+  "location": "Pithampur",
+  "industry": "Automotive",
+  "leads": [
+   {
+    "application": "Camshaft Jr.",
+    "grinding_process": "Cylindrical",
+    "category": "VCBN",
+    "annual_demand_amount": 19380000,
+    "annual_quantity": 114,
+    "unit_price": "155000-225000",
+    "share_noritake": 20,
+    "share_tyrolit": 20,
+    "share_tvmk": 10,
+    "share_other": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Ashok Sambare",
+    "machine_maker": "JTEKT, Junker,Landis",
+    "machine_quantity": 18,
+    "size_od": "350/354 , 400/450",
+    "size_t": "15u-20U",
+    "x_layer": "7 - 9"
+   },
+   {
+    "application": "Dressers",
+    "grinding_process": "Rotary Dresser",
+    "category": "Rotary Dresser",
+    "annual_demand_amount": 5550000,
+    "annual_quantity": 111,
+    "unit_price": "50000",
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Ashok Sambare",
+    "size_od": "100",
+    "size_t": "12,2U",
+    "size_id": "8",
+    "x_layer": "6"
+   }
+  ]
+ },
+ {
+  "customer_name": "Mahabal Auto Ancillaries Pvt.Ltd. - Miraj",
+  "state": "Maharashtra",
+  "location": "Miraj",
+  "industry": "Automotive",
+  "leads": [
+   {
+    "application": "Camshaft Jr.",
+    "grinding_process": "Cylindrical",
+    "category": "Vit Conv",
+    "annual_demand_amount": 1536000,
+    "annual_quantity": 192,
+    "unit_price": "8000",
+    "share_cumi": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ketan Pawar",
+    "machine_maker": "Precitech, HMT",
+    "machine_quantity": 10,
+    "size_od": "500",
+    "size_t": "28-35",
+    "size_id": "127,203,2,304,8"
+   },
+   {
+    "application": "Dressers",
+    "grinding_process": "rotary Dresser",
+    "category": "Rotary Dresser",
+    "annual_demand_amount": 1280000,
+    "annual_quantity": 32,
+    "unit_price": "40000",
+    "share_tyrolit": 10,
+    "share_tvmk": 90,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Ketan Pawar",
+    "machine_maker": "Precitech, NTC, Landis",
+    "machine_quantity": 17,
+    "size_od": "120 , 150",
+    "size_t": "12, 1.1U",
+    "size_id": "15",
+    "x_layer": "10"
+   }
+  ]
+ },
+ {
+  "customer_name": "Girnar Gears Pvt. Ltd. - Ch.Sambhaji Nagar",
+  "state": "Maharashtra",
+  "location": "Ch.Sambhaji Nagar",
+  "industry": "Automotive",
+  "leads": [
+   {
+    "application": "Dressers",
+    "grinding_process": "Dressing",
+    "category": "Rotary Dresser",
+    "annual_demand_amount": 360000,
+    "annual_quantity": 9,
+    "unit_price": "40000",
+    "share_tyrolit": 100,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Nitin Patni",
+    "machine_maker": "Toyoda, NTC",
+    "machine_quantity": 3,
+    "size_od": "100 , 120",
+    "size_t": "12, 2U,1U",
+    "size_id": "8, 15",
+    "x_layer": "6.6, 3"
+   }
+  ]
+ },
+ {
+  "customer_name": "PS Camshafts Pvt. Ltd. - Pithampur",
+  "state": "M.P.",
+  "location": "Pithampur",
+  "industry": "Automotive",
+  "leads": [
+   {
+    "application": "Camshaft Lobe",
+    "grinding_process": "Cylindrical",
+    "category": "VCBN",
+    "annual_demand_amount": 5000000,
+    "annual_quantity": 18,
+    "share_noritake": 10,
+    "share_tyrolit": 80,
+    "share_tvmk": 10,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Shyam",
+    "machine_maker": "NTC -1 , Junker - 2",
+    "machine_quantity": 3,
+    "size_od": "350, 200 & 400",
+    "size_t": "28U",
+    "x_layer": "7"
+   },
+   {
+    "application": "Cylindrical",
+    "grinding_process": "Vit Conv",
+    "share_gno": 50,
+    "share_cumi": 50,
+    "distribution_channel": "Indirect Business",
+    "contact_person": "Mr. Shyam",
+    "machine_maker": "Schaudt,Fortune,Klingenberg,SRB",
+    "machine_quantity": 5,
+    "size_od": "600, 700"
+   }
+  ]
+ },
+ {
+  "customer_name": "TATA STEEL - HSM Roll Shop",
+  "state": "Jamshedpur",
+  "location": "HSM Roll Shop",
+  "industry": "Steel",
+  "leads": [
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 5500000,
+    "annual_quantity": 55,
+    "unit_price": "100000",
+    "share_tyrolit": 20,
+    "share_gno": 80,
+    "contact_person": "Pabitra paridha",
+    "machine_maker": "Pomini/Toshiba/Hercules",
+    "machine_quantity": 3,
+    "size_od": "915",
+    "size_t": "100",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   }
+  ]
+ },
+ {
+  "customer_name": "TATA STEEL KPO - HSM Roll Shop",
+  "state": "Kalinga Nagar",
+  "location": "HSM Roll Shop",
+  "industry": "Steel",
+  "leads": [
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 8000000,
+    "annual_quantity": 80,
+    "unit_price": "100000",
+    "share_tyrolit": 50,
+    "share_gno": 50,
+    "contact_person": "Rajesh Mahonto",
+    "machine_maker": "Pomini",
+    "machine_quantity": 2,
+    "size_od": "915",
+    "size_t": "100",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   },
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 5250000,
+    "annual_quantity": 42,
+    "unit_price": "125000",
+    "share_tyrolit": 50,
+    "share_gno": 50,
+    "contact_person": "Rajesh Mahonto",
+    "machine_maker": "Pomini",
+    "machine_quantity": 2,
+    "size_od": "1066",
+    "size_t": "100",
+    "size_id": "508",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   },
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 6300000,
+    "annual_quantity": 42,
+    "unit_price": "150000",
+    "share_tyrolit": 50,
+    "share_gno": 50,
+    "contact_person": "Rajesh Mahonto",
+    "machine_maker": "Pomini",
+    "machine_quantity": 2,
+    "size_od": "1066",
+    "size_t": "150",
+    "size_id": "508",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   }
+  ]
+ },
+ {
+  "customer_name": "TATA STEEL KPO - CRM ROll Shop",
+  "state": "Kalinga Nagar",
+  "location": "CRM ROll Shop",
+  "industry": "Steel",
+  "leads": [
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 10000000,
+    "annual_quantity": 100,
+    "unit_price": "100000",
+    "share_tyrolit": 60,
+    "share_gno": 40,
+    "contact_person": "Suvendra",
+    "machine_maker": "Pomini",
+    "machine_quantity": 3,
+    "size_od": "915",
+    "size_t": "100",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   },
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 7200000,
+    "annual_quantity": 100,
+    "unit_price": "72000",
+    "share_tyrolit": 60,
+    "share_gno": 40,
+    "contact_person": "Suvendra",
+    "machine_maker": "Pomini",
+    "machine_quantity": 3,
+    "size_od": "762",
+    "size_t": "76",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   }
+  ]
+ },
+ {
+  "customer_name": "AM/NS (ESSAR) - CRM 1",
+  "state": "SURAT",
+  "location": "CRM 1",
+  "industry": "Steel",
+  "leads": [
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 1170000,
+    "annual_quantity": 13,
+    "unit_price": "90000",
+    "share_tyrolit": 20,
+    "share_gno": 80,
+    "contact_person": "Jitendra Yadav",
+    "machine_maker": "Waldrich (1) / Feeros (1)",
+    "machine_quantity": 2,
+    "size_od": "915",
+    "size_t": "100",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   },
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_demand_amount": 2940000,
+    "annual_quantity": 42,
+    "unit_price": "70000",
+    "share_tyrolit": 20,
+    "share_gno": 80,
+    "contact_person": "Jitendra Yadav",
+    "machine_maker": "Herculues",
+    "machine_quantity": 2,
+    "size_od": "760",
+    "size_t": "80",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Quoted",
+    "issue": "Prices very very high hence busness goes to Tyrolite & GNO"
+   }
+  ]
+ },
+ {
+  "customer_name": "AM/NS (ESSAR) - CRM 2 ( New - 2026 )",
+  "state": "SURAT",
+  "location": "CRM 2 ( New - 2026 )",
+  "industry": "Steel",
+  "leads": [
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_quantity": 24,
+    "share_gno": 80,
+    "share_other": 20,
+    "contact_person": "Dharmendra patel",
+    "machine_maker": "Herculues",
+    "machine_quantity": 2,
+    "size_od": "750",
+    "size_t": "80",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Not Started",
+    "issue": "New CRM Roll Shop - Still Not Started"
+   },
+   {
+    "application": "Roll Gr.",
+    "category": "Res Conv",
+    "annual_quantity": 24,
+    "share_gno": 80,
+    "share_other": 20,
+    "contact_person": "Abhishekh Kumar",
+    "machine_maker": "Herculues",
+    "machine_quantity": 1,
+    "size_od": "915",
+    "size_t": "100",
+    "size_id": "304.8",
+    "wheel_speed": "2700",
+    "progress": "Not Started",
+    "issue": "New CRM Roll Shop - Still Not Started"
+   }
+  ]
+ }
+]

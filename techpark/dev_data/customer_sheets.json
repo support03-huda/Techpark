@@ -1,0 +1,1428 @@
+{
+ "follow_up": [
+  {
+   "sheet_row": 4,
+   "raw_customer": "NRB-CK",
+   "customer": "NRB Bearings Ltd. - Chikalthana",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "C'less Conventional",
+   "present_status": "",
+   "next_action": "Offer submitted for Vit. bond wheel... order follow-up"
+  },
+  {
+   "sheet_row": 5,
+   "raw_customer": "NRB-W",
+   "customer": "NRB Bearings Ltd. - Waluj",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "C'less Conventional",
+   "present_status": "Resin bond wheel order received for Laven m/c",
+   "next_action": "To discuss all conv C'less applications before any other supply.."
+  },
+  {
+   "sheet_row": 6,
+   "raw_customer": "Varroc",
+   "customer": "Varroc",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Auto parts",
+   "application": "Seat Gr.",
+   "present_status": "Regularised ... but risky ... to ask them to consider Del time",
+   "next_action": "Risky Customer .. to process only after receipt of order ...regular follow-up required."
+  },
+  {
+   "sheet_row": 7,
+   "raw_customer": "AAA",
+   "customer": "AAA",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Camshafts",
+   "application": "CBN Cam lobe gr",
+   "present_status": "Regularised ...",
+   "next_action": "Need to follow-up regular orders and payment on time , New TVMK to develop.."
+  },
+  {
+   "sheet_row": 8,
+   "raw_customer": "AAA",
+   "customer": "AAA",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Camshafts",
+   "application": "CBN Cam Jr. Gr.",
+   "present_status": "To get the details confirmed again before submitting offer",
+   "next_action": "To develop ... to follow-up Drg. of Gr wheel and Dresser for 16MnCr5 ...VML"
+  },
+  {
+   "sheet_row": 9,
+   "raw_customer": "NRB-J",
+   "customer": "NRB Bearings Ltd. - Jalna",
+   "sales_person": "Santosh Rathod / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "SII CBN Id ( Rocker Arm)",
+   "present_status": "To develop 6.8 mm dia wheels",
+   "next_action": "NTK will supply new sepc for trials."
+  },
+  {
+   "sheet_row": 10,
+   "raw_customer": "NRB-J",
+   "customer": "NRB Bearings Ltd. - Jalna",
+   "sales_person": "Santosh Rathod / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Conv. C'less ( Micron)",
+   "present_status": "Price 20% Higher considering all benefits ..",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 11,
+   "raw_customer": "NRB-J",
+   "customer": "NRB Bearings Ltd. - Jalna",
+   "sales_person": "Santosh Rathod / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "CRB IR Lip n Track",
+   "present_status": "Already had successfully tried",
+   "next_action": "To submit the reports / To get the offer from NTK / To follow-up for orders .."
+  },
+  {
+   "sheet_row": 12,
+   "raw_customer": "GIRNAR",
+   "customer": "Girnar Gears Pvt. Ltd. - Ch.Sambhaji Nagar",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Camshafts",
+   "application": "Cam Jr and Lobe",
+   "present_status": "Mr. Das want to develop Jr gr first .. then lobe gr",
+   "next_action": "To get the details and submit the proposal with TA and CXY Both .."
+  },
+  {
+   "sheet_row": 13,
+   "raw_customer": "NIBL",
+   "customer": "NIBL",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Ring OD Gr.",
+   "present_status": "Need to smoothen the Supply ..",
+   "next_action": "To propose customer for ..... To keep 25% Adv for 6 months requirement."
+  },
+  {
+   "sheet_row": 14,
+   "raw_customer": "NIBL",
+   "customer": "NIBL",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "DDG",
+   "present_status": "To start supply again against GNO",
+   "next_action": "To push for order and to keep at least 1 Set for NTK CXY DDG Wheel."
+  },
+  {
+   "sheet_row": 15,
+   "raw_customer": "NIBC",
+   "customer": "NIBC - Shendra , Ch.Sambhaji Nagar",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Ring Face Gr.",
+   "present_status": "Walter m/c CBN Wheel and Honing Stones Development.",
+   "next_action": "To get the Drg and details ...To submit the offer."
+  },
+  {
+   "sheet_row": 16,
+   "raw_customer": "NATH Foils",
+   "customer": "NATH Foils",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "FOIL Industry",
+   "application": "Foil Roll Gr. 220 grit",
+   "present_status": "Wheel acting slightly Hard , 1st worked , 2nd faced problem",
+   "next_action": "To ask customer to try again and if works to propose softer wheel of H+ or H"
+  },
+  {
+   "sheet_row": 17,
+   "raw_customer": "GREAVES",
+   "customer": "GREAVES",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "ENGINE",
+   "application": "Cam shaft , C'shaft",
+   "present_status": "Supplying AE Sensor parts ...",
+   "next_action": "To develop CBN Wheels for Cam Lobe gr wheels"
+  },
+  {
+   "sheet_row": 18,
+   "raw_customer": "DEVGIRI Forging",
+   "customer": "DEVGIRI Forging",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "GEARS & Shaft",
+   "application": "Gear and Shaft Gr",
+   "present_status": "Nidec M/c received with NTK Wheel , Tyrolit and Cumi",
+   "next_action": "To keep trying ... to start with Shaft or ID Gr..."
+  },
+  {
+   "sheet_row": 19,
+   "raw_customer": "Sanjiv Auto",
+   "customer": "Sanjiv Auto",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "GEARS & Shaft",
+   "application": "Gear and Shaft Gr",
+   "present_status": "",
+   "next_action": "To start with Shaft or ID Gr..."
+  },
+  {
+   "sheet_row": 20,
+   "raw_customer": "EATON Nagar",
+   "customer": "EATON Nagar",
+   "sales_person": "Santosh / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Auto parts",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 21,
+   "raw_customer": "Eaton-Ranjangaon",
+   "customer": "Eaton-Ranjangaon",
+   "sales_person": "Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "GEARS & Shaft",
+   "application": "Shaft Face & OD Gr.",
+   "present_status": "1st Trial sucessfull",
+   "next_action": "Follow-up for Next ordering"
+  },
+  {
+   "sheet_row": 22,
+   "raw_customer": "SECO",
+   "customer": "SECO",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Cutting tool",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 23,
+   "raw_customer": "GKN Driveline",
+   "customer": "GKN Driveline",
+   "sales_person": "Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Auto parts",
+   "application": "Drive Shaft Cage ID &OD gr.",
+   "present_status": "Regularised , Order for 6 months schedule recd....",
+   "next_action": "40 mm wheel worked good-620 pcs/wheel."
+  },
+  {
+   "sheet_row": 24,
+   "raw_customer": "Jagdamba ( JAL Precision)",
+   "customer": "Jagdamba ( JAL Precision)",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "GEARS & Shaft",
+   "application": "Shaft Face & OD Gr.",
+   "present_status": "Sample supplied for varias shaft OD Gr. Wheel",
+   "next_action": "Follw-up for trial and next ordering"
+  },
+  {
+   "sheet_row": 25,
+   "raw_customer": "BFL Keshavnagar",
+   "customer": "BFL Keshavnagar",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "",
+   "application": "Gear",
+   "present_status": "Single rib gr. wheel trial sucessfull",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 26,
+   "raw_customer": "Bright Precision",
+   "customer": "Bright Precision",
+   "sales_person": "Santosh / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Industry",
+   "application": "Piston ring",
+   "present_status": "Purchased Okuma machines with NTK wheels, Scratch mark problem",
+   "next_action": "No follow up.."
+  },
+  {
+   "sheet_row": 27,
+   "raw_customer": "PRECOMP",
+   "customer": "PRECOMP",
+   "sales_person": "Santosh / Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 28,
+   "raw_customer": "SKF-Pune",
+   "customer": "SKF India Ltd - PUNE",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "T5 Bore & OR CZ",
+   "present_status": "Trial pending",
+   "next_action": "Will contact Nitin sir"
+  },
+  {
+   "sheet_row": 29,
+   "raw_customer": "SKF-Pune",
+   "customer": "SKF India Ltd - PUNE",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "T-9 Bore & OR CZ",
+   "present_status": "CH1 bore",
+   "next_action": "Akshay sir will infrom the date for particular type,"
+  },
+  {
+   "sheet_row": 30,
+   "raw_customer": "SKF-Pune",
+   "customer": "SKF India Ltd - PUNE",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "CH-12 Bore CBN",
+   "present_status": "CH-12 Bore CBN, Trial pending",
+   "next_action": "Varun sir will update on the pending trials."
+  },
+  {
+   "sheet_row": 31,
+   "raw_customer": "SKF-Pune",
+   "customer": "SKF India Ltd - PUNE",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Bore Gr",
+   "present_status": "T-1, T-2 Bore Gr New enquiry recieved",
+   "next_action": "Sample wheel supplied to SKF, Quill not mathed, Akshay sir will update on the quill and the trial date."
+  },
+  {
+   "sheet_row": 32,
+   "raw_customer": "SKF-Pune",
+   "customer": "SKF India Ltd - PUNE",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Bore Gr",
+   "present_status": "UC Bore & Outer",
+   "next_action": "Outer will sample has been delivered to skf and trial will be in few days."
+  },
+  {
+   "sheet_row": 33,
+   "raw_customer": "Schaeffler",
+   "customer": "Schaeffler India Ltd. - (INA) Pune",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Bearing",
+   "application": "Track",
+   "present_status": "TA 100 wheel facing issue.",
+   "next_action": "Mail sent to NTK...New spec recomeded by NTK"
+  },
+  {
+   "sheet_row": 34,
+   "raw_customer": "DIVGI",
+   "customer": "DIVGI",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Gear",
+   "application": "Gear Bore",
+   "present_status": "Trial sucesfull - Bore & OD",
+   "next_action": "Wating for the order."
+  },
+  {
+   "sheet_row": 35,
+   "raw_customer": "RUDRALI",
+   "customer": "RUDRALI",
+   "sales_person": "Santosh Rathod",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 36,
+   "raw_customer": "GESTAMP",
+   "customer": "GESTAMP",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "",
+   "application": "",
+   "present_status": "",
+   "next_action": "To know status"
+  },
+  {
+   "sheet_row": 37,
+   "raw_customer": "FUKOKU",
+   "customer": "FUKOKU",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "",
+   "application": "",
+   "present_status": "",
+   "next_action": "To know status"
+  },
+  {
+   "sheet_row": 38,
+   "raw_customer": "NETMECH",
+   "customer": "NETMECH",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Camshafts",
+   "application": "",
+   "present_status": "JR OD Grinding wheel Development - Ceramic Grain",
+   "next_action": "Need Web meeting in this week"
+  },
+  {
+   "sheet_row": 39,
+   "raw_customer": "TOLIA",
+   "customer": "TOLIA Ball & Rollers - Thane",
+   "sales_person": "Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "Balls & Roller",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 40,
+   "raw_customer": "VIKMAN",
+   "customer": "VIKMAN Balls - Thane",
+   "sales_person": "Vedant",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "BALLs",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 41,
+   "raw_customer": "TATA Khopoli",
+   "customer": "TATA Khopoli",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "STEEL",
+   "application": "",
+   "present_status": "",
+   "next_action": "To get Contact details from Sulova Pal"
+  },
+  {
+   "sheet_row": 42,
+   "raw_customer": "RIVAN Foil",
+   "customer": "RIVAN Foil",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "NTK wheel did not perform well",
+   "next_action": "Mathur sir want FOC sample / No further action on this."
+  },
+  {
+   "sheet_row": 43,
+   "raw_customer": "TATA Trapur",
+   "customer": "TATA Trapur",
+   "sales_person": "Shivdhan",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "STEEL",
+   "application": "CRM Roll Grinding",
+   "present_status": "NTK Wheel was regular on Toshiba M/c ..now they reced Pomeni",
+   "next_action": "To visit and convience to start Again for Noritake wheels initially on Toshiba M/c"
+  },
+  {
+   "sheet_row": 44,
+   "raw_customer": "ADROIT",
+   "customer": "ADROIT",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "MEDICAL",
+   "application": "Injection Needle Gr.",
+   "present_status": "Sample Supplied, Sept 24 - GC2000I11B8EW(7) 455x100x203.2",
+   "next_action": "To get the Results and exact problem ..."
+  },
+  {
+   "sheet_row": 45,
+   "raw_customer": "TSUBAKI",
+   "customer": "TSUBAKI Nakashima - Silvasa",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Tsubaki India Directly Purchasing from Tsubaki Japan",
+   "next_action": "Proposal submitted for Stock and Supply through Techpark on 6.3.26.. to Follow-up"
+  },
+  {
+   "sheet_row": 46,
+   "raw_customer": "NHB",
+   "customer": "NHB Ball & Roller Ltd. - Amalsad",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Direct supply",
+   "next_action": "Follow-up for Payment"
+  },
+  {
+   "sheet_row": 47,
+   "raw_customer": "PETForm Tech",
+   "customer": "PETForm Tech",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Plastic forms",
+   "application": "Clock ring (Bore Gr)",
+   "present_status": "Wheel acting soft. Trial failed",
+   "next_action": "Parameters sent to NTK No further action from NTK."
+  },
+  {
+   "sheet_row": 48,
+   "raw_customer": "ESSAR ( AMNS )",
+   "customer": "AM/NS (ESSAR) - CRM 1",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "STEEL",
+   "application": "Roll Gr.",
+   "present_status": "Earlier we supplied a Ceramic Grain wheel, but now it has stopped... we need to start again",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 49,
+   "raw_customer": "TIMKEN Bharuch",
+   "customer": "TIMKEN India Ltd. - Bharuch",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 50,
+   "raw_customer": "SKILL Balls Baroda",
+   "customer": "Skill Precision Balls Pvt. Ltd. - Baroda",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings / Balls",
+   "application": "Ball Lapping",
+   "present_status": "They to develope L1 wheel",
+   "next_action": "Need to send quotation for L1"
+  },
+  {
+   "sheet_row": 51,
+   "raw_customer": "SCHAEFFLER Maneja",
+   "customer": "Schaeffler India Ltd. - Maneja",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 52,
+   "raw_customer": "SCHAEFFLER Savali",
+   "customer": "Schaeffler India Ltd. - (FAG-Savali) Baroda",
+   "sales_person": "Vedant / Santosh",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 53,
+   "raw_customer": "RS Foil",
+   "customer": "RS Foil",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "New plant in process",
+   "next_action": "Plant may get ready till year end."
+  },
+  {
+   "sheet_row": 54,
+   "raw_customer": "VIRGO Foils",
+   "customer": "VIRGO Foils",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "100/120 grit supplied",
+   "next_action": "No furthe action taken."
+  },
+  {
+   "sheet_row": 55,
+   "raw_customer": "Marudhar Foil",
+   "customer": "Marudhar Foil",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 56,
+   "raw_customer": "HIGHLY",
+   "customer": "HIGHLY",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Electrical appliances",
+   "application": "Shaft OD",
+   "present_status": "Regularised",
+   "next_action": "Follow up for the same"
+  },
+  {
+   "sheet_row": 57,
+   "raw_customer": "FCC",
+   "customer": "FCC",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 58,
+   "raw_customer": "SKF Gujrat",
+   "customer": "SKF Gujrat",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "DGBB New development",
+   "present_status": "Wheel supplied to SKF",
+   "next_action": "Wheel work on 2 interval without reducing cycle time against tyrolite 1 skip,"
+  },
+  {
+   "sheet_row": 59,
+   "raw_customer": "RAVIRAJ Foils",
+   "customer": "RAVIRAJ Foils",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "We are suppling regulally WA120,180 & 220 grit wheel",
+   "next_action": "follow-up for Payment &"
+  },
+  {
+   "sheet_row": 60,
+   "raw_customer": "SMELTON FOils",
+   "customer": "SMELTON FOils",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "Need to send quotation for 120 & 60 grit",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 61,
+   "raw_customer": "TEXSPIN P-1",
+   "customer": "Texspin Bearings Ltd. - Plant-1",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Track",
+   "present_status": "TA3 120K wheel having problem(High RA)",
+   "next_action": "Mail sent to NTK...No reply yet"
+  },
+  {
+   "sheet_row": 62,
+   "raw_customer": "TEXSPIN P-1",
+   "customer": "Texspin Bearings Ltd. - Plant-1",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearing",
+   "application": "Dresser",
+   "present_status": "Dresser confirmation",
+   "next_action": "Zoom meeting for futher details"
+  },
+  {
+   "sheet_row": 63,
+   "raw_customer": "TEXSPIN P-2",
+   "customer": "Texspin Bearings Ltd. - Plant-2",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Dresser",
+   "present_status": "Dresser details taken",
+   "next_action": "Follow up for the same"
+  },
+  {
+   "sheet_row": 64,
+   "raw_customer": "KCI",
+   "customer": "KCI Bearings Ltd. - Surendranagar",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Honning stone trial failed",
+   "next_action": "Have take trial with new spec."
+  },
+  {
+   "sheet_row": 65,
+   "raw_customer": "SKP Bearings",
+   "customer": "SKP Bearing Industries Ltd. - Surendranagar",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Honning stone trial pending",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 66,
+   "raw_customer": "TURBO Brgs",
+   "customer": "Turbo Bearings Pvt. Ltd. - Rajkot",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Track",
+   "present_status": "Not recieved order yet - for Koyo machine",
+   "next_action": "Contack Shekhar sir for this"
+  },
+  {
+   "sheet_row": 67,
+   "raw_customer": "Orbit Brgs",
+   "customer": "Orbit Bearings India Pvt. Ltd. - Rajkot",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "IR Bore",
+   "present_status": "Tiral wheel supplied",
+   "next_action": "Wheel failed"
+  },
+  {
+   "sheet_row": 68,
+   "raw_customer": "SKILL Balls Rajkot",
+   "customer": "Skill Precision Balls Pvt. Ltd. - Rajkot",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Must send L1 enquiry",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 69,
+   "raw_customer": "Synnova Gears",
+   "customer": "Synnova Gears",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Gear",
+   "application": "Gear Bore",
+   "present_status": "Trial wheel ready at Techpark end",
+   "next_action": "Trials to conduct"
+  },
+  {
+   "sheet_row": 70,
+   "raw_customer": "PRECIMAX",
+   "customer": "PRECI-MAX Rollers - Rajkot",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Roller / Bearing",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 71,
+   "raw_customer": "STAR Rollers",
+   "customer": "STAR Rollers",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "present_status": "Introduction sent",
+   "next_action": "will visit the plant this month."
+  },
+  {
+   "sheet_row": 72,
+   "raw_customer": "VISHAL Rollers",
+   "customer": "VISHAL Rollers",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "Ball Lapping",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 73,
+   "raw_customer": "AUSTIN Bearings",
+   "customer": "Austin Bearings (Austin Engineering Co. Ltd.)",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "Bearings",
+   "application": "",
+   "present_status": "Small quantity batched.",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 74,
+   "raw_customer": "AMNS Gandhidham",
+   "customer": "AMNS Gandhidham",
+   "sales_person": "Vedant",
+   "region_raw": "WEST - GUJ",
+   "region": "West - GUJ",
+   "industry": "STEEL",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 75,
+   "raw_customer": "TATA Kharagpur",
+   "customer": "TSL (TATA Bearings) - Kharagpur",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-WB",
+   "region": "East - WB",
+   "industry": "Bearings",
+   "application": "TRB Lip & Track",
+   "present_status": "Trial Wheels for Lip n Track and IR Track gr received",
+   "next_action": "Dt. 6-5-2026, Outer ring track Trail reports from Swarup, Next Trails to be conduct asap for 100X7.5X46"
+  },
+  {
+   "sheet_row": 76,
+   "raw_customer": "TATA Kharagpur",
+   "customer": "TSL (TATA Bearings) - Kharagpur",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-WB",
+   "region": "East - WB",
+   "industry": "Bearings",
+   "application": "BB IR Grove",
+   "present_status": "BB IR grove gr wheels received",
+   "next_action": "Trials to conduct"
+  },
+  {
+   "sheet_row": 77,
+   "raw_customer": "HITACHI",
+   "customer": "HITACHI",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-WB",
+   "region": "East - WB",
+   "industry": "Cutting Tools",
+   "application": "",
+   "present_status": "Conv. C'less , Dresser and CBN Wheels for Hob resharpening",
+   "next_action": "To follow-up for regular orders . | PO_9800005965_LMS | Material Dispatched, Follow up for material received at there end."
+  },
+  {
+   "sheet_row": 78,
+   "raw_customer": "TATA-J CRM",
+   "customer": "TATA-J CRM",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "STEEL",
+   "application": "New bond",
+   "present_status": "Customer wants a marked symbol on the box of trail wheel to recognized it with ease",
+   "next_action": "1.Material Received at there end - to follow up for performance 2. Follow up for GC 46 5 pcs"
+  },
+  {
+   "sheet_row": 80,
+   "raw_customer": "TATA-J CRM",
+   "customer": "TATA-J CRM",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "STEEL",
+   "application": "Roll Gr.",
+   "present_status": "CXY60/ CXY80 & CXY46_New Bond B1822",
+   "next_action": "Follow up for the same"
+  },
+  {
+   "sheet_row": 81,
+   "raw_customer": "TATA-J HSM",
+   "customer": "TATA STEEL - HSM Roll Shop",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "STEEL",
+   "application": "Roll Gr.",
+   "present_status": "PR No 3100126928; Grinding Wheel-ARC PR | 3 sample quoted",
+   "next_action": "Need to follow-up with Noritake how to proceed for sample"
+  },
+  {
+   "sheet_row": 82,
+   "raw_customer": "TATA-J TSCR",
+   "customer": "TATA-J TSCR",
+   "sales_person": "Shivdhan",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "STEEL",
+   "application": "Roll Gr.",
+   "present_status": "Noritake Wheel trial sucessfull",
+   "next_action": "Need to follow-up with Noritake how to proceed for sample"
+  },
+  {
+   "sheet_row": 83,
+   "raw_customer": "TIMKEN JSR",
+   "customer": "TIMKEN India Ltd. - Jamshedpur",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "Bearings",
+   "application": "Nishin M/c",
+   "present_status": "Conv. C'less R regularised , Finish under trial ..",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 84,
+   "raw_customer": "TIMKEN JSR",
+   "customer": "TIMKEN India Ltd. - Jamshedpur",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "Bearings",
+   "application": "Cone Cell",
+   "present_status": "Deatils taken from them, To make questionnerie of this ID ring",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 85,
+   "raw_customer": "CTC",
+   "customer": "CTC",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST-JH",
+   "region": "East - JH",
+   "industry": "Cutting Tools",
+   "application": "",
+   "present_status": "Check and confirm how to proceed / strat our wheel to proceed trails",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 86,
+   "raw_customer": "SHYAM Giridhi",
+   "customer": "SHYAM Giridhi",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - JH",
+   "region": "East - JH",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "Wheel supplied, Trail schedule not fixed",
+   "next_action": "to contact them for schedule a trial"
+  },
+  {
+   "sheet_row": 87,
+   "raw_customer": "SHYAM Howarha",
+   "customer": "SHYAM Howarha",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - WB",
+   "region": "East - WB",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "Regularly suppling WA150,180 & 220 Grit",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 88,
+   "raw_customer": "BELLMER",
+   "customer": "BELLMER",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST-WB",
+   "region": "East - WB",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "Wheel dispatched for trail.",
+   "next_action": "After wheel received at customer end, Schedule a trail."
+  },
+  {
+   "sheet_row": 89,
+   "raw_customer": "JINDAL Foil",
+   "customer": "JINDAL Foil",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST-WB",
+   "region": "East - WB",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 92,
+   "raw_customer": "HINDALCO Lapanga-Foil",
+   "customer": "HINDALCO Lapanga-Foil",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "wheel send to convert from 80 to 70 (Wheel- ___ )",
+   "next_action": "To follow up for when wheel received at there end. to check performance Ra required 0.15,need to recommend them to use 180 grit"
+  },
+  {
+   "sheet_row": 93,
+   "raw_customer": "HINDALCO Lapanga-CRM",
+   "customer": "HINDALCO Lapanga-CRM",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "Roll Gr.",
+   "present_status": "wheel received with Pomini m/c - Required RA not achived",
+   "next_action": "To follow up with Noritake to suggest suitable wheel"
+  },
+  {
+   "sheet_row": 94,
+   "raw_customer": "HINDALCO Hirakud-CRM",
+   "customer": "HINDALCO Hirakud-CRM",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "Need to check questionnarie with customer.",
+   "next_action": "To follow up for the same"
+  },
+  {
+   "sheet_row": 95,
+   "raw_customer": "SHYAM Lapanga-CRM",
+   "customer": "SHYAM Lapanga-CRM",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "they want details of natural Ra with different grit and aslo bond details, and benefits.",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 96,
+   "raw_customer": "SHYAM Lapanga-Foil",
+   "customer": "SHYAM Lapanga-Foil",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "they want details of natural Ra with different grit and aslo bond details, and benefits.",
+   "next_action": "undefined"
+  },
+  {
+   "sheet_row": 97,
+   "raw_customer": "SHYAM Steel , Lapanga",
+   "customer": "SHYAM Steel , Lapanga",
+   "sales_person": "Shivdhan / Santosh Rathod",
+   "region_raw": "EAST - OD",
+   "region": "East - OD",
+   "industry": "FOIL",
+   "application": "",
+   "present_status": "PO NO-7832000662 (DISC) received",
+   "next_action": "Order on noritake proceed"
+  },
+  {
+   "sheet_row": 99,
+   "raw_customer": "Esmech (SMS Group)",
+   "customer": "Esmech (SMS Group)",
+   "sales_person": "Shivdhan",
+   "region_raw": "West - MH",
+   "region": "West - MH",
+   "industry": "",
+   "application": "Flexible Oil stone",
+   "present_status": "PI sent to customer GC150",
+   "next_action": "undefined"
+  }
+ ],
+ "products": [
+  {
+   "customer": "SKF India Ltd - PUNE",
+   "raw": "SKF India Ltd., Pune",
+   "products": [
+    {
+     "product": "Ball Bearings",
+     "production_volume": 19.7,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "TRB Bearings",
+     "production_volume": 13.5,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "BB Hub Bearings",
+     "production_volume": 5,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "TRB Hub Bearings",
+     "production_volume": 5,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "Hub-3 Generation",
+     "production_volume": 0.3,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "THU",
+     "production_volume": 0.6,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "Rollers",
+     "production_volume": 200,
+     "unit": "Million pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    }
+   ],
+   "notes": [
+    "( Automotive and Industrial : 50% each )",
+    "SKF Group Turnover - 5000 Crore including",
+    "Automotive and Industrial"
+   ],
+   "annual_turnover_cr": 2130,
+   "turnover_text": "2130 Cr ( 50% Automotive and 50% Industrial ) i.e. 1070 Cr. each",
+   "abrasive_consumption_cr": 24,
+   "abrasive_consumption_details": "2 Cr. / M--- 24 Cr /Year",
+   "group_turnover_cr": 5000
+  },
+  {
+   "customer": "NRB Bearings Ltd. - Jalna",
+   "raw": "NRB Bearings Ltd.,-Jalna",
+   "products": [
+    {
+     "product": "Rocker Arm Brgs",
+     "production_volume": 27,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "CRB Bearings",
+     "production_volume": 5.5,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "NRB_Rings & Sleevs",
+     "production_volume": 10,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "Ball Bearings",
+     "production_volume": 1.75,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "TRB",
+     "production_volume": 0.8,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": "0.8-0.85 L/M"
+    },
+    {
+     "product": "Rollers",
+     "production_volume": 25,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "Ring",
+     "production_volume": 2,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    }
+   ],
+   "notes": [
+    "1077.52 Crores for Group"
+   ],
+   "annual_turnover_cr": 480,
+   "turnover_text": "480 Cr",
+   "abrasive_consumption_cr": 12,
+   "abrasive_consumption_details": "12 Cr",
+   "group_turnover_cr": 1077.52
+  },
+  {
+   "customer": "TSL (TATA Bearings) - Kharagpur",
+   "raw": "Tata Steel ( Bearings) Kharagpur",
+   "products": [
+    {
+     "product": "Ball Bearings",
+     "production_volume": 22,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    },
+    {
+     "product": "TRB",
+     "production_volume": 3.25,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": ""
+    }
+   ],
+   "notes": [],
+   "annual_turnover_cr": 250,
+   "turnover_text": "250 Cr.",
+   "abrasive_consumption_cr": 3,
+   "abrasive_consumption_details": "3 Cr / per Year"
+  },
+  {
+   "customer": "ILJIN - Pune",
+   "raw": "ILJIN Bearings , Pune",
+   "products": [
+    {
+     "product": "HUB GEN-1,2",
+     "production_volume": 6,
+     "unit": "Lakh pcs",
+     "frequency": "Monthly",
+     "remarks": "6-7 L/M"
+    },
+    {
+     "product": "HUB-GEN 3"
+    }
+   ],
+   "notes": [],
+   "annual_turnover_cr": 800,
+   "turnover_text": "800-900 Cr",
+   "abrasive_consumption_cr": 5,
+   "abrasive_consumption_details": "5-6 Cr"
+  },
+  {
+   "customer": "Austin Bearings (Austin Engineering Co. Ltd.)",
+   "raw": "Austin Bearings (Austin Engineering Co. Ltd. )",
+   "products": [],
+   "notes": [],
+   "annual_turnover_cr": 106,
+   "turnover_text": "106 Crores( 24-25)"
+  },
+  {
+   "customer": "RMP Bearings - Ranpur",
+   "raw": "RMP Bearings , Ranpur, Gujrat",
+   "products": [],
+   "notes": []
+  },
+  {
+   "customer": "Rings Plus Aqua - Ahilyanagar",
+   "raw": "Rings Plus Aqua, AhilyaNagar, MH",
+   "products": [
+    {
+     "product": "Water Pump Bearings"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "customer": "TEC Bearings - Shaparveraval",
+   "raw": "TEC Bearings, Shaparveraval Guj",
+   "products": [
+    {
+     "product": "TRB , BB , SRB"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "customer": "TOLIA Ball & Rollers - Thane",
+   "raw": "TOLIA Ball and Roller LLP ( Thane , Bhiwandi )",
+   "products": [
+    {
+     "product": "SS and Bearings Balls",
+     "production_volume": 290,
+     "unit": "Tons",
+     "frequency": "Monthly",
+     "remarks": "50+240 = 290 tons/Month"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "customer": "VIKMAN Balls - Thane",
+   "raw": "VIKMAN Balls",
+   "products": [
+    {
+     "product": "SS (Major) and Brg Balls ( Minor )",
+     "production_volume": 30,
+     "unit": "Tons",
+     "frequency": "Monthly",
+     "remarks": "30 Tons/ 300 tons Cap/M (38 Lapp mcs)"
+    }
+   ],
+   "notes": [
+    "20% Export"
+   ]
+  },
+  {
+   "customer": "PRECI-MAX Rollers - Rajkot",
+   "raw": "PRECI-MAX Rollers, Rajkot",
+   "products": [
+    {
+     "product": "Cylindrical , Spherical and Needle Rollers",
+     "production_volume": 500,
+     "unit": "Tons",
+     "frequency": "Monthly",
+     "remarks": "500 - 1200 tons/ Month"
+    }
+   ],
+   "notes": [],
+   "annual_turnover_cr": 250,
+   "turnover_text": "250-600 Crores"
+  }
+ ],
+ "jis": {
+  "customer": "JIS Tools",
+  "established_year": 1974,
+  "manufacturing_profile": "Special Tools and Dies, Circular Thread Rolling Dies, Form Tools, Gear Hobs, Special Cutting Tools viz., (Reamers, End Mills, Roughing End Mills for CNC machines, Special Taps, etc.) in various grades of High Speed Steel (H.S.S.) and Carbide brazed.",
+  "heat_treatment": "In house Heat treatment process",
+  "machines": [
+   {
+    "machine_type": "For Thread Grinding",
+    "maker": "WMW, Reishauer, Matrix"
+   },
+   {
+    "machine_type": "Profile Grinding Machines",
+    "maker": "WMW/Wickman"
+   },
+   {
+    "machine_type": "Relieving Lthes",
+    "maker": "WMW"
+   },
+   {
+    "machine_type": "Cylindrical Grinding Machines",
+    "maker": "Jones & Shipman/ HMT"
+   },
+   {
+    "machine_type": "Automatic Tools & Cutter Grinders",
+    "maker": "Reinecker"
+   }
+  ],
+  "wheels": [
+   {
+    "application": "ROLL Grinding / Serration Grinding",
+    "wheel_specification": "89A400K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "0.5 - 1 MM",
+    "annual_consumption": 10,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "ROLL Grinding / Serration Grinding",
+    "wheel_specification": "CS33A320IIVB1",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "0.7 - 2 MM",
+    "annual_consumption": 40,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "Thread Roll Grinding",
+    "wheel_specification": "89A400K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "0.5 - 0.9 MM",
+    "annual_consumption": 10,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "Thread Roll Grinding",
+    "wheel_specification": "89A320K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "1 - 2 MM",
+    "annual_consumption": 40,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "Thread Roll Grinding",
+    "wheel_specification": "89A280K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "2.5 - 3.5 MM",
+    "annual_consumption": 25,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "Thread Roll Grinding",
+    "wheel_specification": "89A220K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "3.5 - 5 MM",
+    "annual_consumption": 25,
+    "consumption_unit": "Pcs"
+   },
+   {
+    "application": "Thread Roll Grinding",
+    "wheel_specification": "89A180K3V111",
+    "wheel_size": "350x40x160",
+    "wheel_speed": "50 M/S",
+    "pitch_range": "Above 5 mm",
+    "annual_consumption": 10,
+    "consumption_unit": "Pcs"
+   }
+  ]
+ }
+}

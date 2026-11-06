@@ -1,7 +1,7 @@
 // Copyright (c) 2026, Techpark International
-// Plants / Production / Commercial / Technical / Visits tabs: summary tiles above
-// editable tables. These and the Contacts table are synced to the real records on
-// save (techpark/customer_sync.py). The Products tab is a read-only summary.
+// Plants / Products Info / Commercial / Technical Lead / Visits tabs: summary tiles
+// above editable tables. These and the Contacts table are synced to the real records on
+// save (techpark/customer_sync.py). The Products Info overview is a read-only summary of its table.
 
 frappe.ui.form.on("TP Customer", {
 	setup(frm) {
@@ -14,6 +14,10 @@ frappe.ui.form.on("TP Customer", {
 		frm.set_query("supplier_product_category", "visits", (doc, cdt, cdn) => ({
 			filters: { principal: locals[cdt][cdn].principal || "", is_active: 1 },
 		}));
+		frm.set_query("principal", "technical_leads", () => ({ filters: { is_active: 1 } }));
+		frm.set_query("supplier_product_category", "technical_leads", (doc, cdt, cdn) => ({
+			filters: { principal: locals[cdt][cdn].principal || "", is_active: 1 },
+		}));
 	},
 
 	refresh(frm) {
@@ -22,11 +26,8 @@ frappe.ui.form.on("TP Customer", {
 		const plant_fields = {
 			production: "plant",
 			turnovers: "plant",
-			visits: "plant",
-			segment_applications: "address",
 			wheel_specs: "plant",
-			consumptions: "plant",
-			manufacturing_details: "plant",
+			visits: "plant",
 		};
 		for (const [table, field] of Object.entries(plant_fields)) {
 			if (frm.fields_dict[table]) {
@@ -41,7 +42,6 @@ frappe.ui.form.on("TP Customer", {
 		if (frm.is_new()) return;
 		M.render_production(frm);
 		M.render_commercial(frm);
-		M.render_products(frm);
 		M.render_technical(frm);
 		M.render_visits(frm);
 		// "Customer Card" is the default print format of TP Customer
@@ -58,6 +58,21 @@ frappe.ui.form.on("TP Customer Plant", {
 frappe.ui.form.on("TP Customer Production", {
 	production_add: (frm) => techpark.customer_master.render_production(frm),
 	production_remove: (frm) => techpark.customer_master.render_production(frm),
+	product: (frm) => techpark.customer_master.render_production(frm),
+	production_volume: (frm) => techpark.customer_master.render_production(frm),
+	unit: (frm) => techpark.customer_master.render_production(frm),
+	frequency: (frm) => techpark.customer_master.render_production(frm),
+});
+frappe.ui.form.on("TP Customer", {
+	abrasive_consumption_cr: (frm) => techpark.customer_master.render_production(frm),
+	annual_turnover_cr: (frm) => techpark.customer_master.render_production(frm),
+});
+frappe.ui.form.on("TP Customer Technical Lead", {
+	principal(frm, cdt, cdn) {
+		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
+	},
+	progress: (frm) => techpark.customer_master.render_technical(frm),
+	annual_demand_amount: (frm) => techpark.customer_master.render_technical(frm),
 });
 frappe.ui.form.on("TP Customer Turnover", {
 	turnovers_add: (frm) => techpark.customer_master.render_commercial(frm),
@@ -83,17 +98,10 @@ frappe.ui.form.on("TP Customer Visit", {
 		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
 	},
 });
-for (const [child, table] of [
-	["TP Customer Segment", "segment_applications"],
-	["TP Customer Wheel Spec", "wheel_specs"],
-	["TP Customer Consumption", "consumptions"],
-	["TP Customer Manufacturing", "manufacturing_details"],
-]) {
-	frappe.ui.form.on(child, {
-		[`${table}_add`]: (frm) => techpark.customer_master.render_technical(frm),
-		[`${table}_remove`]: (frm) => techpark.customer_master.render_technical(frm),
-	});
-}
+frappe.ui.form.on("TP Customer Technical Lead", {
+	technical_leads_add: (frm) => techpark.customer_master.render_technical(frm),
+	technical_leads_remove: (frm) => techpark.customer_master.render_technical(frm),
+});
 frappe.ui.form.on("Company contacts", {
 	person_name: (frm) => techpark.customer_master.set_contact_options(frm),
 	designation: (frm) => techpark.customer_master.set_contact_options(frm),
@@ -168,20 +176,89 @@ techpark.customer_master.render_plants = function (frm) {
 	);
 };
 
-techpark.customer_master.render_production = function (frm) {
+// Products Info tab (Customer Card format): tiles for the company figures, then the products range
+// grouped by category, each product with its production volume. Edited in the table below it.
+techpark.customer_master.render_production = async function (frm) {
 	if (!frm.fields_dict.production_html) return;
 	const M = techpark.customer_master;
-	frm.fields_dict.production_html.$wrapper.html(
-		M.wrap(
-			M.stats_html([
-				{ label: "Production Lines", value: (frm.doc.production || []).length },
-				{
-					label: "Annual Turnover",
-					value: frm.doc.annual_turnover_cr ? `₹${frm.doc.annual_turnover_cr} Cr` : "—",
-				},
-			])
+	const esc = frappe.utils.escape_html;
+	const rows = (frm.doc.production || []).filter((r) => r.product);
+	const wrapper = frm.fields_dict.production_html.$wrapper;
+	const token = (M._production_token = (M._production_token || 0) + 1);
+
+	const ids = (field) => [...new Set(rows.map((r) => r[field]).filter(Boolean))];
+	const product_ids = ids("product");
+	const products = product_ids.length
+		? await M.get_list("Customer Product", { name: ["in", product_ids] }, ["name", "product_name", "product_category"])
+		: [];
+	const product_map = Object.fromEntries(products.map((p) => [String(p.name), p]));
+	const category_ids = [...new Set(products.map((p) => p.product_category).filter(Boolean))];
+	const categories = category_ids.length
+		? await M.get_list("Product Category", { name: ["in", category_ids] }, ["name", "category_name"])
+		: [];
+	const category_map = Object.fromEntries(categories.map((c) => [String(c.name), c.category_name]));
+	const unit_ids = ids("unit");
+	const units = unit_ids.length ? await M.get_list("Unit", { name: ["in", unit_ids] }, ["name", "unit_name"]) : [];
+	const unit_map = Object.fromEntries(units.map((u) => [String(u.name), u.unit_name]));
+	if (token !== M._production_token) return; // a newer render started meanwhile
+
+	const crore = (v) => (v ? `₹ ${format_number(v, null, 2)} Cr` : "—");
+	let html = M.stats_html([
+		{ label: __("Products"), value: product_ids.length },
+		{ label: __("Product Categories"), value: category_ids.length },
+		{ label: __("Annual Turnover"), value: crore(frm.doc.annual_turnover_cr) },
+		{ label: __("Abrasive Consumption / Year"), value: crore(frm.doc.abrasive_consumption_cr) },
+	]);
+
+	if (!rows.length) {
+		html += `<p class="text-muted small" style="margin:4px 0 0;">${__(
+			"No products yet. Add each product the customer makes and its production volume in the table below."
+		)}</p>`;
+		return wrapper.html(M.wrap(html));
+	}
+
+	// Products grouped by category
+	const groups = {};
+	for (const r of rows) {
+		const p = product_map[String(r.product)] || {};
+		const category = category_map[String(p.product_category)] || __("Other");
+		(groups[category] = groups[category] || []).push({ row: r, name: p.product_name || r.product });
+	}
+	const volume = (r) => {
+		if (!r.production_volume) return `<span class="text-muted">${__("Volume not given")}</span>`;
+		const unit = unit_map[String(r.unit)] || "";
+		return `<b style="font-size:16px;">${format_number(r.production_volume, null, 2)}</b> ${esc(unit)}${
+			r.frequency ? ` <span class="text-muted">/ ${esc(__(r.frequency === "Annual" ? "Year" : r.frequency.replace(/ly$/, "")))}</span>` : ""
+		}`;
+	};
+	html += Object.keys(groups)
+		.sort()
+		.map(
+			(category) => `
+		<div style="margin-top:14px;">
+			<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+				<span class="indicator-pill blue">${esc(category)}</span>
+				<span class="text-muted small">${__("{0} product(s)", [groups[category].length])}</span>
+			</div>
+			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">
+				${groups[category]
+					.map(
+						({ row, name }) => `
+				<div style="border:1px solid var(--border-color); border-left:3px solid var(--blue-500); border-radius:var(--border-radius); padding:10px 12px; background:var(--fg-color);">
+					<div style="font-weight:600; margin-bottom:4px;">${M.link("Customer Product", row.product, name)}</div>
+					<div>${volume(row)}</div>
+					${row.remarks ? `<div class="text-muted small" style="margin-top:4px;">${esc(row.remarks)}</div>` : ""}
+				</div>`
+					)
+					.join("")}
+			</div>
+		</div>`
 		)
-	);
+		.join("");
+	if (frm.doc.abrasive_consumption_details) {
+		html += `<div class="text-muted small" style="margin-top:12px;"><b>${__("Abrasive Consumption")}:</b> ${esc(frm.doc.abrasive_consumption_details)}</div>`;
+	}
+	wrapper.html(M.wrap(html));
 };
 
 techpark.customer_master.render_commercial = function (frm) {
@@ -199,58 +276,22 @@ techpark.customer_master.render_commercial = function (frm) {
 	);
 };
 
-// Products = the distinct products in the Production tab (read-only summary)
-techpark.customer_master.render_products = async function (frm) {
-	if (!frm.fields_dict.products_html) return;
-	const M = techpark.customer_master;
-	const wrapper = frm.fields_dict.products_html.$wrapper;
-	const product_ids = [...new Set((frm.doc.production || []).map((r) => r.product).filter(Boolean))];
-
-	const products = product_ids.length
-		? await M.get_list("Customer Product", { name: ["in", product_ids] }, ["name", "product_name", "product_category", "active"])
-		: [];
-	const product_map = {};
-	products.forEach((p) => (product_map[p.name] = p));
-
-	const category_ids = [...new Set(products.map((p) => p.product_category).filter(Boolean))];
-	const categories = category_ids.length
-		? await M.get_list("Product Category", { name: ["in", category_ids] }, ["name", "category_name"])
-		: [];
-	const category_map = {};
-	categories.forEach((c) => (category_map[c.name] = c.category_name));
-
-	let html = M.stats_html([{ label: "Distinct Products", value: product_ids.length }]);
-	html += M.table_html(
-		["Product", "Category", "Status"],
-		product_ids.map((pid) => {
-			const prod = product_map[pid] || {};
-			return [
-				M.link("Customer Product", pid, prod.product_name || pid),
-				frappe.utils.escape_html(category_map[prod.product_category] || ""),
-				M.badge(prod.active ? "Active" : "Inactive", prod.active ? "green" : "gray"),
-			];
-		})
-	);
-	html += `<p class="text-muted small">${__("Products come from the Production tab — add a production row to add a product here.")}</p>`;
-	wrapper.html(M.wrap(html));
-};
-
-// Technical tab: tiles counting the Segments / Wheel Specs / Consumption / Manufacturing
-// tables below them (the tables are synced to their records on save)
-techpark.customer_master.TECHNICAL_TABLES = [
-	{ table: "segment_applications", title: __("Segments & Applications") },
-	{ table: "wheel_specs", title: __("Wheel Specifications") },
-	{ table: "consumptions", title: __("Abrasive / Wheel Consumption") },
-	{ table: "manufacturing_details", title: __("Manufacturing") },
-];
-
+// Technical Lead tab: Demand Survey tiles above the Technical Leads table
 techpark.customer_master.render_technical = function (frm) {
 	if (!frm.fields_dict.technical_html) return;
 	const M = techpark.customer_master;
-	const tiles = M.TECHNICAL_TABLES.map((t) => ({ label: t.title, value: (frm.doc[t.table] || []).length }));
-	let html = M.stats_html(tiles);
+	const leads = frm.doc.technical_leads || [];
+	const demand = leads.reduce((sum, r) => sum + (r.annual_demand_amount || 0), 0);
+	const count = (status) => leads.filter((r) => r.progress === status).length;
+	let html = M.stats_html([
+		{ label: __("Technical Leads"), value: leads.length },
+		{ label: __("Annual Demand"), value: demand ? format_currency(demand, "INR") : "—" },
+		{ label: __("Approved"), value: count("Approved") },
+		{ label: __("Quoted / Under Trial"), value: count("Quoted") + count("Under Trial") + count("Trial Order Received") },
+		{ label: __("Not Started"), value: count("Not Started") },
+	]);
 	html += `<p class="text-muted small" style="margin:0;">${__(
-		"Add rows below and save the customer — each row is saved as its own record (click its ID to open it). A segment's Applications and Competitors are edited on the segment record."
+		"One row per application (Demand Survey): process, principal category, annual demand, competitor share, machine, size, progress, issue and action plan. Open a row to fill all columns."
 	)}</p>`;
 	frm.fields_dict.technical_html.$wrapper.html(M.wrap(html));
 };

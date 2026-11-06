@@ -21,49 +21,10 @@ TITLE_FIELDS = {
 	"Customer Department": "department_name",
 }
 
-TECHNICAL = {
-	"segments": {
-		"doctype": "Customer Segment Application",
-		"fields": [
-			"name", "address as plant", "segment", "sub_category_line", "application_notes",
-			"monthly_vloume as volume", "unit", "segment_turnover_cr",
-		],
-		"links": {"plant": "Plant", "segment": "Product Segment", "unit": "Unit"},
-	},
-	"wheel_specs": {
-		"doctype": "Wheel Specification",
-		"fields": [
-			"name", "plant", "application", "wheel_specification", "wheel_size", "wheel_speed",
-			"pitch_range", "annual_consumption", "consumption_unit", "competitors", "remarks",
-		],
-		"links": {
-			"plant": "Plant", "application": "Customer Application",
-			"consumption_unit": "Unit", "competitors": "TP Competitor",
-		},
-	},
-	"consumption": {
-		"doctype": "Wheel Consumption",
-		"fields": [
-			"name", "plant", "consumption_type", "application", "quantity", "unit",
-			"frequency", "current_supplier", "remarks",
-		],
-		"links": {
-			"plant": "Plant", "consumption_type": "Consumption Type", "application": "Customer Application",
-			"unit": "Unit", "current_supplier": "TP Competitor",
-		},
-	},
-	"manufacturing": {
-		"doctype": "Manufacturing Details",
-		"fields": ["name", "plant", "manufacturing_type", "process_name", "process_type", "description", "remarks"],
-		"links": {"plant": "Plant"},
-	},
-}
-
-
 def get_customer_card(customer):
 	"""Jinja method for the Customer Card print format."""
 	doc = frappe.get_doc("TP Customer", customer)
-	card = {key: _records(customer, cfg) for key, cfg in TECHNICAL.items()}
+	card = {}
 
 	plants = {str(p.record): p.plant_name for p in doc.plants if p.record}
 	units = _titles("Unit", [r.unit for r in doc.production + doc.turnovers])
@@ -100,39 +61,24 @@ def get_customer_card(customer):
 		for r in doc.turnovers
 	]
 	card["contacts"] = [c for c in doc.contacts if cint(c.is_active)]
-	card["machines"] = [{**m.as_dict(), "plant": _title(plants, m.plant)} for m in doc.machines]
+	# Customer Card Format 2: current wheel usage and machines
+	wheels = doc.get("wheel_specs") or []
+	applications = _titles("Customer Application", [r.application for r in wheels])
+	competitors = _titles("TP Competitor", [r.competitors for r in wheels])
+	wheel_units = _titles("Unit", [r.consumption_unit for r in wheels])
+	card["wheel_specs"] = [
+		{
+			**r.as_dict(),
+			"application_title": _title(applications, r.application),
+			"competitors_title": _title(competitors, r.competitors),
+			"consumption_unit_title": _title(wheel_units, r.consumption_unit),
+		}
+		for r in wheels
+	]
+	card["machines"] = [{**m.as_dict(), "plant": _title(plants, m.plant)} for m in doc.get("machines") or []]
 	card["agents"] = [frappe.utils.get_fullname(a.agent) for a in doc.handled_by]
 	card["principals"] = [p.principal for p in doc.principals]
 	return card
-
-
-def _records(customer, cfg):
-	rows = frappe.get_all(cfg["doctype"], filters={"customer": customer}, fields=cfg["fields"], order_by="creation asc")
-	for field, doctype in cfg["links"].items():
-		titles = _titles(doctype, [r.get(field) for r in rows])
-		for r in rows:
-			r[field + "_title"] = _title(titles, r.get(field))
-	if cfg["doctype"] == "Customer Segment Application":
-		_add_segment_children(rows)
-	return rows
-
-
-def _add_segment_children(rows):
-	"""Applications and competitors of each segment (Table MultiSelect children)."""
-	names = [r.name for r in rows] or [""]
-	children = {}
-	for child, field, doctype in (
-		("Customer Application S", "application_name", "Customer Application"),
-		("Competitor S", "competitor_name", "TP Competitor"),
-	):
-		items = frappe.get_all(child, filters={"parent": ("in", names)}, fields=["parent", field], order_by="idx asc")
-		titles = _titles(doctype, [i.get(field) for i in items])
-		children[child] = items, field, titles
-	for r in rows:
-		apps, app_field, app_titles = children["Customer Application S"]
-		comps, comp_field, comp_titles = children["Competitor S"]
-		r["applications"] = ", ".join(_title(app_titles, i[app_field]) for i in apps if i.parent == r.name)
-		r["competitors"] = ", ".join(_title(comp_titles, i[comp_field]) for i in comps if i.parent == r.name)
 
 
 def _titles(doctype, names):

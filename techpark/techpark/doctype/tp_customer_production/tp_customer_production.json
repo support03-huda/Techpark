@@ -23,8 +23,7 @@
    "read_only": 1,
    "no_copy": 1,
    "in_list_view": 1,
-   "columns": 1,
-   "description": "Filled in when the customer is saved"
+   "columns": 1
   },
   {
    "fieldname": "plant",
@@ -45,9 +44,9 @@
   {
    "fieldname": "production_volume",
    "fieldtype": "Float",
-   "label": "Monthly Qty",
+   "label": "Production Volume",
    "in_list_view": 1,
-   "columns": 1
+   "columns": 2
   },
   {
    "fieldname": "unit",
@@ -61,27 +60,28 @@
    "fieldname": "frequency",
    "fieldtype": "Select",
    "options": "Daily\nWeekly\nMonthly\nQuarterly\nAnnual",
-   "label": "Frequency",
+   "label": "Per",
    "in_list_view": 1,
-   "columns": 1
+   "columns": 1,
+   "default": "Monthly"
   },
   {
    "fieldname": "department",
    "fieldtype": "Link",
    "options": "Customer Department",
-   "label": "Department",
-   "in_list_view": 1,
-   "columns": 2
+   "label": "Department"
   },
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
-   "label": "Remarks"
+   "label": "Remarks",
+   "in_list_view": 1,
+   "columns": 3
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-11-02 12:00:00.000000",
+ "modified": "2026-11-06 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer Production",

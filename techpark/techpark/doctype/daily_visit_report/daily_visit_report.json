@@ -10,6 +10,7 @@
   "visit_time",
   "customer",
   "customer_name",
+  "dvr_stage",
   "contact",
   "contact_designation",
   "contact_phone",
@@ -17,7 +18,6 @@
   "visit_purpose",
   "dvr_type",
   "department",
-  "dvr_stage",
   "column_break_visit",
   "distributor",
   "visited_by",
@@ -26,12 +26,20 @@
   "plant_name",
   "segment_application",
   "section_principal",
+  "principal",
+  "technical_lead",
+  "application",
+  "supplier_product_category",
+  "column_break_principal",
+  "development_status",
+  "sales_status",
+  "spec",
+  "size",
+  "opportunity",
+  "development_done_before",
   "principals",
   "principal_list",
   "principal_summary",
-  "principal",
-  "column_break_principal",
-  "supplier_product_category",
   "section_application",
   "application_potentials",
   "column_break_application",
@@ -94,31 +102,39 @@
    "read_only": 1
   },
   {
-   "description": "Picked from the customer's contacts",
+   "fieldname": "dvr_stage",
+   "fieldtype": "Select",
+   "label": "Stage",
+   "options": "\nDevelopment\nSales\nDevelopment + Sales",
+   "bold": 1,
+   "allow_on_submit": 1,
+   "in_standard_filter": 1
+  },
+  {
    "fieldname": "contact",
    "fieldtype": "Link",
    "label": "Contact Person",
-   "options": "Customer Contact"
+   "options": "Customer Contact",
+   "hidden": 1
   },
   {
-   "depends_on": "contact",
    "fetch_from": "contact.designation",
    "fieldname": "contact_designation",
    "fieldtype": "Data",
    "label": "Designation",
-   "read_only": 1
+   "read_only": 1,
+   "hidden": 1
   },
   {
-   "depends_on": "contact",
    "fetch_from": "contact.phone",
    "fieldname": "contact_phone",
    "fieldtype": "Data",
    "label": "Phone",
    "options": "Phone",
-   "read_only": 1
+   "read_only": 1,
+   "hidden": 1
   },
   {
-   "description": "Name (designation) of the contact; kept in step with Contact Person",
    "fieldname": "contact_person",
    "fieldtype": "Data",
    "hidden": 1,
@@ -128,11 +144,9 @@
   {
    "fieldname": "visit_purpose",
    "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "Visit Purpose",
    "options": "Routine\nTrial\nIssue\nCommercial\nStock\nOrder Follow-up",
-   "reqd": 1
+   "hidden": 1
   },
   {
    "fieldname": "dvr_type",
@@ -150,18 +164,7 @@
    "label": "Department",
    "options": "Sales\nApplication",
    "default": "Sales",
-   "reqd": 1,
-   "in_standard_filter": 1
-  },
-  {
-   "fieldname": "dvr_stage",
-   "fieldtype": "Select",
-   "label": "Stage",
-   "options": "\nDevelopment\nSales\nDevelopment + Sales",
-   "bold": 1,
-   "read_only": 1,
-   "allow_on_submit": 1,
-   "in_standard_filter": 1
+   "hidden": 1
   },
   {
    "fieldname": "column_break_visit",
@@ -207,25 +210,108 @@
    "hidden": 1
   },
   {
-   "description": "The customer line / segment worked on in this visit",
    "fieldname": "segment_application",
    "fieldtype": "Link",
    "label": "Segment / Line",
-   "options": "Customer Segment Application"
+   "options": "Customer Segment Application",
+   "hidden": 1
   },
   {
    "fieldname": "section_principal",
    "fieldtype": "Section Break",
-   "label": "Principals (Development → Sales)"
+   "label": "Application Line",
+   "depends_on": "eval:doc.dvr_stage"
+  },
+  {
+   "fieldname": "principal",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Principal",
+   "options": "Principal",
+   "search_index": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "technical_lead",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "TP Technical Lead",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Data",
+   "label": "Application Name",
+   "bold": 1,
+   "read_only_depends_on": "eval:doc.technical_lead",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "supplier_product_category",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Principal Product Category",
+   "options": "Supplier Product Category",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "column_break_principal",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "development_status",
+   "fieldtype": "Select",
+   "label": "Development Status",
+   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed",
+   "allow_on_submit": 1,
+   "read_only_depends_on": "eval:doc.development_done_before",
+   "depends_on": "eval:doc.dvr_stage != 'Sales'"
+  },
+  {
+   "fieldname": "sales_status",
+   "fieldtype": "Select",
+   "label": "Sales Status",
+   "options": "\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.dvr_stage && doc.dvr_stage != 'Development'"
+  },
+  {
+   "fieldname": "spec",
+   "fieldtype": "Data",
+   "label": "Wheel Spec",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "label": "Size",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "options": "TP Opportunity",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "development_done_before",
+   "fieldtype": "Check",
+   "label": "Trial Successful in an Earlier Visit",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "hidden": 1
   },
   {
    "fieldname": "principals",
    "fieldtype": "Table",
    "label": "Principals",
    "options": "DVR Principal",
-   "reqd": 1,
    "allow_on_submit": 1,
-   "description": "One row per principal discussed. Sales Status opens once the trial is successful for that customer, principal and product category."
+   "hidden": 1
   },
   {
    "fieldname": "principal_list",
@@ -246,52 +332,27 @@
    "allow_on_submit": 1
   },
   {
-   "fieldname": "principal",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Principal",
-   "options": "Principal",
-   "search_index": 1,
-   "read_only": 1,
-   "hidden": 1,
-   "allow_on_submit": 1
+   "fieldname": "section_application",
+   "fieldtype": "Section Break",
+   "hide_border": 1,
+   "hidden": 1
   },
   {
-   "fieldname": "column_break_principal",
+   "fieldname": "application_potentials",
+   "fieldtype": "Text",
+   "label": "Application Details / Potential",
+   "hidden": 1
+  },
+  {
+   "fieldname": "column_break_application",
    "fieldtype": "Column Break",
    "hidden": 1
   },
   {
-   "fieldname": "supplier_product_category",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Supplier Product Category",
-   "options": "Supplier Product Category",
-   "read_only": 1,
-   "hidden": 1,
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "section_application",
-   "fieldtype": "Section Break",
-   "hide_border": 1
-  },
-  {
-   "description": "Machine parameters, trial potential, wheel speed, volume",
-   "fieldname": "application_potentials",
-   "fieldtype": "Text",
-   "label": "Application Details / Potential"
-  },
-  {
-   "fieldname": "column_break_application",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "Competitor performance, pricing or issues seen on the line",
    "fieldname": "competitor_line_activity",
    "fieldtype": "Text",
-   "label": "Competitor Activity on Line"
+   "label": "Competitor Activity on Line",
+   "hidden": 1
   },
   {
    "fieldname": "section_lead",
@@ -301,7 +362,6 @@
   },
   {
    "default": "Prospect",
-   "description": "What happened as a result of this visit? Can be updated after submit as the lead progresses.",
    "fieldname": "lead_status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -369,7 +429,6 @@
    "label": "Next Action"
   },
   {
-   "description": "A follow-up ToDo is created for the employee on submit",
    "fieldname": "next_action_date",
    "fieldtype": "Date",
    "label": "Next Action By"
@@ -417,7 +476,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-07 12:00:00.000000",
+ "modified": "2026-11-06 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

@@ -136,7 +136,7 @@ def _visits_by_stage(visits, since, month_start):
 			+ [{"label": s, "value": n} for s, n in counts.items() if s not in statuses],
 			"by_principal": _group(stage_rows, "principal")[:10],
 			"by_person": _group(stage_visits, "employee_name")[:10],
-			"by_purpose": _group(stage_visits, "visit_purpose"),
+			"by_type": _group(stage_visits, "dvr_type"),
 			"recent": [
 				{
 					"name": v.name, "date": str(v.visit_date), "customer": v.customer_name, "by": v.employee_name,

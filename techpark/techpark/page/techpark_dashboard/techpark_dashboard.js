@@ -189,7 +189,7 @@ class TPDashboard {
 			</div>
 			<div class="tpd-row wide">
 				<div class="tpd-panel"><h4>${__("Latest {0} visits", [__(stage)])}</h4><div class="tpd-stage-recent"></div></div>
-				<div class="tpd-panel"><h4>${__("Purpose of visit")}</h4><div class="tpd-chart tpd-chart-stage-purpose"></div></div>
+				<div class="tpd-panel"><h4>${__("Type of visit")}</h4><div class="tpd-chart tpd-chart-stage-purpose"></div></div>
 			</div>`);
 
 		const delta = s.last_month ? Math.round(((s.this_month - s.last_month) / s.last_month) * 100) : null;
@@ -223,10 +223,10 @@ class TPDashboard {
 		bar(".tpd-chart-stage-status", s.by_status, [color]);
 		bar(".tpd-chart-stage-principal", s.by_principal, [TPD_COLORS.violet]);
 		bar(".tpd-chart-stage-person", s.by_person, [TPD_COLORS.teal]);
-		if (s.by_purpose.length) {
+		if (s.by_type.length) {
 			this.chart(".tpd-chart-stage-purpose", {
 				type: "donut",
-				data: { labels: s.by_purpose.map((r) => __(r.label)), datasets: [{ values: s.by_purpose.map((r) => r.value) }] },
+				data: { labels: s.by_type.map((r) => __(r.label)), datasets: [{ values: s.by_type.map((r) => r.value) }] },
 				colors: TPD_PALETTE,
 			});
 		} else {

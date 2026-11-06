@@ -244,6 +244,7 @@ class TPDevelopmentBoard {
 					supplier_product_category: r.supplier_product_category,
 					spec: r.spec,
 					size: r.size,
+					stage: r.stage,
 				};
 				frappe.new_doc("Daily Visit Report", { customer: r.customer });
 				return;

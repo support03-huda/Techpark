@@ -53,24 +53,27 @@
   "plants",
   "tab_production",
   "production_html",
+  "section_production_table",
   "production",
-  "tab_products",
-  "products_html",
+  "section_abrasive",
+  "abrasive_consumption_cr",
+  "column_break_abrasive",
+  "abrasive_consumption_details",
+  "section_company_profile",
+  "manufacturing_profile",
+  "column_break_company_profile",
+  "heat_treatment",
+  "section_machines",
+  "machines",
+  "section_wheel_specs",
+  "wheel_specs",
   "tab_commercial",
   "commercial_html",
   "turnovers",
   "tab_technical",
   "technical_html",
-  "section_segment_applications",
-  "segment_applications",
-  "section_wheel_specs",
-  "wheel_specs",
-  "section_consumptions",
-  "consumptions",
-  "section_manufacturing_details",
-  "manufacturing_details",
-  "section_machines",
-  "machines",
+  "section_technical_leads",
+  "technical_leads",
   "tab_visits",
   "visits_html",
   "visits"
@@ -83,7 +86,6 @@
   },
   {
    "bold": 1,
-   "description": "Legal / trade name of the customer",
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -106,7 +108,6 @@
    "options": "Company\nIndividual"
   },
   {
-   "description": "Pick or add an industry (Bearing, Automotive, Steel …)",
    "fieldname": "industry_domain",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -120,7 +121,6 @@
    "options": "Organizaton Segment"
   },
   {
-   "description": "Principals this customer works with. Added automatically when a visit (DVR) for a new principal is submitted.",
    "fieldname": "principals",
    "fieldtype": "Table MultiSelect",
    "label": "Principals",
@@ -179,7 +179,6 @@
    "precision": "2"
   },
   {
-   "description": "Turnover of the whole group, if the customer belongs to one",
    "fieldname": "group_turnover_cr",
    "fieldtype": "Float",
    "label": "Group Turnover (₹ Cr)",
@@ -227,7 +226,6 @@
    "label": "Primary Contact"
   },
   {
-   "description": "Filled automatically from the contact marked Primary",
    "fieldname": "primary_contact_name",
    "fieldtype": "Data",
    "label": "Contact Name",
@@ -304,7 +302,6 @@
    "label": "Contacts"
   },
   {
-   "description": "Each row is saved as a Customer Contact (CON-0001 …) so visits can link to the person met.",
    "fieldname": "contacts",
    "fieldtype": "Table",
    "label": "Contacts",
@@ -325,7 +322,6 @@
    "read_only": 1
   },
   {
-   "description": "Set automatically when the status becomes Prospect. The \"Customer in Prospect for 7+ Days\" notification counts from this date.",
    "fieldname": "prospect_since",
    "fieldtype": "Date",
    "label": "Prospect Since",
@@ -366,30 +362,84 @@
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "tab_production",
    "fieldtype": "Tab Break",
-   "label": "Production"
+   "label": "Products Info"
   },
   {
    "fieldname": "production_html",
    "fieldtype": "HTML",
-   "label": "Production"
+   "label": "Products Overview"
+  },
+  {
+   "fieldname": "section_production_table",
+   "fieldtype": "Section Break",
+   "label": "Products Range & Production Volume"
   },
   {
    "fieldname": "production",
    "fieldtype": "Table",
    "label": "Production",
-   "options": "TP Customer Production",
-   "description": "Plants added in the Plants tab can be picked here after saving."
+   "options": "TP Customer Production"
   },
   {
-   "depends_on": "eval:!doc.__islocal",
-   "fieldname": "tab_products",
-   "fieldtype": "Tab Break",
-   "label": "Products"
+   "fieldname": "section_abrasive",
+   "fieldtype": "Section Break",
+   "label": "Abrasive Consumption"
   },
   {
-   "fieldname": "products_html",
-   "fieldtype": "HTML",
-   "label": "Products"
+   "fieldname": "abrasive_consumption_cr",
+   "fieldtype": "Float",
+   "label": "Abrasive Consumption (₹ Cr / Year)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_abrasive",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "abrasive_consumption_details",
+   "fieldtype": "Small Text",
+   "label": "Abrasive Consumption Details"
+  },
+  {
+   "fieldname": "section_company_profile",
+   "fieldtype": "Section Break",
+   "label": "Company Profile"
+  },
+  {
+   "fieldname": "manufacturing_profile",
+   "fieldtype": "Small Text",
+   "label": "Manufacturing"
+  },
+  {
+   "fieldname": "column_break_company_profile",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "heat_treatment",
+   "fieldtype": "Small Text",
+   "label": "Heat Treatment"
+  },
+  {
+   "fieldname": "section_machines",
+   "fieldtype": "Section Break",
+   "label": "Machine Details"
+  },
+  {
+   "fieldname": "machines",
+   "fieldtype": "Table",
+   "label": "Machines",
+   "options": "Customer Machine"
+  },
+  {
+   "fieldname": "section_wheel_specs",
+   "fieldtype": "Section Break",
+   "label": "Current Wheel Usage"
+  },
+  {
+   "fieldname": "wheel_specs",
+   "fieldtype": "Table",
+   "label": "Current Wheel Usage",
+   "options": "TP Customer Wheel Spec"
   },
   {
    "depends_on": "eval:!doc.__islocal",
@@ -412,7 +462,7 @@
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "tab_technical",
    "fieldtype": "Tab Break",
-   "label": "Technical"
+   "label": "Technical Lead"
   },
   {
    "fieldname": "technical_html",
@@ -420,59 +470,15 @@
    "label": "Technical"
   },
   {
-   "fieldname": "section_segment_applications",
+   "fieldname": "section_technical_leads",
    "fieldtype": "Section Break",
-   "label": "Segments & Applications"
+   "label": "Technical Leads (Demand Survey)"
   },
   {
-   "fieldname": "segment_applications",
+   "fieldname": "technical_leads",
    "fieldtype": "Table",
-   "label": "Segments & Applications",
-   "options": "TP Customer Segment"
-  },
-  {
-   "fieldname": "section_wheel_specs",
-   "fieldtype": "Section Break",
-   "label": "Wheel Specifications"
-  },
-  {
-   "fieldname": "wheel_specs",
-   "fieldtype": "Table",
-   "label": "Wheel Specifications",
-   "options": "TP Customer Wheel Spec"
-  },
-  {
-   "fieldname": "section_consumptions",
-   "fieldtype": "Section Break",
-   "label": "Abrasive / Wheel Consumption"
-  },
-  {
-   "fieldname": "consumptions",
-   "fieldtype": "Table",
-   "label": "Abrasive / Wheel Consumption",
-   "options": "TP Customer Consumption"
-  },
-  {
-   "fieldname": "section_manufacturing_details",
-   "fieldtype": "Section Break",
-   "label": "Manufacturing"
-  },
-  {
-   "fieldname": "manufacturing_details",
-   "fieldtype": "Table",
-   "label": "Manufacturing",
-   "options": "TP Customer Manufacturing"
-  },
-  {
-   "fieldname": "section_machines",
-   "fieldtype": "Section Break",
-   "label": "Machine Details"
-  },
-  {
-   "fieldname": "machines",
-   "fieldtype": "Table",
-   "label": "Machines",
-   "options": "Customer Machine"
+   "label": "Technical Leads",
+   "options": "TP Customer Technical Lead"
   },
   {
    "depends_on": "eval:!doc.__islocal",
@@ -495,7 +501,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-03 12:00:00.000000",
+ "modified": "2026-11-06 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

@@ -55,19 +55,8 @@ TABLES = {
 		"doctype": "Customer Turnover",
 		"fields": ["financial_year", "plant", "amount", "unit", "frequency", "remarks"],
 	},
-	"segment_applications": {
-		"label": "Segments & Applications",
-		"child": "TP Customer Segment",
-		"doctype": "Customer Segment Application",
-		"fields": [
-			"address", "segment", "sub_category_line", "monthly_vloume", "unit", "segment_turnover_cr",
-			"department", "application_notes", "remarks",
-		],
-		# read-only Applications / Competitors text (lambda: the function is defined below)
-		"display": lambda names: _segment_display(names),
-	},
 	"wheel_specs": {
-		"label": "Wheel Specifications",
+		"label": "Current Wheel Usage",
 		"child": "TP Customer Wheel Spec",
 		"doctype": "Wheel Specification",
 		"fields": [
@@ -75,20 +64,42 @@ TABLES = {
 			"consumption_unit", "plant", "segment", "competitors", "department", "remarks",
 		],
 	},
-	"consumptions": {
-		"label": "Abrasive / Wheel Consumption",
-		"child": "TP Customer Consumption",
-		"doctype": "Wheel Consumption",
+	"technical_leads": {
+		"label": "Technical Leads",
+		"child": "TP Customer Technical Lead",
+		"doctype": "TP Technical Lead",
 		"fields": [
-			"consumption_type", "application", "quantity", "unit", "frequency", "current_supplier",
-			"plant", "department", "remarks",
+			"principal",
+			"application",
+			"grinding_process",
+			"supplier_product_category",
+			"product",
+			"production_line",
+			"distribution_channel",
+			"contact_person",
+			"progress",
+			"annual_demand_amount",
+			"annual_quantity",
+			"unit_price",
+			"share_noritake",
+			"share_tyrolit",
+			"share_asahi",
+			"share_tvmk",
+			"share_gno",
+			"share_cumi",
+			"share_other",
+			"other_competitors",
+			"machine_maker",
+			"machine_quantity",
+			"wheel_speed",
+			"size_od",
+			"size_t",
+			"size_id",
+			"x_layer",
+			"issue",
+			"action_plan",
+			"remarks",
 		],
-	},
-	"manufacturing_details": {
-		"label": "Manufacturing",
-		"child": "TP Customer Manufacturing",
-		"doctype": "Manufacturing Details",
-		"fields": ["plant", "manufacturing_type", "process_name", "process_type", "description", "department", "remarks"],
 	},
 	"visits": {
 		"label": "Visits",
@@ -253,27 +264,6 @@ def _norm(value):
 	return cstr(value)
 
 
-def _segment_display(names):
-	"""Applications / Competitors of each segment as text for the read-only row columns."""
-	names = [n for n in names if n]
-	if not names:
-		return {}
-	text = {n: {"applications_text": [], "competitors_text": []} for n in names}
-	for child, field, master, title, key in (
-		("Customer Application S", "application_name", "Customer Application", "application_name", "applications_text"),
-		("Competitor S", "competitor_name", "TP Competitor", "competitor_name", "competitors_text"),
-	):
-		rows = frappe.get_all(child, filters={"parent": ("in", names)}, fields=["parent", field], order_by="idx asc")
-		ids = list({r[field] for r in rows if r[field]})
-		titles = {
-			str(m.name): m[title] for m in frappe.get_all(master, filters={"name": ("in", ids or [""])}, fields=["name", title])
-		}
-		for r in rows:
-			if r[field]:
-				text[r.parent][key].append(titles.get(str(r[field]), str(r[field])))
-	return {n: {k: ", ".join(v) for k, v in t.items()} for n, t in text.items()}
-
-
 # ---------------------------------------------------------------------------
 # records -> TP Customer
 # ---------------------------------------------------------------------------
@@ -289,13 +279,16 @@ def on_record_change(doc, method=None):
 		customers.add(before.get("customer"))  # record moved to another customer
 	for customer in customers:
 		if customer and frappe.db.exists("TP Customer", customer):
-			pull_from_records(customer, [TABLE_BY_DOCTYPE[doc.doctype]])
+			if doc.doctype in TABLE_BY_DOCTYPE:
+				pull_from_records(customer, [TABLE_BY_DOCTYPE[doc.doctype]])
 
 
 def pull_from_records(customer, tables=None):
 	"""Rebuild the customer's child tables from the real records."""
 	for table in tables or TABLES:
-		cfg = TABLES[table]
+		cfg = TABLES.get(table)
+		if not cfg:  # an old patch may name a table that is no longer on the form
+			continue
 		submittable = cfg.get("submittable")
 		fields = ["name", *cfg["fields"]] + (["docstatus", "stage_completed"] if submittable else [])
 		filters = {"customer": customer}

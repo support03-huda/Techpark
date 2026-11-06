@@ -4,6 +4,8 @@
 Captures the visit once; demand records are created from it, and
 the next action becomes a ToDo for the employee so the follow-up is tracked.
 
+One application line per visit (since 2026-11-06): its fields are on the form and copied into a
+single hidden DVR Principal row. Older visits may still hold several rows.
 Principal-wise: every principal discussed is a row (DVR Principal) with two stages.
 Development (introduction ... Successful Trial) comes first; the Sales stage (quotation ...
 Order Won / Regularization) opens only once the trial was successful for that customer,
@@ -57,6 +59,13 @@ SALES_FOLLOW_UPS = ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up"
 WON_STATUSES = ("Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization")
 LOST_STATUSES = ("Cancelled", "Trial Failed")
 GENERAL_APPLICATION = "General"
+# One application line per visit: these fields on the visit are copied into its (hidden) principal row,
+# which opportunities, follow-ups and reports read.
+LINE_FIELDS = (
+	"principal", "technical_lead", "application", "supplier_product_category", "spec", "size",
+	"development_status", "sales_status",
+)
+LINE_RESULT_FIELDS = (*LINE_FIELDS, "development_done_before", "opportunity")
 
 # Old single Lead Stage / Status (and the stages used before 2026-11-06) -> (stage, development
 # status, sales status) of a principal row.
@@ -158,6 +167,7 @@ def find_contact(customer, label):
 class DailyVisitReport(Document):
 	def onload(self):
 		self.set_onload("locked", is_locked(self))
+		self.row_to_line()  # visits made before the line moved onto the form
 
 	def validate(self):
 		self.distributor = DISTRIBUTOR
@@ -235,8 +245,25 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def line_to_row(self):
+		"""The visit's Application Line fields -> its first principal row (made if missing)."""
+		if not (self.development_status or self.sales_status or self.technical_lead):
+			return  # no line entered here (e.g. a visit from the customer's Visits tab): add_row_from_summary
+		row = self.principals[0] if self.principals else self.append("principals", {})
+		for field in LINE_FIELDS:
+			row.set(field, self.get(field))
+
+	def row_to_line(self):
+		"""The first principal row's (validated) values -> the visit's Application Line fields."""
+		if not self.get("principals"):
+			return
+		row = self.principals[0]
+		for field in LINE_RESULT_FIELDS:
+			self.set(field, row.get(field))
+
 	def set_principal_rows(self):
 		"""Stage and progress of every principal row, then the summary fields."""
+		self.line_to_row()
 		self.add_row_from_summary()
 		if not self.principals:
 			frappe.throw(_("Add at least one Principal discussed on this visit."))
@@ -247,13 +274,14 @@ class DailyVisitReport(Document):
 			key = (row.application, row.principal, str(row.supplier_product_category or ""), row.spec or "")
 			if key in seen:
 				frappe.throw(
-					_("Principals row {0}: {1} is entered twice.").format(
-						row.idx, " / ".join(p for p in (row.application, row.principal, row.category_name, row.spec) if p)
+					_("{0} is entered twice.").format(
+						" / ".join(p for p in (row.application, row.principal, row.category_name, row.spec) if p)
 					)
 				)
 			seen.add(key)
 			self.set_row_stage(row)
 		self.set_summary()
+		self.row_to_line()
 
 	def add_row_from_summary(self):
 		"""A new visit entered on the customer's Visits tab has only the single Principal /
@@ -278,9 +306,22 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def line_label(self, row):
+		"""How messages name a line: the application on a one-line visit, the row on older multi-line ones."""
+		name = frappe.bold(" · ".join(p for p in (row.application, row.principal) if p) or _("Application line"))
+		return name if len(self.principals) <= 1 else _("Row {0} ({1})").format(row.idx, name)
+
 	def set_application(self, row):
 		"""Every row is one application line (its development is followed as a TP Opportunity).
 		Empty: the visit's Segment / Line, else "General"."""
+		if row.get("technical_lead"):
+			# The row's application is its Technical Lead's, which must be this customer's
+			lead = frappe.db.get_value("TP Technical Lead", row.technical_lead, ["customer", "application"], as_dict=True)
+			if lead and lead.customer != self.customer:
+				frappe.throw(
+					_("Application {0} is a Technical Lead of another customer.").format(frappe.bold(lead.application))
+				)
+			row.application = (lead and lead.application) or row.application
 		for field in ("application", "spec", "size"):
 			row.set(field, (row.get(field) or "").strip() or None)
 		if not row.application:
@@ -302,8 +343,8 @@ class DailyVisitReport(Document):
 		category_principal = frappe.db.get_value("Supplier Product Category", row.supplier_product_category, "principal")
 		if category_principal != row.principal:
 			frappe.throw(
-				_("Principals row {0}: Product Category {1} belongs to {2}, not {3}.").format(
-					row.idx,
+				_("{0}: Product Category {1} belongs to {2}, not {3}.").format(
+					self.line_label(row),
 					frappe.bold(row.category_name or row.supplier_product_category),
 					frappe.bold(category_principal),
 					frappe.bold(row.principal),
@@ -314,25 +355,39 @@ class DailyVisitReport(Document):
 		row.development_done_before = 1 if development_done(
 			self.customer, row.principal, row.supplier_product_category, self.name, row.application, row.spec
 		) else 0
-		if row.development_done_before:
+		visit_stage = self.dvr_stage if self.dvr_stage in ("Development", "Sales") else None
+		# Strict rules for new entries; already-submitted visits keep their recorded rows.
+		strict = self._action != "update_after_submit"
+		if visit_stage == "Sales":
+			# A Sales visit follows lines whose development is complete
 			row.development_status = TRIAL_DONE
+		elif row.development_done_before:
+			row.development_status = TRIAL_DONE
+			if visit_stage == "Development" and strict:
+				frappe.throw(
+					_("{0} already had a Successful Trial, so it is in the Sales stage. Set the visit's Stage to Sales.").format(
+						self.line_label(row)
+					)
+				)
+		if visit_stage == "Sales" and strict and not row.sales_status:
+			frappe.throw(
+				_("{0}: select the Sales Status.").format(self.line_label(row))
+			)
 		if not row.development_status:
 			frappe.throw(
-				_("Principals row {0} ({1}): select the Development Status.").format(row.idx, frappe.bold(row.principal))
+				_("{0}: select the Development Status.").format(self.line_label(row))
 			)
 		row.stage = "Sales" if row.development_status == TRIAL_DONE else "Development"
 		if row.sales_status and row.stage != "Sales":
 			frappe.throw(
-				_("Principals row {0} ({1}): Sales Status {2} can be set only after a Successful Trial.").format(
-					row.idx, frappe.bold(row.principal), frappe.bold(row.sales_status)
+				_("{0}: Sales Status {1} can be set only after a Successful Trial.").format(
+					self.line_label(row), frappe.bold(row.sales_status)
 				)
 			)
 		row.progress = STAGE_PROGRESS.get(row.sales_status or row.development_status, 0)
 		if row.next_action_date and getdate(row.next_action_date) < getdate(self.visit_date):
 			frappe.throw(
-				_("Principals row {0} ({1}): Next Action By cannot be before the Visit Date.").format(
-					row.idx, frappe.bold(row.principal)
-				)
+				_("{0}: Next Action By cannot be before the Visit Date.").format(self.line_label(row))
 			)
 
 	def set_summary(self):
@@ -349,7 +404,9 @@ class DailyVisitReport(Document):
 			)
 			for row in rows
 		)
-		self.dvr_stage = dvr_stage(row.stage for row in rows)
+		if self.dvr_stage not in ("Development", "Sales"):
+			# Not chosen (visits added from the customer's Visits tab) or an older mixed visit
+			self.dvr_stage = dvr_stage(row.stage for row in rows)
 		furthest = max(rows, key=lambda row: row.progress or 0)
 		self.lead_stage = furthest.sales_status or furthest.development_status
 		self.stage_completed = furthest.progress or 0
@@ -368,6 +425,12 @@ class DailyVisitReport(Document):
 		self.activate_customer()
 		self.add_principal_to_customer()
 		sync_visit(self)
+		self.set_line_opportunity()
+
+	def set_line_opportunity(self):
+		"""sync_visit links the row to its TP Opportunity; show it on the visit too."""
+		if self.principals and self.principals[0].opportunity != self.get("opportunity"):
+			self.db_set("opportunity", self.principals[0].opportunity, update_modified=False)
 
 	# The principal rows' statuses are "Allow on Submit": a lead can move forward on a
 	# submitted visit. Frappe skips validate() for these updates, so recompute here.
@@ -377,6 +440,7 @@ class DailyVisitReport(Document):
 	def on_update_after_submit(self):
 		self.activate_customer()
 		sync_visit(self)
+		self.set_line_opportunity()
 
 	def on_cancel(self):
 		for todo in [self.follow_up, *(row.follow_up for row in self.principals)]:
