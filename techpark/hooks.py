@@ -90,6 +90,9 @@ jinja = {
 # before_install = "techpark.install.before_install"
 after_install = "techpark.install.after_install"
 
+# Frappe 16.54 menus: copy workspace_sidebar/techpark.json into the Sidebar on every migrate.
+after_migrate = ["techpark.sidebar.sync_sidebar"]
+
 # Uninstallation
 # ------------
 
