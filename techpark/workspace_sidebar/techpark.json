@@ -13,8 +13,8 @@
    "indent": 0,
    "keep_closed": 0,
    "label": "Dashboard",
-   "link_to": "TechPark",
-   "link_type": "Workspace",
+   "link_to": "techpark-dashboard",
+   "link_type": "Page",
    "show_arrow": 0,
    "type": "Link"
   },
@@ -51,6 +51,18 @@
    "label": "Visits (DVR)",
    "link_to": "Daily Visit Report",
    "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "git-pull-request",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Development Board",
+   "link_to": "techpark-development-board",
+   "link_type": "Page",
    "show_arrow": 0,
    "type": "Link"
   },
@@ -434,7 +446,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-06 14:00:00.000000",
+ "modified": "2026-11-06 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark",

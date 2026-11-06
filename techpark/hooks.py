@@ -15,7 +15,7 @@ add_to_apps_screen = [
 	{
 		"name": "techpark",
 		"title": "TechPark",
-		"route": "/desk/techpark",
+		"route": "/desk/techpark-dashboard",
 		"has_permission": "techpark.permission.has_app_permission",
 	}
 ]

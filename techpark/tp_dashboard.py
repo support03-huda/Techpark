@@ -1,7 +1,8 @@
 # Copyright (c) 2026, Techpark International
-"""Data of the TechPark Dashboard (Frappe UI app at /tp, frontend/).
+"""Data of the TechPark Dashboard page (techpark-dashboard) and the Development Board page
+(techpark-development-board).
 
-One call returns everything the page shows. Counts follow the same rules as the workspace
+One call returns everything a page shows. Counts follow the same rules as the workspace
 number cards (techpark/dashboard.py): get_list applies the record permissions, so a salesperson
 sees their own visits, customers and expenses, managers the whole team.
 """
@@ -82,11 +83,175 @@ def get_dashboard():
 				}
 				for v in visits[:8]
 			],
+			"stages": _visits_by_stage(visits, since, month_start),
 		},
 		"pipeline": _pipeline(),
+		"opportunities": _opportunities(now, visits, month_start),
 		"customers": _customers(),
 		"expenses": _expenses(month_start, since),
 	}
+
+
+def _visits_by_stage(visits, since, month_start):
+	"""Visits tab, one part per stage: the visits with a principal row in that stage (a visit with both
+	stages counts in both), their rows' statuses, principals, people and the latest visits."""
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import DEVELOPMENT_PROGRESS, SALES_PROGRESS
+
+	rows = frappe.get_all(
+		"DVR Principal",
+		filters={"parenttype": "Daily Visit Report", "parent": ("in", [v.name for v in visits] or [""])},
+		fields=["parent", "stage", "development_status", "sales_status", "principal", "application", "opportunity"],
+	)
+	last_month_start = add_months(month_start, -1)
+	out = {}
+	for stage, statuses in (("Development", DEVELOPMENT_PROGRESS), ("Sales", SALES_PROGRESS)):
+		stage_rows = [r for r in rows if r.stage == stage]
+		for r in stage_rows:
+			r.status = (r.sales_status if stage == "Sales" else r.development_status) or "Not set"
+		parents = {r.parent for r in stage_rows}
+		stage_visits = [v for v in visits if v.name in parents]
+		this_month = [v for v in stage_visits if getdate(v.visit_date) >= month_start]
+		month_names = {v.name for v in this_month}
+		counts = {}
+		for r in stage_rows:
+			counts[r.status] = counts.get(r.status, 0) + 1
+		lines_by_visit = {}
+		for r in stage_rows:
+			lines_by_visit.setdefault(r.parent, []).append(
+				{"application": r.application, "principal": r.principal, "status": r.status}
+			)
+		out[stage] = {
+			"total": len(stage_visits),
+			"this_month": len(this_month),
+			"last_month": sum(1 for v in stage_visits if last_month_start <= getdate(v.visit_date) < month_start),
+			"customers_this_month": len({v.customer for v in this_month}),
+			"lines_this_month": len({r.opportunity or (r.parent, r.application, r.principal) for r in stage_rows if r.parent in month_names}),
+			"monthly": _monthly(stage_visits, since, lambda v: 1, "visit_date"),
+			# In the order of the cycle, then anything else
+			"by_status": [{"label": s, "value": counts[s]} for s in statuses if counts.get(s)]
+			+ [{"label": s, "value": n} for s, n in counts.items() if s not in statuses],
+			"by_principal": _group(stage_rows, "principal")[:10],
+			"by_person": _group(stage_visits, "employee_name")[:10],
+			"by_purpose": _group(stage_visits, "visit_purpose"),
+			"recent": [
+				{
+					"name": v.name, "date": str(v.visit_date), "customer": v.customer_name, "by": v.employee_name,
+					"purpose": v.visit_purpose, "lines": lines_by_visit.get(v.name, []),
+				}
+				for v in stage_visits[:10]
+			],
+		}
+	return out
+
+
+OPPORTUNITY_FIELDS = [
+	"name", "customer", "customer_name", "application", "principal", "supplier_product_category", "category_name", "spec", "size",
+	"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
+	"next_action_date", "last_visit", "visits", "remarks",
+]
+IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
+
+
+def _opportunities(now, visits, month_start):
+	"""Application lines: totals, the High-importance open ones and a sales-person table."""
+	opps = frappe.get_list(
+		"TP Opportunity", filters={"visits": (">", 0)}, fields=OPPORTUNITY_FIELDS, limit_page_length=0
+	)
+	open_ = [o for o in opps if o.lead_status in ("Open", "On Hold")]
+	overdue = lambda o: o.next_action_date and getdate(o.next_action_date) < now
+	visits_this_month = {}
+	for v in visits:
+		if getdate(v.visit_date) >= month_start:
+			visits_this_month[v.employee_name] = visits_this_month.get(v.employee_name, 0) + 1
+
+	people = {}
+	for o in opps:
+		name = frappe.utils.get_fullname(o.sales_person) if o.sales_person else "Not set"
+		p = people.setdefault(name, {"name": name, "open": 0, "development": 0, "sales": 0, "won": 0, "lost": 0, "overdue": 0})
+		if o.lead_status in ("Open", "On Hold"):
+			p["open"] += 1
+			p["development" if o.stage == "Development" else "sales"] += 1
+			p["overdue"] += 1 if overdue(o) else 0
+		elif o.lead_status == "Won":
+			p["won"] += 1
+		elif o.lead_status == "Lost":
+			p["lost"] += 1
+	for p in people.values():
+		p["visits"] = visits_this_month.get(p["name"], 0)
+
+	hot = sorted(
+		(o for o in open_ if o.importance == "High"),
+		key=lambda o: (o.next_action_date is None, str(o.next_action_date or "")),
+	)
+	return {
+		"total": len(opps),
+		"open": len(open_),
+		"development": sum(1 for o in open_ if o.stage == "Development"),
+		"sales": sum(1 for o in open_ if o.stage == "Sales"),
+		"won": sum(1 for o in opps if o.lead_status == "Won"),
+		"lost": sum(1 for o in opps if o.lead_status == "Lost"),
+		"high": sum(1 for o in open_ if o.importance == "High"),
+		"overdue": sum(1 for o in open_ if overdue(o)),
+		"hot": [_line(o) for o in hot[:8]],
+		"by_person": sorted(people.values(), key=lambda p: -p["open"]),
+	}
+
+
+def _line(o):
+	return {
+		"name": o.name, "customer": o.customer_name, "application": o.application, "principal": o.principal,
+		"spec": o.spec, "status": o.status, "stage": o.stage, "progress": o.progress,
+		"next_action": o.next_action, "date": str(o.next_action_date) if o.next_action_date else None,
+	}
+
+
+@frappe.whitelist()
+def get_development_board(customer=None, principal=None, sales_person=None, importance=None, show="Open"):
+	"""Development Board: every application line (opportunity) with its customer, grouped on the page."""
+	if not has_app_permission():
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
+		DEVELOPMENT_PROGRESS,
+		SALES_PROGRESS,
+	)
+
+	filters = {"visits": (">", 0)}
+	for field, value in (("customer", customer), ("principal", principal), ("sales_person", sales_person), ("importance", importance)):
+		if value:
+			filters[field] = value
+	if show == "Open":
+		filters["lead_status"] = ("in", ("Open", "On Hold"))
+	elif show in ("Won", "Lost"):
+		filters["lead_status"] = show
+	opps = frappe.get_list("TP Opportunity", filters=filters, fields=OPPORTUNITY_FIELDS, limit_page_length=0)
+
+	customers = {
+		c.name: c
+		for c in frappe.get_all(
+			"TP Customer",
+			filters={"name": ("in", list({o.customer for o in opps}) or [""])},
+			fields=["name", "territory_region", "industry_domain", "customer_status"],
+		)
+	}
+	rows = []
+	for o in opps:
+		c = customers.get(o.customer) or frappe._dict()
+		rows.append(
+			{
+				**o,
+				"region": c.territory_region,
+				"industry": c.industry_domain,
+				"customer_status": c.customer_status,
+				"sales_person_name": frappe.utils.get_fullname(o.sales_person) if o.sales_person else "",
+				"next_action_date": str(o.next_action_date) if o.next_action_date else None,
+				"last_visit": str(o.last_visit) if o.last_visit else None,
+			}
+		)
+	rows.sort(key=lambda r: (IMPORTANCE_ORDER.get(r["importance"], 3), r["customer_name"] or "", r["application"] or ""))
+	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS] + [
+		{"status": s, "stage": "Sales"} for s in SALES_PROGRESS
+	]
+	return {"rows": rows, "statuses": statuses, "today": today()}
 
 
 def _follow_ups(user, team, now):
