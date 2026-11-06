@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "creation": "2026-11-06 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "status",
+  "stage",
+  "visit",
+  "by",
+  "remark"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "in_list_view": 1,
+   "columns": 3
+  },
+  {
+   "fieldname": "stage",
+   "fieldtype": "Data",
+   "label": "Stage",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "visit",
+   "fieldtype": "Link",
+   "label": "Visit",
+   "options": "Daily Visit Report",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "by",
+   "fieldtype": "Link",
+   "label": "By",
+   "options": "User",
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Small Text",
+   "label": "Remark"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-11-06 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "TP Opportunity Log",
+ "istable": 1,
+ "editable_grid": 0
+}

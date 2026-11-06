@@ -314,7 +314,7 @@ CUSTOMERS = [
 			{"days_ago": 20, "purpose": "Trial", "principal": "Noritake", "category": "Super Abrasive (Vitrified)", "status": "Prospect", "stage": "Trial / Sample",
 			 "notes": "Trial of CBN wheel on Line 4 bore grinding. First 300 pcs OK.", "potential": "Wheel speed 60 M/s, 900 wheels/year potential", "competition": "Tyrolit running, price pressure",
 			 "next_action": "Collect trial report", "next_in": 2, "expense": 650},
-			{"days_ago": 3, "purpose": "Commercial", "principal": "Noritake", "category": "Super Abrasive (Vitrified)", "status": "Prospect", "stage": "Quotation Submitted",
+			{"days_ago": 3, "purpose": "Commercial", "principal": "Noritake", "category": "Super Abrasive (Vitrified)", "status": "Prospect", "stage": "Offer Submitted",
 			 "notes": "Submitted offer for bulk order after successful trial.", "next_action": "Follow up on PO", "next_in": 7, "expense": 650},
 		],
 	},
@@ -427,7 +427,7 @@ CUSTOMERS = [
 		"visits": [
 			{"days_ago": 12, "purpose": "Issue", "principal": "Noritake", "category": "Grinding Stone (Vitrified)", "status": "Prospect", "stage": "Technical Discussion",
 			 "notes": "Required Ra 0.15 not achieved with present wheel.", "competition": "Tyrolit wheel on Pomini machine", "next_action": "Recommend 180 grit wheel", "next_in": 2, "expense": 3200},
-			{"days_ago": 4, "purpose": "Commercial", "principal": "Noritake", "category": "Grinding Stone (Vitrified)", "status": "On Hold", "stage": "Quotation Submitted",
+			{"days_ago": 4, "purpose": "Commercial", "principal": "Noritake", "category": "Grinding Stone (Vitrified)", "status": "On Hold", "stage": "Offer Submitted",
 			 "notes": "Offer submitted; customer holding until new plant is ready.", "next_action": "Check plant readiness", "next_in": 30, "expense": 3200},
 		],
 	},

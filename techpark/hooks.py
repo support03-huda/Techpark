@@ -136,14 +136,17 @@ after_install = "techpark.install.after_install"
 
 # A Sales User sees only their own DVRs; managers and admins see all of them.
 # Expenses follow the reporting line (TP Team Member): own, the team's, or all for approvers.
+# Opportunities: a Sales User sees their own (Sales Person, or made by them); managers and admins see all.
 permission_query_conditions = {
 	"Daily Visit Report": "techpark.permission.dvr_query_conditions",
 	"TP Expense": "techpark.permission.expense_query_conditions",
+	"TP Opportunity": "techpark.permission.opportunity_query_conditions",
 }
 
 has_permission = {
 	"Daily Visit Report": "techpark.permission.dvr_has_permission",
 	"TP Expense": "techpark.permission.expense_has_permission",
+	"TP Opportunity": "techpark.permission.own_record_has_permission",
 }
 
 # Refuse changes to entries locked for salespeople.

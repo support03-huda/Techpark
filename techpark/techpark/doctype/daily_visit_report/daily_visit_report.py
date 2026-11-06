@@ -16,42 +16,54 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate, today
 
+from techpark.opportunity import refresh_opportunity, sync_visit
 from techpark.permission import is_locked, is_manager
 
 DISTRIBUTOR = "TP"
 
 # Status -> % of the whole cycle (Development up to 50%, Sales after). Keep in sync with daily_visit_report.js.
+# The client's development cycle (CRM column list / Development Status format, 2026-11-06):
+# enquiry -> sent to the principal -> offer -> trial PO -> sample -> trial -> bulk trial PO -> regularised.
 DEVELOPMENT_PROGRESS = {
-	"Introduction": 10,
-	"Requirement Shared": 20,
-	"Sample / Trial Planned": 30,
+	"Introduction": 5,
+	"Enquiry Received": 10,
+	"Sent to Principal": 15,
+	"Offer Received": 20,
+	"Offer Submitted": 25,
+	"Trial PO Received": 30,
+	"Sample Received": 35,
 	"Trial in Progress": 40,
+	"Retest": 40,
 	"Successful Trial": 50,
 	"Trial Failed": 40,
 }
 SALES_PROGRESS = {
-	"Quotation Submitted": 65,
-	"Negotiation": 80,
-	"Order Won": 100,
+	"Bulk Trial PO": 75,
 	"Regularization": 100,
-	"Order Lost": 50,
 	"On Hold": 50,
+	"Cancelled": 50,
 }
 STAGE_PROGRESS = {**DEVELOPMENT_PROGRESS, **SALES_PROGRESS}
 TRIAL_DONE = "Successful Trial"
-WON_STATUSES = ("Order Won", "Regularization")
-LOST_STATUSES = ("Order Lost", "Trial Failed")
+TRIAL_STATUSES = ("Trial PO Received", "Sample Received", "Trial in Progress", "Retest")
+WON_STATUSES = ("Bulk Trial PO", "Regularization")
+LOST_STATUSES = ("Cancelled", "Trial Failed")
+GENERAL_APPLICATION = "General"
 
-# Old single Lead Stage / Status -> (stage, development status, sales status) of a principal row.
+# Old single Lead Stage / Status (and the stages used before 2026-11-06) -> (stage, development
+# status, sales status) of a principal row.
 OLD_STAGES = {
 	"Introduction": ("Development", "Introduction", None),
-	"Received Enquiry": ("Development", "Requirement Shared", None),
-	"Requirement Shared": ("Development", "Requirement Shared", None),
-	"Technical Discussion": ("Development", "Requirement Shared", None),
+	"Received Enquiry": ("Development", "Enquiry Received", None),
+	"Requirement Shared": ("Development", "Enquiry Received", None),
+	"Technical Discussion": ("Development", "Enquiry Received", None),
+	"Sample / Trial Planned": ("Development", "Trial PO Received", None),
 	"Trial / Sample": ("Development", "Trial in Progress", None),
-	"Quotation Submitted": ("Sales", TRIAL_DONE, "Quotation Submitted"),
-	"Negotiation": ("Sales", TRIAL_DONE, "Negotiation"),
-	"Order Received": ("Sales", TRIAL_DONE, "Order Won"),
+	"Quotation Submitted": ("Development", "Offer Submitted", None),
+	"Negotiation": ("Development", "Offer Submitted", None),
+	"Order Received": ("Sales", TRIAL_DONE, "Bulk Trial PO"),
+	"Order Won": ("Sales", TRIAL_DONE, "Bulk Trial PO"),
+	"Order Lost": ("Sales", TRIAL_DONE, "Cancelled"),
 }
 
 
@@ -65,10 +77,10 @@ def row_from_lead(lead_stage, lead_status):
 	else:
 		stage, development, sales = OLD_STAGES.get(lead_stage, ("Development", "Introduction", None))
 	if lead_status == "Won":
-		stage, development, sales = "Sales", TRIAL_DONE, "Order Won"
+		stage, development, sales = "Sales", TRIAL_DONE, sales if sales in WON_STATUSES else "Bulk Trial PO"
 	elif lead_status == "Lost":
 		if stage == "Sales":
-			sales = "Order Lost"
+			sales = "Cancelled"
 		else:
 			development = "Trial Failed"
 	elif lead_status == "On Hold" and stage == "Sales":
@@ -85,9 +97,9 @@ def dvr_stage(stages):
 
 
 @frappe.whitelist()
-def development_done(customer, principal, supplier_product_category=None, exclude=None):
+def development_done(customer, principal, supplier_product_category=None, exclude=None, application=None, spec=None):
 	"""True when an earlier submitted visit of this customer recorded a successful trial (or already
-	reached the Sales stage) for this principal and product category."""
+	reached the Sales stage) for this application line, principal, product category and spec."""
 	if not (customer and principal):
 		return False
 	return bool(
@@ -98,6 +110,7 @@ def development_done(customer, principal, supplier_product_category=None, exclud
 			join `tabDaily Visit Report` d on d.name = r.parent and r.parenttype = 'Daily Visit Report'
 			where d.docstatus = 1 and d.customer = %(customer)s and d.name != %(exclude)s
 				and r.principal = %(principal)s and ifnull(r.supplier_product_category, '') = %(category)s
+				and ifnull(r.application, '') = %(application)s and ifnull(r.spec, '') = %(spec)s
 				and (r.development_status = %(done)s or r.stage = 'Sales')
 			limit 1
 			""",
@@ -105,6 +118,8 @@ def development_done(customer, principal, supplier_product_category=None, exclud
 				"customer": customer,
 				"principal": principal,
 				"category": supplier_product_category or "",
+				"application": (application or "").strip() or GENERAL_APPLICATION,
+				"spec": (spec or "").strip(),
 				"exclude": exclude or "",
 				"done": TRIAL_DONE,
 			},
@@ -220,11 +235,12 @@ class DailyVisitReport(Document):
 		seen = set()
 		for row in self.principals:
 			self.validate_category(row)
-			key = (row.principal, str(row.supplier_product_category or ""))
+			self.set_application(row)
+			key = (row.application, row.principal, str(row.supplier_product_category or ""), row.spec or "")
 			if key in seen:
 				frappe.throw(
 					_("Principals row {0}: {1} is entered twice.").format(
-						row.idx, " / ".join(p for p in (row.principal, row.category_name) if p)
+						row.idx, " / ".join(p for p in (row.application, row.principal, row.category_name, row.spec) if p)
 					)
 				)
 			seen.add(key)
@@ -254,6 +270,18 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def set_application(self, row):
+		"""Every row is one application line (its development is followed as a TP Opportunity).
+		Empty: the visit's Segment / Line, else "General"."""
+		for field in ("application", "spec", "size"):
+			row.set(field, (row.get(field) or "").strip() or None)
+		if not row.application:
+			row.application = (
+				frappe.db.get_value("Customer Segment Application", self.segment_application, "sub_category_line")
+				if self.segment_application
+				else None
+			) or GENERAL_APPLICATION
+
 	def validate_category(self, row):
 		# Product categories are numbered (autoincrement): the name is what people read.
 		row.category_name = (
@@ -276,7 +304,7 @@ class DailyVisitReport(Document):
 
 	def set_row_stage(self, row):
 		row.development_done_before = 1 if development_done(
-			self.customer, row.principal, row.supplier_product_category, self.name
+			self.customer, row.principal, row.supplier_product_category, self.name, row.application, row.spec
 		) else 0
 		if row.development_done_before:
 			row.development_status = TRIAL_DONE
@@ -305,10 +333,10 @@ class DailyVisitReport(Document):
 		self.principal = rows[0].principal
 		self.supplier_product_category = rows[0].supplier_product_category
 		self.principal_list = ", ".join(dict.fromkeys(row.principal for row in rows))
-		# "Noritake · Super Abrasive: Trial in Progress" per line, for the customer's Visits tab
+		# "Ch-6 O/R Grove · Noritake: Trial in Progress" per line, for the customer's Visits tab
 		self.principal_summary = "\n".join(
 			"{0}: {1}".format(
-				" · ".join(p for p in (row.principal, row.category_name) if p),
+				" · ".join(p for p in (row.application, row.principal, row.category_name) if p),
 				row.sales_status or row.development_status,
 			)
 			for row in rows
@@ -331,6 +359,7 @@ class DailyVisitReport(Document):
 		self.create_follow_up()
 		self.activate_customer()
 		self.add_principal_to_customer()
+		sync_visit(self)
 
 	# The principal rows' statuses are "Allow on Submit": a lead can move forward on a
 	# submitted visit. Frappe skips validate() for these updates, so recompute here.
@@ -339,11 +368,15 @@ class DailyVisitReport(Document):
 
 	def on_update_after_submit(self):
 		self.activate_customer()
+		sync_visit(self)
 
 	def on_cancel(self):
 		for todo in [self.follow_up, *(row.follow_up for row in self.principals)]:
 			if todo and frappe.db.get_value("ToDo", todo, "status") == "Open":
 				frappe.db.set_value("ToDo", todo, "status", "Cancelled")
+		# The opportunities fall back to their latest remaining visit.
+		for name in dict.fromkeys(row.opportunity for row in self.principals if row.opportunity):
+			refresh_opportunity(name)
 
 	def create_follow_up(self):
 		"""A ToDo for the visit's Next Action, and one per principal row with its own Next Action."""

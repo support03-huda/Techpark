@@ -41,18 +41,21 @@ def get_stale_prospects_card(filters=None):
 
 @frappe.whitelist()
 def get_trials_in_progress_card(filters=None):
-	return _lead_card(("Sample / Trial Planned", "Trial in Progress"), stage="Development")
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_STATUSES
+
+	return _lead_card(TRIAL_STATUSES, stage="Development")
 
 
 @frappe.whitelist()
 def get_successful_trials_card(filters=None):
-	"""Trial done, no sales status yet: ready for a quotation."""
+	"""Trial done, no bulk trial PO yet."""
 	return _lead_card(("Successful Trial",), status="Successful Trial")
 
 
 @frappe.whitelist()
 def get_orders_won_card(filters=None):
-	return _lead_card(("Order Won",), status="Order Won")
+	"""Bulk trial PO received (the first order after a successful trial)."""
+	return _lead_card(("Bulk Trial PO",), status="Bulk Trial PO")
 
 
 @frappe.whitelist()

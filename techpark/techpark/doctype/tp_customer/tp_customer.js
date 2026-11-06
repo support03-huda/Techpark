@@ -76,7 +76,7 @@ frappe.ui.form.on("TP Customer Visit", {
 	visits_remove: (frm) => techpark.customer_master.render_visits(frm),
 	visit_date: (frm) => techpark.customer_master.render_visits(frm),
 	lead_status(frm, cdt, cdn) {
-		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Order Won");
+		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Bulk Trial PO");
 		techpark.customer_master.render_visits(frm);
 	},
 	principal(frm, cdt, cdn) {
@@ -477,7 +477,7 @@ techpark.customer_master.render_visits = function (frm) {
 	M.render_principal_status(frm, wrapper.find(".tp-principal-status"), visits);
 };
 
-// Latest Development / Sales status of each principal (and product category) over the visits shown.
+// Latest status of each application line (application + principal + category + spec) over the visits shown.
 techpark.customer_master.render_principal_status = async function (frm, $target, visits) {
 	const dates = Object.fromEntries(visits.filter((v) => v.record).map((v) => [v.record, v.visit_date || ""]));
 	const records = Object.keys(dates);
@@ -486,18 +486,18 @@ techpark.customer_master.render_principal_status = async function (frm, $target,
 		doctype: "DVR Principal",
 		parent: "Daily Visit Report",
 		filters: [["parent", "in", records]],
-		fields: ["parent", "principal", "supplier_product_category", "category_name", "stage", "development_status", "sales_status", "progress"],
+		fields: ["parent", "application", "spec", "opportunity", "principal", "supplier_product_category", "category_name", "stage", "development_status", "sales_status", "progress"],
 		limit_page_length: 0,
 	});
 	const latest = {};
 	for (const r of rows.sort((a, b) => (dates[a.parent] < dates[b.parent] ? 1 : -1))) {
-		const key = `${r.principal}|${r.supplier_product_category || ""}`;
+		const key = `${r.application || ""}|${r.principal}|${r.supplier_product_category || ""}|${r.spec || ""}`;
 		if (!latest[key]) latest[key] = r;
 	}
 	const esc = frappe.utils.escape_html;
 	const color = (s) =>
-		["Order Won", "Regularization"].includes(s) ? "green"
-		: ["Order Lost", "Trial Failed"].includes(s) ? "red"
+		["Bulk Trial PO", "Regularization"].includes(s) ? "green"
+		: ["Cancelled", "Trial Failed"].includes(s) ? "red"
 		: s === "On Hold" ? "gray"
 		: s === "Successful Trial" ? "purple"
 		: "blue";
@@ -505,8 +505,9 @@ techpark.customer_master.render_principal_status = async function (frm, $target,
 		.map((r) => {
 			const status = (r.stage === "Sales" && r.sales_status) || r.development_status || "";
 			return `<tr>
+				<td>${r.opportunity ? `<a href="/desk/tp-opportunity/${encodeURIComponent(r.opportunity)}">${esc(r.application || "")}</a>` : esc(r.application || "")}</td>
 				<td>${esc(r.principal)}</td>
-				<td>${esc(r.category_name || "")}</td>
+				<td>${esc([r.category_name, r.spec].filter(Boolean).join(" · "))}</td>
 				<td>${esc(__(r.stage || ""))}</td>
 				<td><span class="indicator-pill ${color(status)}">${esc(__(status))}</span></td>
 				<td style="text-align:right;">${r.progress || 0}%</td>
@@ -514,9 +515,9 @@ techpark.customer_master.render_principal_status = async function (frm, $target,
 			</tr>`;
 		})
 		.join("");
-	$target.html(`<div class="control-label" style="margin-bottom:6px;">${__("Principal-wise Status")}</div>
+	$target.html(`<div class="control-label" style="margin-bottom:6px;">${__("Application-wise Status")}</div>
 		<div style="overflow-x:auto;"><table class="table table-bordered table-sm" style="font-size:12px; margin:0;">
-			<thead><tr><th>${__("Principal")}</th><th>${__("Product Category")}</th><th>${__("Stage")}</th>
+			<thead><tr><th>${__("Application / Line")}</th><th>${__("Principal")}</th><th>${__("Category · Spec")}</th><th>${__("Stage")}</th>
 				<th>${__("Status")}</th><th style="text-align:right;">${__("Progress")}</th><th>${__("Last Visit")}</th></tr></thead>
 			<tbody>${body}</tbody>
 		</table></div>`);

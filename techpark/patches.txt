@@ -32,3 +32,7 @@ techpark.patches.fill_dvr_stage
 techpark.patches.customer_details_from_plant
 techpark.patches.sync_techpark_sidebar
 techpark.patches.set_login_logo
+techpark.patches.opportunities_from_visits
+techpark.patches.sync_techpark_sidebar #2026-11-06 opportunities
+techpark.patches.remove_quotation_follow_up
+techpark.patches.sync_techpark_sidebar #2026-11-06 without quotations

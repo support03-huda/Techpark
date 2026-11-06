@@ -71,6 +71,29 @@ def dvr_has_permission(doc, ptype=None, user=None):
 	return not (ptype in LOCKED_PTYPES and is_locked(doc, user))
 
 
+# Field naming the salesperson a record belongs to (besides its owner).
+OWN_FIELDS = {"TP Opportunity": "sales_person"}
+
+
+def _own_conditions(doctype, user):
+	user = user or frappe.session.user
+	if is_manager(user):
+		return ""
+	user = frappe.db.escape(user)
+	return f"(`tab{doctype}`.`{OWN_FIELDS[doctype]}` = {user} or `tab{doctype}`.owner = {user})"
+
+
+def opportunity_query_conditions(user=None, doctype=None):
+	return _own_conditions("TP Opportunity", user)
+
+
+def own_record_has_permission(doc, ptype=None, user=None):
+	user = user or frappe.session.user
+	if is_manager(user) or ptype == "create" or doc.is_new():
+		return True
+	return user in (doc.get(OWN_FIELDS[doc.doctype]), doc.owner)
+
+
 def is_expense_admin(user=None):
 	user = user or frappe.session.user
 	return user == "Administrator" or bool(EXPENSE_ADMIN_ROLES & set(frappe.get_roles(user)))

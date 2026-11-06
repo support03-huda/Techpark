@@ -1,21 +1,16 @@
 # Copyright (c) 2026, Techpark International
-"""Where each application stands, principal-wise: one row per customer, segment / line application,
-principal and product category, taken from its latest principal row on a Visit Report (Development
-stage up to the Successful Trial, then the Sales stage). Salespeople see only their own visits
-(DVR permissions)."""
+"""Where each development stands: one row per opportunity (customer + application / line + principal +
+wheel spec), like the client's Development Status and Sales Follow-up sheets. The status is the line's
+latest submitted visit (techpark/opportunity.py). Salespeople see their own opportunities."""
 
 import frappe
 from frappe import _
-from frappe.utils import date_diff, getdate, today
+from frappe.utils import getdate, today
 
-from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
-	LOST_STATUSES,
-	STAGE_PROGRESS,
-	WON_STATUSES,
-)
+from techpark.opportunity import follow_up_state
+from techpark.techpark.doctype.daily_visit_report.daily_visit_report import STAGE_PROGRESS
 
-# Follow-up due within this many days counts as "Due Soon".
-DUE_SOON_DAYS = 3
+IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
 
 
 def execute(filters=None):
@@ -26,152 +21,112 @@ def execute(filters=None):
 
 def get_columns():
 	return [
-		{"fieldname": "customer", "label": _("Customer Code"), "fieldtype": "Link", "options": "TP Customer", "width": 105},
-		{"fieldname": "customer_name", "label": _("Customer"), "fieldtype": "Data", "width": 190},
-		{"fieldname": "application", "label": _("Application / Line"), "fieldtype": "Data", "width": 190},
-		{"fieldname": "principal", "label": _("Principal"), "fieldtype": "Link", "options": "Principal", "width": 100},
-		{"fieldname": "supplier_product_category", "label": _("Product Category"), "fieldtype": "Data", "width": 160},
+		{"fieldname": "opportunity", "label": _("Opportunity"), "fieldtype": "Link", "options": "TP Opportunity", "width": 105},
+		{"fieldname": "salesperson", "label": _("Sales Person"), "fieldtype": "Data", "width": 130},
+		{"fieldname": "region", "label": _("Region"), "fieldtype": "Data", "width": 100},
+		{"fieldname": "customer_name", "label": _("Customer"), "fieldtype": "Data", "width": 180},
+		{"fieldname": "industry", "label": _("Industry"), "fieldtype": "Data", "width": 110},
+		{"fieldname": "application", "label": _("Application / Line"), "fieldtype": "Data", "width": 180},
+		{"fieldname": "principal", "label": _("Principal"), "fieldtype": "Link", "options": "Principal", "width": 95},
+		{"fieldname": "spec", "label": _("Wheel Spec"), "fieldtype": "Data", "width": 150},
+		{"fieldname": "size", "label": _("Size"), "fieldtype": "Data", "width": 100},
+		{"fieldname": "importance", "label": _("Importance"), "fieldtype": "Data", "width": 90},
 		{"fieldname": "stage", "label": _("Stage"), "fieldtype": "Data", "width": 100},
-		{"fieldname": "lead_stage", "label": _("Status"), "fieldtype": "Data", "width": 150},
-		{"fieldname": "stage_completed", "label": _("Progress"), "fieldtype": "Percent", "width": 90},
-		{"fieldname": "lead_status", "label": _("Lead Status"), "fieldtype": "Data", "width": 95},
-		{"fieldname": "last_visit", "label": _("Last Visit"), "fieldtype": "Date", "width": 100},
-		{"fieldname": "dvr_type", "label": _("Last Contact"), "fieldtype": "Data", "width": 100},
-		{"fieldname": "visits", "label": _("Visits"), "fieldtype": "Int", "width": 65},
+		{"fieldname": "lead_stage", "label": _("Present Status"), "fieldtype": "Data", "width": 140},
+		{"fieldname": "stage_completed", "label": _("Progress"), "fieldtype": "Percent", "width": 85},
 		{"fieldname": "next_action", "label": _("Next Action"), "fieldtype": "Data", "width": 220},
 		{"fieldname": "next_action_date", "label": _("Next Action By"), "fieldtype": "Date", "width": 110},
 		{"fieldname": "follow_up", "label": _("Follow-up"), "fieldtype": "Data", "width": 95},
-		{"fieldname": "salesperson", "label": _("Salesperson"), "fieldtype": "Data", "width": 140},
+		{"fieldname": "last_visit", "label": _("Last Visit"), "fieldtype": "Date", "width": 100},
+		{"fieldname": "visits", "label": _("Visits"), "fieldtype": "Int", "width": 65},
+		{"fieldname": "lead_status", "label": _("Result"), "fieldtype": "Data", "width": 80},
+		{"fieldname": "remarks", "label": _("Status / Notes"), "fieldtype": "Data", "width": 220},
+		{"fieldname": "customer", "label": _("Customer Code"), "fieldtype": "Link", "options": "TP Customer", "width": 105},
 		{"fieldname": "dvr", "label": _("Latest Visit"), "fieldtype": "Link", "options": "Daily Visit Report", "width": 150},
 	]
 
 
-def row_lead_status(status):
-	if status in WON_STATUSES:
-		return "Won"
-	if status in LOST_STATUSES:
-		return "Lost"
-	return "On Hold" if status == "On Hold" else "Prospect"
-
-
 def get_data(filters):
-	conditions = {"docstatus": ("<", 2)}
-	for field in ("customer", "visited_by", "department"):
+	conditions = {"visits": (">", 0)}
+	for field, column in (
+		("customer", "customer"), ("principal", "principal"), ("visited_by", "sales_person"),
+		("stage", "stage"), ("status", "status"), ("lead_status", "lead_status"), ("importance", "importance"),
+	):
 		if filters.get(field):
-			conditions[field] = filters[field]
+			conditions[column] = filters[field]
+	if filters.open_only:
+		conditions["lead_status"] = ("not in", ("Won", "Lost"))
 
-	# get_list applies the DVR permissions, so a salesperson sees only their own visits.
-	visits = {
-		v.name: v
-		for v in frappe.get_list(
-			"Daily Visit Report",
-			filters=conditions,
-			fields=[
-				"name", "customer", "customer_name", "segment_application", "plant_name", "visit_date", "dvr_type",
-				"next_action", "next_action_date", "visited_by", "follow_up", "creation",
-			],
-			limit_page_length=0,
+	# get_list applies the permissions: a salesperson sees only their own opportunities.
+	opportunities = frappe.get_list(
+		"TP Opportunity",
+		filters=conditions,
+		fields=[
+			"name", "customer", "customer_name", "application", "principal", "category_name", "spec", "size",
+			"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
+			"next_action_date", "follow_up", "last_visit", "last_dvr", "visits", "remarks",
+		],
+		limit_page_length=0,
+	)
+	customers = {
+		c.name: c
+		for c in frappe.get_all(
+			"TP Customer",
+			filters={"name": ("in", list({o.customer for o in opportunities}) or [""])},
+			fields=["name", "territory_region", "industry_domain"],
 		)
 	}
-	row_filters = {"parenttype": "Daily Visit Report", "parent": ("in", list(visits) or [""])}
-	if filters.get("principal"):
-		row_filters["principal"] = filters.principal
-	principal_rows = frappe.get_all(
-		"DVR Principal",
-		filters=row_filters,
-		fields=["parent", "principal", "supplier_product_category", "category_name", "stage", "development_status", "sales_status", "progress"],
-	)
-	# Newest visit first, so the first row seen per application is its latest.
-	principal_rows.sort(key=lambda r: (visits[r.parent].visit_date, visits[r.parent].creation), reverse=True)
-
-	latest, counts = {}, {}
-	for r in principal_rows:
-		v = visits[r.parent]
-		key = (v.customer, v.segment_application or v.plant_name, r.principal, r.supplier_product_category)
-		counts[key] = counts.get(key, 0) + 1
-		latest.setdefault(key, (v, r))
-
-	lines = application_names({v.segment_application for v, r in latest.values() if v.segment_application})
 	open_todos = set(
 		frappe.get_all(
 			"ToDo",
-			filters={"name": ("in", [v.follow_up for v, r in latest.values() if v.follow_up] or [""]), "status": "Open"},
+			filters={"name": ("in", [o.follow_up for o in opportunities if o.follow_up] or [""]), "status": "Open"},
 			pluck="name",
 		)
 	)
-
+	now = getdate(today())
 	rows = []
-	for key, (v, r) in latest.items():
-		status = (r.stage == "Sales" and r.sales_status) or r.development_status
-		lead_status = row_lead_status(status)
-		if filters.lead_status and lead_status != filters.lead_status:
-			continue
-		if filters.stage and r.stage != filters.stage:
-			continue
-		if filters.status and status != filters.status:
-			continue
-		if filters.open_only and lead_status in ("Won", "Lost"):
-			continue
+	for o in opportunities:
+		customer = customers.get(o.customer) or frappe._dict()
 		rows.append(
 			{
-				"customer": v.customer,
-				"customer_name": v.customer_name,
-				"application": lines.get(v.segment_application) or "",
-				"plant_name": v.plant_name,
-				"principal": r.principal,
-				"supplier_product_category": r.category_name or r.supplier_product_category,
-				"stage": r.stage,
-				"lead_stage": status,
-				"stage_completed": r.progress or STAGE_PROGRESS.get(status, 0),
-				"lead_status": lead_status,
-				"last_visit": v.visit_date,
-				"dvr_type": v.dvr_type,
-				"visits": counts[key],
-				"next_action": v.next_action,
-				"next_action_date": v.next_action_date,
-				"follow_up": follow_up_state(v, open_todos),
-				"salesperson": frappe.utils.get_fullname(v.visited_by) if v.visited_by else "",
-				"dvr": v.name,
+				"opportunity": o.name,
+				"customer": o.customer,
+				"customer_name": o.customer_name,
+				"region": customer.territory_region,
+				"industry": customer.industry_domain,
+				"application": o.application,
+				"principal": o.principal,
+				"supplier_product_category": o.category_name,
+				"spec": o.spec,
+				"size": o.size,
+				"importance": o.importance,
+				"stage": o.stage,
+				"lead_stage": o.status,
+				"stage_completed": o.progress or STAGE_PROGRESS.get(o.status, 0),
+				"lead_status": o.lead_status,
+				"last_visit": o.last_visit,
+				"visits": o.visits,
+				"next_action": o.next_action,
+				"next_action_date": o.next_action_date,
+				"follow_up": follow_up_state(o, open_todos, now),
+				"salesperson": frappe.utils.get_fullname(o.sales_person) if o.sales_person else "",
+				"remarks": o.remarks,
+				"dvr": o.last_dvr,
 			}
 		)
-	rows.sort(key=lambda r: (r["customer_name"] or "", r["application"], r["principal"] or ""))
+	rows.sort(key=lambda r: (IMPORTANCE_ORDER.get(r["importance"], 3), r["customer_name"] or "", r["application"] or ""))
 	return rows
 
 
-def follow_up_state(visit, open_todos):
-	"""Overdue / Due Soon / Planned while the follow-up is open; empty when done or none."""
-	if not visit.next_action_date or (visit.follow_up and visit.follow_up not in open_todos):
-		return ""
-	days = date_diff(getdate(visit.next_action_date), today())
-	if days < 0:
-		return _("Overdue")
-	return _("Due Soon") if days <= DUE_SOON_DAYS else _("Planned")
-
-
-def application_names(names):
-	"""Segment / line application -> "Segment – Line"."""
-	if not names:
-		return {}
-	result = {}
-	for s in frappe.get_all(
-		"Customer Segment Application",
-		filters={"name": ("in", list(names))},
-		fields=["name", "segment", "sub_category_line"],
-	):
-		segment = frappe.db.get_value("Product Segment", s.segment, "segment_name") if s.segment else ""
-		result[s.name] = " – ".join(p for p in (segment, s.sub_category_line) if p) or s.name
-	return result
-
-
 def get_chart(rows):
-	"""Applications at each status (latest status only, so one lead counts once), Development then Sales."""
+	"""Opportunities at each status (Development then Sales)."""
 	stages = [s for s in STAGE_PROGRESS if any(r["lead_stage"] == s for r in rows)]
 	if not stages:
 		return None
 	return {
 		"data": {
 			"labels": stages,
-			"datasets": [{"name": _("Applications"), "values": [sum(r["lead_stage"] == s for r in rows) for s in stages]}],
+			"datasets": [{"name": _("Opportunities"), "values": [sum(r["lead_stage"] == s for r in rows) for s in stages]}],
 		},
 		"type": "bar",
 		"colors": ["#2490ef"],
