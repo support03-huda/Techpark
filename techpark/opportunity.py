@@ -110,8 +110,44 @@ def refresh_opportunity(name):
 		doc.sales_person = latest.visited_by
 	if latest.get("size"):
 		doc.size = latest.size
+	set_milestones(doc, rows)
 	doc.flags.ignore_permissions = True
 	doc.save()
+
+
+# Visit status -> value of the Samples / Trials / Bulk Trials PO / Regularised columns (the client's
+# Development Status sheet). The latest matching visit wins.
+MILESTONES = {
+	"samples": {"Sample Received": "Received"},
+	"trials": {
+		"Trial PO Received": "To Try",
+		"Sample Received": "To Try",
+		"Trial in Progress": "In Progress",
+		"Retest": "In Progress",
+		"Successful Trial": "Successful",
+		"Trial Failed": "Failed",
+	},
+	"bulk_trial_po": {"Bulk Trial PO": "Received"},
+	"regularised": {"Regularization": "Regularised"},
+}
+
+
+def set_milestones(doc, rows):
+	"""Fill the milestone columns from the visits. A value entered by hand that the visits cannot give
+	(Supplied, Not Tried, Cost Problem ...) is kept, except that a regularisation always shows."""
+	found = {}
+	for r in rows:
+		status = r.sales_status or r.development_status
+		for field, mapping in MILESTONES.items():
+			if status in mapping:
+				found[field] = mapping[status]
+		# In the Sales stage the trial was successful (also when a visit skipped the trial status).
+		if r.stage == "Sales" and found.get("trials") != "Failed":
+			found["trials"] = "Successful"
+	for field, value in found.items():
+		current = doc.get(field)
+		if not current or current in MILESTONES[field].values() or value == "Regularised":
+			doc.set(field, value)
 
 
 def follow_up_state(opportunity, open_todos, today):

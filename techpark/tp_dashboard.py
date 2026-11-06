@@ -25,6 +25,10 @@ PIPELINE = [
 	"Trial in Progress",
 	"Successful Trial",
 	"Bulk Trial PO",
+	"Enquiry Follow-up",
+	"Order Follow-up",
+	"Delivery Follow-up",
+	"Payment Follow-up",
 	"Regularization",
 ]
 EXPENSE_PENDING = ("Pending Manager", "Pending Admin")
@@ -147,7 +151,7 @@ def _visits_by_stage(visits, since, month_start):
 OPPORTUNITY_FIELDS = [
 	"name", "customer", "customer_name", "application", "principal", "supplier_product_category", "category_name", "spec", "size",
 	"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
-	"next_action_date", "last_visit", "visits", "remarks",
+	"next_action_date", "last_visit", "visits", "remarks", "invoice_oc", "samples", "trials", "bulk_trial_po", "regularised",
 ]
 IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
 
@@ -326,6 +330,8 @@ def _pipeline():
 		"successful": counts["Successful Trial"],
 		"won": counts["Bulk Trial PO"],
 		"regularization": counts["Regularization"],
+		# Sales cycle follow-ups: lines waiting on an enquiry / order / delivery / payment
+		"follow_ups": [{"status": s, "value": counts[s]} for s in ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")],
 	}
 
 

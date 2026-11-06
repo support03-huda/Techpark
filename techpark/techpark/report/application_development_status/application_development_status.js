@@ -25,6 +25,10 @@ frappe.query_reports["Application Development Status"] = {
 				"Successful Trial",
 				"Trial Failed",
 				"Bulk Trial PO",
+				"Enquiry Follow-up",
+				"Order Follow-up",
+				"Delivery Follow-up",
+				"Payment Follow-up",
 				"Regularization",
 				"On Hold",
 				"Cancelled",
@@ -42,6 +46,15 @@ frappe.query_reports["Application Development Status"] = {
 		}
 		if (column.fieldname === "stage" && data && data.stage) {
 			value = `<span class="indicator-pill ${data.stage === "Sales" ? "green" : "blue"}">${value}</span>`;
+		}
+		// Milestone columns coloured like the client's Development Status sheet
+		const milestone = {
+			Successful: "green", Regularised: "green", Received: "blue", Supplied: "blue", "Received / Sent": "blue",
+			"Can Use as Samples": "blue", "In Progress": "orange", "To Try": "orange", Failed: "red",
+			"Cost Problem": "red", "Not Regularised": "red", "Not Tried": "gray",
+		};
+		if (["samples", "trials", "bulk_trial_po", "regularised"].includes(column.fieldname) && data && data[column.fieldname]) {
+			value = `<span class="indicator-pill ${milestone[data[column.fieldname]] || "gray"}">${value}</span>`;
 		}
 		if (column.fieldname === "importance" && data && data.importance) {
 			const color = { High: "red", Medium: "orange", Low: "gray" }[data.importance];

@@ -121,6 +121,8 @@ class TPDashboard {
 		const panes = {
 			today: `
 				<div class="tpd-grid tpd-action"></div>
+				<div class="tpd-section">${__("Sales follow-ups")}<span class="tpd-muted">${__("lines at each follow-up of the sales cycle")}</span></div>
+				<div class="tpd-grid tpd-sales-fu"></div>
 				<div class="tpd-row">
 					<div class="tpd-panel"><h4>${__("Open follow-ups")}<span class="tpd-muted">${__("earliest first")}</span></h4><div class="tpd-follow"></div></div>
 					<div class="tpd-panel"><h4>${__("High-importance lines")}<span class="tpd-muted">${__("open")}</span></h4><div class="tpd-hot"></div></div>
@@ -154,6 +156,7 @@ class TPDashboard {
 		this.$body.find(".tpd-pane").html(panes[key] || "");
 		// Each block draws only when its place is on the page.
 		this.render_action(d);
+		this.render_sales_follow_ups(d.pipeline.follow_ups || []);
 		this.render_follow_ups(d.follow_ups.list);
 		this.render_hot(d.opportunities.hot);
 		this.render_funnel(d);
@@ -272,6 +275,19 @@ class TPDashboard {
 			[__("Prospects Waiting"), f.stale_prospects, __("prospect for {0}+ days", [f.stale_days]), TPD_COLORS.violet, () => frappe.set_route("List", "TP Customer", { customer_status: "Prospect" })],
 			[__("Lines Overdue"), d.opportunities.overdue, __("next action date passed"), TPD_COLORS.maroon, () => frappe.set_route("techpark-development-board")],
 		]);
+	}
+
+	render_sales_follow_ups(rows) {
+		const info = {
+			"Enquiry Follow-up": [__("enquiry to follow up"), TPD_COLORS.blue],
+			"Order Follow-up": [__("order to follow up"), TPD_COLORS.orange],
+			"Delivery Follow-up": [__("delivery to follow up"), TPD_COLORS.teal],
+			"Payment Follow-up": [__("payment to collect"), TPD_COLORS.red],
+		};
+		this.kpis(".tpd-sales-fu", rows.map((r) => [
+			__(r.status), r.value, (info[r.status] || [""])[0], (info[r.status] || [, TPD_COLORS.slate])[1],
+			() => this.report({ status: r.status }),
+		]));
 	}
 
 	list(selector, rows, render, open, empty) {

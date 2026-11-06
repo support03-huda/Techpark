@@ -32,6 +32,12 @@
   "last_dvr",
   "first_visit",
   "visits",
+  "section_milestones",
+  "samples",
+  "trials",
+  "column_break_milestones",
+  "bulk_trial_po",
+  "regularised",
   "section_notes",
   "remarks",
   "hold_cancel_reason",
@@ -155,7 +161,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nRegularization\nOn Hold\nCancelled",
+   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
    "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
@@ -229,6 +235,43 @@
    "read_only": 1
   },
   {
+   "fieldname": "section_milestones",
+   "fieldtype": "Section Break",
+   "label": "Development Status",
+   "description": "Like the client's Development Status sheet. Filled from the visits; Supplied, Not Tried, Cost Problem etc. can be set here."
+  },
+  {
+   "fieldname": "samples",
+   "fieldtype": "Select",
+   "label": "Samples",
+   "options": "\nReceived\nSupplied\nReceived / Sent\nCan Use as Samples",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "trials",
+   "fieldtype": "Select",
+   "label": "Trials",
+   "options": "\nTo Try\nIn Progress\nSuccessful\nFailed\nNot Tried",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_milestones",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bulk_trial_po",
+   "fieldtype": "Select",
+   "label": "Bulk Trials PO",
+   "options": "\nReceived\nSuccessful\nFailed"
+  },
+  {
+   "fieldname": "regularised",
+   "fieldtype": "Select",
+   "label": "Regularised",
+   "options": "\nRegularised\nCost Problem\nNot Regularised",
+   "in_standard_filter": 1
+  },
+  {
    "fieldname": "section_notes",
    "fieldtype": "Section Break",
    "label": "Notes"
@@ -268,7 +311,7 @@
    "group": "Visits"
   }
  ],
- "modified": "2026-11-06 14:00:00.000000",
+ "modified": "2026-11-07 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",

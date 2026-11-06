@@ -496,7 +496,8 @@ techpark.customer_master.render_principal_status = async function (frm, $target,
 	}
 	const esc = frappe.utils.escape_html;
 	const color = (s) =>
-		["Bulk Trial PO", "Regularization"].includes(s) ? "green"
+		["Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization"].includes(s) ? "green"
+		: s === "Enquiry Follow-up" ? "blue"
 		: ["Cancelled", "Trial Failed"].includes(s) ? "red"
 		: s === "On Hold" ? "gray"
 		: s === "Successful Trial" ? "purple"

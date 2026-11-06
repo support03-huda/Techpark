@@ -179,6 +179,21 @@ class TPDevelopmentBoard {
 		});
 	}
 
+	// Samples / Trials / Bulk Trials PO / Regularised, like the client's Development Status sheet
+	milestones_html(r) {
+		const color = {
+			Successful: "green", Regularised: "green", Received: "blue", Supplied: "blue", "Received / Sent": "blue",
+			"Can Use as Samples": "blue", "In Progress": "orange", "To Try": "orange", Failed: "red",
+			"Cost Problem": "red", "Not Regularised": "red", "Not Tried": "gray",
+		};
+		const pills = [
+			[__("Samples"), r.samples], [__("Trials"), r.trials], [__("Bulk PO"), r.bulk_trial_po], [__("Regularised"), r.regularised],
+		]
+			.filter(([, v]) => v)
+			.map(([label, v]) => `<span class="tpd-pill ${color[v] || "gray"}" title="${this.esc(label)}">${this.esc(label)}: ${this.esc(__(v))}</span>`);
+		return pills.length ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px">${pills.join("")}</div>` : "";
+	}
+
 	line(r, order) {
 		const color = TPB_RESULT[r.lead_status] ? TPB_RESULT[r.lead_status][1] : TPB_STAGE_COLOR[r.stage] || "#64748b";
 		const cur = order.indexOf(r.status);
@@ -205,6 +220,7 @@ class TPDevelopmentBoard {
 			<div>
 				<div class="status" style="color:${color}">${this.esc(__(r.status || __("No status")))} ${result}</div>
 				<div class="tpd-steps">${steps}</div>
+				${this.milestones_html(r)}
 			</div>
 			<div>
 				<div class="next" title="${this.esc(r.next_action || "")}">${this.esc(r.next_action || __("No next action"))}</div>

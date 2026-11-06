@@ -18,7 +18,11 @@ techpark.dvr.STAGE_PROGRESS = {
 	Retest: 40,
 	"Successful Trial": 50,
 	"Trial Failed": 40,
-	"Bulk Trial PO": 75,
+	"Bulk Trial PO": 70,
+	"Enquiry Follow-up": 75,
+	"Order Follow-up": 80,
+	"Delivery Follow-up": 85,
+	"Payment Follow-up": 90,
 	Regularization: 100,
 	"On Hold": 50,
 	Cancelled: 50,
@@ -242,7 +246,7 @@ techpark.dvr.render_stage = function (frm) {
 		return;
 	}
 	const color = (status) =>
-		["Bulk Trial PO", "Regularization"].includes(status) ? "var(--green-500)"
+		["Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization"].includes(status) ? "var(--green-500)"
 		: ["Cancelled", "Trial Failed"].includes(status) ? "var(--red-500)"
 		: status === "On Hold" ? "var(--gray-500)"
 		: "var(--blue-500)";

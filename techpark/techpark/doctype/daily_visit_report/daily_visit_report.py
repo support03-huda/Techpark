@@ -37,8 +37,14 @@ DEVELOPMENT_PROGRESS = {
 	"Successful Trial": 50,
 	"Trial Failed": 40,
 }
+# Sales cycle after the trial (CRM column list): the bulk trial PO, then the enquiry / order / delivery /
+# payment follow-ups of the regular business; each follow-up's Next Action is its reminder.
 SALES_PROGRESS = {
-	"Bulk Trial PO": 75,
+	"Bulk Trial PO": 70,
+	"Enquiry Follow-up": 75,
+	"Order Follow-up": 80,
+	"Delivery Follow-up": 85,
+	"Payment Follow-up": 90,
 	"Regularization": 100,
 	"On Hold": 50,
 	"Cancelled": 50,
@@ -46,7 +52,9 @@ SALES_PROGRESS = {
 STAGE_PROGRESS = {**DEVELOPMENT_PROGRESS, **SALES_PROGRESS}
 TRIAL_DONE = "Successful Trial"
 TRIAL_STATUSES = ("Trial PO Received", "Sample Received", "Trial in Progress", "Retest")
-WON_STATUSES = ("Bulk Trial PO", "Regularization")
+SALES_FOLLOW_UPS = ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")
+# An order is in: the customer is buying (an enquiry follow-up is not an order yet).
+WON_STATUSES = ("Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization")
 LOST_STATUSES = ("Cancelled", "Trial Failed")
 GENERAL_APPLICATION = "General"
 

@@ -320,7 +320,7 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Lead Stage",
-   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nRegularization\nOn Hold\nCancelled",
+   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
    "allow_on_submit": 1,
    "read_only": 1
   },
@@ -417,7 +417,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-06 12:00:00.000000",
+ "modified": "2026-11-07 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
