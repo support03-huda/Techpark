@@ -194,7 +194,7 @@ doc_events = {
 	"Customer Turnover": {**_customer_tab_sync, **_default_plant},
 	"TP Technical Lead": _customer_tab_sync,
 	"Customer Segment Application": _default_plant,
-	"Wheel Specification": {**_customer_tab_sync, **_default_plant},
+	"Wheel Specification": _default_plant,
 	"Wheel Consumption": _default_plant,
 	"Manufacturing Details": _default_plant,
 	"Daily Visit Report": {

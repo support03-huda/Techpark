@@ -36,7 +36,6 @@ def execute():
 			_safe(f"follow-up row {row['sheet_row']}", _follow_up, row, principal)
 		for card in data["products"]:
 			_safe(f"products {card['customer']}", _products, card)
-		_safe("JIS Tools", _jis, data["jis"])
 	finally:
 		frappe.flags.mute_emails = False
 	frappe.db.commit()

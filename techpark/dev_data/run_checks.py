@@ -89,10 +89,9 @@ def _meta_checks():
 		expect(f["tab_production"].label == "Products Info", f"tab label is {f['tab_production'].label}")
 		expect(f["tab_technical"].label == "Technical Lead", "Technical tab label")
 		expect("tab_products" not in f and "products_html" not in f, "old Products tab still there")
-		for n in ("production", "abrasive_consumption_cr", "manufacturing_profile", "heat_treatment", "machines",
-		          "wheel_specs", "technical_leads"):
+		for n in ("production", "abrasive_consumption_cr", "technical_leads"):
 			expect(n in f, f"TP Customer.{n} missing")
-		for n in ("segment_applications", "consumptions", "manufacturing_details"):
+		for n in ("segment_applications", "consumptions", "manufacturing_details", "machines", "wheel_specs", "manufacturing_profile"):
 			expect(n not in f, f"TP Customer.{n} should be removed")
 		return "Products Info / Technical Lead tabs ok"
 
@@ -182,7 +181,11 @@ def _dvr_checks(ctx):
 		dvr.reload()
 		expect(dvr.principals[0].development_status == "Offer Submitted", "row not updated after submit")
 		expect(frappe.db.get_value("TP Opportunity", ctx.opp1, "status") == "Offer Submitted", "opportunity not updated")
-		return "row + opportunity moved to Offer Submitted"
+		lead = frappe.db.get_value("TP Technical Lead", ctx.lead1.name, ["stage", "current_status"], as_dict=True)
+		expect(lead.current_status == "Offer Submitted" and lead.stage == "Development", f"technical lead shows {lead}")
+		tab = frappe.db.get_value("TP Customer Technical Lead", {"record": ctx.lead1.name}, "current_status")
+		expect(tab == "Offer Submitted", f"customer tab row shows {tab!r}")
+		return "row, opportunity, technical lead and customer tab moved to Offer Submitted"
 
 	def sales_needs_status():
 		return expect_error(lambda: _dvr(ctx, "Sales", ctx.lead1).insert(), "Sales Status")
@@ -226,29 +229,14 @@ def _customer_checks(ctx):
 
 	def products_info():
 		c = frappe.get_doc("TP Customer", ctx.customer)
-		unit = frappe.db.get_value("Unit", {}) or frappe.get_doc({"doctype": "Unit", "unit_name": "Pcs (test)", "active": 1}).insert().name
-		app = frappe.db.get_value("Customer Application", {}) or frappe.get_doc(
-			{"doctype": "Customer Application", "application_name": "Roll Grinding (test)", "is_active": 1}
-		).insert().name
 		c.abrasive_consumption_cr = 24
-		c.manufacturing_profile = "Ball and TRB bearings"
-		c.heat_treatment = "In-house"
-		c.append("machines", {"machine_type": "Thread Grinding", "maker": "WMW, Reishauer", "quantity": 3})
-		c.append("wheel_specs", {
-			"application": app, "wheel_specification": "89A400K3V111", "wheel_size": "350x40x160",
-			"wheel_speed": "50 M/S", "pitch_range": "0.5 - 1 MM", "annual_consumption": 10, "consumption_unit": unit,
-		})
 		c.append("technical_leads", {"principal": ctx.lead1.principal, "application": "Run Checks Line", "progress": "Quoted"})
 		c.save()
 		c.reload()
-		wheel = c.wheel_specs[-1]
-		expect(wheel.record and frappe.db.exists("Wheel Specification", wheel.record), "wheel row not saved as a Wheel Specification")
 		lead = next((r for r in c.technical_leads if r.application == "Run Checks Line"), None)
 		expect(lead and lead.record and frappe.db.exists("TP Technical Lead", lead.record), "tab row not saved as a TP Technical Lead")
-		expect(c.machines[-1].maker == "WMW, Reishauer", "machine row")
 		expect(c.abrasive_consumption_cr == 24, "abrasive consumption")
-		ctx.wheel = wheel.record
-		return f"wheel {wheel.record}, lead {lead.record}"
+		return f"lead {lead.record}"
 
 	def lead_record_to_tab():
 		lead = frappe.get_doc({"doctype": "TP Technical Lead", "customer": ctx.customer, "principal": ctx.lead1.principal,
@@ -259,12 +247,11 @@ def _customer_checks(ctx):
 
 	def customer_card():
 		html = frappe.get_print("TP Customer", ctx.customer, "Customer Card")
-		for text in ("CUSTOMER CARD", "Technical Leads", "Current Wheel Usage", "Machine Details", "Company Profile", "Abrasive / Year"):
+		for text in ("CUSTOMER CARD", "Technical Leads", "Abrasive / Year"):
 			expect(text in html, f"'{text}' missing in the print")
-		expect("89A400K3V111" in html, "wheel spec not printed")
 		return f"{len(html)} chars"
 
-	check("Customer: Products Info saves (wheel usage, machines, abrasive, profile)", products_info)
+	check("Customer: Products Info + Technical Lead tab save", products_info)
 	check("Customer: Technical Lead record shows on the tab", lead_record_to_tab)
 	check("Customer: Customer Card print", customer_card)
 

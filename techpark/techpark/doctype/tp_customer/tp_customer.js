@@ -8,7 +8,6 @@ frappe.ui.form.on("TP Customer", {
 		frm.set_query("territory_region", () => ({ filters: { is_active: 1 } }));
 		// Principals is a Table MultiSelect (no grid): its query is set on the field itself
 		frm.set_query("principals", () => ({ filters: { is_active: 1 } }));
-		frm.set_query("plant", "machines", () => ({ filters: { customer: frm.doc.name || "" } }));
 		frm.set_query("principal", "visits", () => ({ filters: { is_active: 1 } }));
 		// Only the selected principal's product categories
 		frm.set_query("supplier_product_category", "visits", (doc, cdt, cdn) => ({
@@ -26,7 +25,6 @@ frappe.ui.form.on("TP Customer", {
 		const plant_fields = {
 			production: "plant",
 			turnovers: "plant",
-			wheel_specs: "plant",
 			visits: "plant",
 		};
 		for (const [table, field] of Object.entries(plant_fields)) {

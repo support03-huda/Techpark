@@ -59,14 +59,6 @@
   "abrasive_consumption_cr",
   "column_break_abrasive",
   "abrasive_consumption_details",
-  "section_company_profile",
-  "manufacturing_profile",
-  "column_break_company_profile",
-  "heat_treatment",
-  "section_machines",
-  "machines",
-  "section_wheel_specs",
-  "wheel_specs",
   "tab_commercial",
   "commercial_html",
   "turnovers",
@@ -401,47 +393,6 @@
    "label": "Abrasive Consumption Details"
   },
   {
-   "fieldname": "section_company_profile",
-   "fieldtype": "Section Break",
-   "label": "Company Profile"
-  },
-  {
-   "fieldname": "manufacturing_profile",
-   "fieldtype": "Small Text",
-   "label": "Manufacturing"
-  },
-  {
-   "fieldname": "column_break_company_profile",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "heat_treatment",
-   "fieldtype": "Small Text",
-   "label": "Heat Treatment"
-  },
-  {
-   "fieldname": "section_machines",
-   "fieldtype": "Section Break",
-   "label": "Machine Details"
-  },
-  {
-   "fieldname": "machines",
-   "fieldtype": "Table",
-   "label": "Machines",
-   "options": "Customer Machine"
-  },
-  {
-   "fieldname": "section_wheel_specs",
-   "fieldtype": "Section Break",
-   "label": "Current Wheel Usage"
-  },
-  {
-   "fieldname": "wheel_specs",
-   "fieldtype": "Table",
-   "label": "Current Wheel Usage",
-   "options": "TP Customer Wheel Spec"
-  },
-  {
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "tab_commercial",
    "fieldtype": "Tab Break",
@@ -501,7 +452,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-06 21:00:00.000000",
+ "modified": "2026-11-07 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

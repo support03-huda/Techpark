@@ -61,21 +61,6 @@ def get_customer_card(customer):
 		for r in doc.turnovers
 	]
 	card["contacts"] = [c for c in doc.contacts if cint(c.is_active)]
-	# Customer Card Format 2: current wheel usage and machines
-	wheels = doc.get("wheel_specs") or []
-	applications = _titles("Customer Application", [r.application for r in wheels])
-	competitors = _titles("TP Competitor", [r.competitors for r in wheels])
-	wheel_units = _titles("Unit", [r.consumption_unit for r in wheels])
-	card["wheel_specs"] = [
-		{
-			**r.as_dict(),
-			"application_title": _title(applications, r.application),
-			"competitors_title": _title(competitors, r.competitors),
-			"consumption_unit_title": _title(wheel_units, r.consumption_unit),
-		}
-		for r in wheels
-	]
-	card["machines"] = [{**m.as_dict(), "plant": _title(plants, m.plant)} for m in doc.get("machines") or []]
 	card["agents"] = [frappe.utils.get_fullname(a.agent) for a in doc.handled_by]
 	card["principals"] = [p.principal for p in doc.principals]
 	return card

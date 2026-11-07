@@ -55,19 +55,12 @@ TABLES = {
 		"doctype": "Customer Turnover",
 		"fields": ["financial_year", "plant", "amount", "unit", "frequency", "remarks"],
 	},
-	"wheel_specs": {
-		"label": "Current Wheel Usage",
-		"child": "TP Customer Wheel Spec",
-		"doctype": "Wheel Specification",
-		"fields": [
-			"application", "wheel_specification", "wheel_size", "wheel_speed", "pitch_range", "annual_consumption",
-			"consumption_unit", "plant", "segment", "competitors", "department", "remarks",
-		],
-	},
 	"technical_leads": {
 		"label": "Technical Leads",
 		"child": "TP Customer Technical Lead",
 		"doctype": "TP Technical Lead",
+		# read-only Stage / Current Status come from the lead (set from its opportunity)
+		"display": lambda names: _lead_status(names),
 		"fields": [
 			"principal",
 			"application",
@@ -262,6 +255,16 @@ def _norm(value):
 	if isinstance(value, (int, float)):
 		return flt(value)
 	return cstr(value)
+
+
+def _lead_status(names):
+	names = [n for n in names if n]
+	if not names:
+		return {}
+	return {
+		r.name: {"stage": r.stage, "current_status": r.current_status}
+		for r in frappe.get_all("TP Technical Lead", filters={"name": ("in", names)}, fields=["name", "stage", "current_status"])
+	}
 
 
 # ---------------------------------------------------------------------------

@@ -19,6 +19,10 @@
   "distribution_channel",
   "contact_person",
   "progress",
+  "stage",
+  "current_status",
+  "opportunity",
+  "last_visit",
   "section_demand",
   "annual_demand_amount",
   "annual_quantity",
@@ -129,6 +133,37 @@
    "options": "\nNot Started\nQuoted\nTrial Order Received\nUnder Trial\nApproved\nEvaluation Failed",
    "in_list_view": 1,
    "in_standard_filter": 1
+  },
+  {
+   "fieldname": "stage",
+   "fieldtype": "Select",
+   "label": "Stage",
+   "options": "\nDevelopment\nSales",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "current_status",
+   "fieldtype": "Data",
+   "label": "Current Status",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "options": "TP Opportunity",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "last_visit",
+   "fieldtype": "Date",
+   "label": "Last Visit",
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "fieldname": "section_demand",
@@ -269,7 +304,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-06 21:00:00.000000",
+ "modified": "2026-11-07 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",

@@ -162,7 +162,6 @@ def load_customer(spec, m, users):
 			"handled_by": [{"agent": a} for a in agents],
 			"contacts": [dict(c, is_active=1) for c in spec["contacts"]],
 			"plants": [dict(p, country="India", is_active=1) for p in spec["plants"]],
-			"machines": spec["machines"],
 		}
 	).insert(ignore_permissions=True)
 

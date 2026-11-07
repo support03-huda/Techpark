@@ -43,3 +43,4 @@ techpark.patches.opportunity_milestones
 techpark.patches.technical_leads_to_records
 techpark.patches.dvr_single_line
 techpark.patches.fill_customer_wheel_usage
+techpark.patches.technical_lead_status

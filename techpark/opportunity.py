@@ -65,7 +65,7 @@ def refresh_opportunity(name):
 		return
 	rows = frappe.db.sql(
 		"""
-		select r.stage, r.development_status, r.sales_status, r.size, r.remark,
+		select r.stage, r.development_status, r.sales_status, r.size, r.remark, r.technical_lead,
 			r.next_action as row_next_action, r.next_action_date as row_next_action_date, r.follow_up as row_follow_up,
 			d.name as dvr, d.visit_date, d.visited_by, d.next_action, d.next_action_date, d.follow_up
 		from `tabDVR Principal` r
@@ -113,6 +113,25 @@ def refresh_opportunity(name):
 	set_milestones(doc, rows)
 	doc.flags.ignore_permissions = True
 	doc.save()
+	update_technical_lead(doc, rows)
+
+
+def update_technical_lead(doc, rows):
+	"""Show the line's stage and current status on its Technical Lead and the customer's Technical Lead tab."""
+	lead = next((r.technical_lead for r in reversed(rows) if r.get("technical_lead")), None) or frappe.db.get_value(
+		"TP Technical Lead", {"customer": doc.customer, "principal": doc.principal, "application": doc.application}
+	)
+	if not lead or not frappe.db.exists("TP Technical Lead", lead):
+		return
+	frappe.db.set_value(
+		"TP Technical Lead",
+		lead,
+		{"stage": doc.stage, "current_status": doc.status, "opportunity": doc.name, "last_visit": doc.last_visit},
+		update_modified=False,
+	)
+	frappe.db.set_value(
+		"TP Customer Technical Lead", {"record": lead}, {"stage": doc.stage, "current_status": doc.status}, update_modified=False
+	)
 
 
 # Visit status -> value of the Samples / Trials / Bulk Trials PO / Regularised columns (the client's
