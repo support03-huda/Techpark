@@ -59,13 +59,13 @@
   "abrasive_consumption_cr",
   "column_break_abrasive",
   "abrasive_consumption_details",
-  "tab_commercial",
+  "section_turnover_history",
   "commercial_html",
   "turnovers",
   "tab_technical",
-  "technical_html",
   "section_technical_leads",
   "technical_leads",
+  "technical_html",
   "tab_visits",
   "visits_html",
   "visits"
@@ -393,10 +393,9 @@
    "label": "Abrasive Consumption Details"
   },
   {
-   "depends_on": "eval:!doc.__islocal",
-   "fieldname": "tab_commercial",
-   "fieldtype": "Tab Break",
-   "label": "Commercial"
+   "fieldname": "section_turnover_history",
+   "fieldtype": "Section Break",
+   "label": "Turnover History"
   },
   {
    "fieldname": "commercial_html",
@@ -416,11 +415,6 @@
    "label": "Technical Lead"
   },
   {
-   "fieldname": "technical_html",
-   "fieldtype": "HTML",
-   "label": "Technical"
-  },
-  {
    "fieldname": "section_technical_leads",
    "fieldtype": "Section Break",
    "label": "Technical Leads (Demand Survey)"
@@ -430,6 +424,11 @@
    "fieldtype": "Table",
    "label": "Technical Leads",
    "options": "TP Customer Technical Lead"
+  },
+  {
+   "fieldname": "technical_html",
+   "fieldtype": "HTML",
+   "label": "Technical"
   },
   {
    "depends_on": "eval:!doc.__islocal",
@@ -452,7 +451,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-07 13:00:00.000000",
+ "modified": "2026-11-12 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

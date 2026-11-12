@@ -44,3 +44,6 @@ techpark.patches.technical_leads_to_records
 techpark.patches.dvr_single_line
 techpark.patches.fill_customer_wheel_usage
 techpark.patches.technical_lead_status
+techpark.patches.remove_techpark_workspace
+techpark.patches.dvr_product_name
+techpark.patches.technical_lead_status #present status

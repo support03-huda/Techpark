@@ -67,7 +67,8 @@ def refresh_opportunity(name):
 		"""
 		select r.stage, r.development_status, r.sales_status, r.size, r.remark, r.technical_lead,
 			r.next_action as row_next_action, r.next_action_date as row_next_action_date, r.follow_up as row_follow_up,
-			d.name as dvr, d.visit_date, d.visited_by, d.next_action, d.next_action_date, d.follow_up
+			d.name as dvr, d.visit_date, d.visited_by, d.next_action, d.next_action_date, d.follow_up,
+			d.discussion_notes
 		from `tabDVR Principal` r
 		join `tabDaily Visit Report` d on d.name = r.parent and r.parenttype = 'Daily Visit Report'
 		where r.opportunity = %s and d.docstatus = 1
@@ -99,6 +100,7 @@ def refresh_opportunity(name):
 		else "On Hold" if status == "On Hold"
 		else "Open"
 	)
+	doc.present_status = latest.get("discussion_notes")
 	doc.next_action = latest.get("row_next_action") or latest.get("next_action")
 	doc.next_action_date = latest.get("row_next_action_date") or latest.get("next_action_date")
 	doc.follow_up = latest.get("row_follow_up") or latest.get("follow_up")
@@ -108,6 +110,9 @@ def refresh_opportunity(name):
 	doc.visits = len(rows)
 	if latest.get("visited_by"):
 		doc.sales_person = latest.visited_by
+	# Colleagues on the latest visit (shown as "Santosh / Vedant")
+	joint = frappe.get_all("DVR Joint Visitor", filters={"parent": latest.get("dvr") or "", "parenttype": "Daily Visit Report"}, pluck="user")
+	doc.joint_with = ", ".join(frappe.utils.get_fullname(u) for u in joint) or None
 	if latest.get("size"):
 		doc.size = latest.size
 	set_milestones(doc, rows)

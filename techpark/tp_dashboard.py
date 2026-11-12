@@ -151,7 +151,7 @@ def _visits_by_stage(visits, since, month_start):
 OPPORTUNITY_FIELDS = [
 	"name", "customer", "customer_name", "application", "principal", "supplier_product_category", "category_name", "spec", "size",
 	"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
-	"next_action_date", "last_visit", "visits", "remarks", "invoice_oc", "samples", "trials", "bulk_trial_po", "regularised",
+	"next_action_date", "last_visit", "visits", "remarks", "present_status", "joint_with", "invoice_oc", "samples", "trials", "bulk_trial_po", "regularised",
 ]
 IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
 
@@ -210,8 +210,8 @@ def _line(o):
 
 
 @frappe.whitelist()
-def get_development_board(customer=None, principal=None, sales_person=None, importance=None, show="Open"):
-	"""Development Board: every application line (opportunity) with its customer, grouped on the page."""
+def get_development_board(customer=None, principal=None, sales_person=None, importance=None, show="Open", stage=None):
+	"""Development / Sales Board: every application line (opportunity) of that stage with its customer."""
 	if not has_app_permission():
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
 	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
@@ -223,6 +223,8 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 	for field, value in (("customer", customer), ("principal", principal), ("sales_person", sales_person), ("importance", importance)):
 		if value:
 			filters[field] = value
+	if stage in ("Development", "Sales"):
+		filters["stage"] = stage
 	if show == "Open":
 		filters["lead_status"] = ("in", ("Open", "On Hold"))
 	elif show in ("Won", "Lost"):
@@ -252,10 +254,61 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 			}
 		)
 	rows.sort(key=lambda r: (IMPORTANCE_ORDER.get(r["importance"], 3), r["customer_name"] or "", r["application"] or ""))
-	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS] + [
-		{"status": s, "stage": "Sales"} for s in SALES_PROGRESS
-	]
+	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS if s != "Successful Trial"]
+	# A successful trial moves the line to the Sales stage: there it waits for the bulk trial PO.
+	sales_statuses = [{"status": "Successful Trial", "stage": "Sales"}] + [{"status": s, "stage": "Sales"} for s in SALES_PROGRESS]
+	if stage == "Sales":
+		statuses = sales_statuses
+	elif stage != "Development":
+		statuses += sales_statuses
 	return {"rows": rows, "statuses": statuses, "today": today()}
+
+
+@frappe.whitelist()
+def get_calendar(start, end):
+	"""Dashboard calendar: visits (DVRs) and open follow-ups between two dates. Salespeople see their own."""
+	if not has_app_permission():
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+	user, team, now = _scope()
+	start, end = getdate(start), getdate(end)
+	visits = frappe.get_list(
+		"Daily Visit Report",
+		filters={"visit_date": ("between", [start, end]), "docstatus": ("<", 2)},
+		fields=["name", "visit_date", "customer_name", "dvr_stage", "application", "development_status", "sales_status",
+		        "employee_name", "docstatus"],
+		order_by="visit_date, visit_time",
+		limit_page_length=1000,
+	)
+	todo_filters = {"reference_type": "Daily Visit Report", "status": "Open", "date": ("between", [start, end])}
+	if not team:
+		todo_filters["allocated_to"] = user
+	todos = frappe.get_all("ToDo", filters=todo_filters, fields=["name", "date", "reference_name", "description", "allocated_to"], limit=1000)
+	customers = {
+		v.name: v.customer_name
+		for v in frappe.get_all(
+			"Daily Visit Report", filters={"name": ("in", [t.reference_name for t in todos] or [""])}, fields=["name", "customer_name"]
+		)
+	}
+	return {
+		"today": str(now),
+		"visits": [
+			{
+				"name": v.name, "date": str(v.visit_date), "customer": v.customer_name, "stage": v.dvr_stage,
+				"application": v.application, "status": v.sales_status or v.development_status, "by": v.employee_name,
+				"draft": v.docstatus == 0,
+			}
+			for v in visits
+		],
+		"follow_ups": [
+			{
+				"name": t.name, "date": str(t.date), "visit": t.reference_name, "customer": customers.get(t.reference_name, ""),
+				"action": frappe.utils.strip_html(t.description or "")[:120],
+				"by": frappe.utils.get_fullname(t.allocated_to) if t.allocated_to else "",
+			}
+			for t in todos
+			if t.reference_name in customers
+		],
+	}
 
 
 def _follow_ups(user, team, now):

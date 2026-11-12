@@ -5,7 +5,7 @@
 
 /* hero */
 .tpd-hero { border-radius: 14px; padding: 20px 22px; color: #fff; position: relative; overflow: hidden;
-	background: linear-gradient(120deg, #5a1218 0%, #8e2229 45%, #2f7d3a 100%); }
+	background: linear-gradient(135deg, #4a0d12 0%, #8e2229 55%, #b9474f 100%); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); }
 .tpd-hero::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 50%;
 	background: rgba(255, 255, 255, 0.07); }
 .tpd-hero h2 { margin: 0; font-size: 20px; font-weight: 700; color: #fff; }
@@ -140,3 +140,35 @@
 .tpd-subtab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .tpd-subtab.active .dot { background: #fff; }
 .tpd-subtab.active .n { background: rgba(255, 255, 255, 0.25); color: #fff; }
+
+/* Calendar tab */
+.tpd-cal-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.tpd-cal-title { font-size: 17px; font-weight: 700; color: var(--heading-color); min-width: 150px; text-align: center; }
+.tpd-cal-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-left: 12px; }
+.tpd-cal-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+.tpd-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--border-color);
+	border-radius: 12px; overflow: hidden; background: var(--card-bg); }
+.tpd-cal-dow { padding: 8px; font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px;
+	background: var(--subtle-fg); border-bottom: 1px solid var(--border-color); text-align: center; }
+.tpd-cal-day { min-height: 112px; padding: 6px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+	display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tpd-cal-day:nth-child(7n) { border-right: 0; }
+.tpd-cal-day.out { background: var(--subtle-fg); opacity: 0.6; }
+.tpd-cal-day.today { background: rgba(142, 34, 41, 0.05); box-shadow: inset 0 0 0 2px #8e2229; }
+.tpd-cal-num { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+.tpd-cal-day.today .tpd-cal-num { color: #fff; background: #8e2229; border-radius: 10px; width: 22px; text-align: center; }
+.tpd-cal-chip { font-size: 11px; line-height: 1.35; padding: 3px 6px; border-radius: 6px; cursor: pointer; overflow: hidden;
+	white-space: nowrap; text-overflow: ellipsis; color: var(--heading-color); font-weight: 600;
+	background: color-mix(in srgb, var(--c) 14%, transparent); border-left: 3px solid var(--c); }
+.tpd-cal-chip span { font-weight: 400; color: var(--text-muted); }
+.tpd-cal-chip:hover { background: color-mix(in srgb, var(--c) 24%, transparent); }
+.tpd-cal-chip.draft { border-left-style: dashed; opacity: 0.8; }
+.tpd-cal-more { font-size: 11px; color: var(--primary); cursor: pointer; padding-left: 4px; }
+.tpd-cal-daylist { display: flex; flex-direction: column; gap: 6px; }
+.tpd-cal-daylist .tpd-cal-chip { font-size: 12.5px; white-space: normal; padding: 6px 8px; }
+@media (max-width: 768px) {
+	.tpd-cal-day { min-height: 70px; padding: 3px; }
+	.tpd-cal-chip { font-size: 0; padding: 0; height: 6px; border-left-width: 0; background: var(--c); }
+	.tpd-cal-legend { margin-left: 0; }
+}
+

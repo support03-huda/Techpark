@@ -26,6 +26,7 @@ class TPDashboard {
 		this.page.set_primary_action(__("New Visit"), () => frappe.new_doc("Daily Visit Report"), "add");
 		this.page.set_secondary_action(__("Refresh"), () => this.refresh(), "refresh");
 		this.page.add_inner_button(__("Development Board"), () => frappe.set_route("techpark-development-board"));
+		this.page.add_inner_button(__("Sales Board"), () => frappe.set_route("techpark-sales-board"));
 		this.page.add_inner_button(__("New Customer"), () => frappe.new_doc("TP Customer"));
 		this.page.add_inner_button(__("New Expense"), () => frappe.new_doc("TP Expense"));
 		this.visit_stage = "Development";
@@ -103,6 +104,7 @@ class TPDashboard {
 			{ key: "today", label: __("Today"), count: f.overdue + f.today, alert: f.overdue > 0 },
 			{ key: "development", label: __("Development"), count: d.opportunities.open },
 			{ key: "visits", label: __("Visits"), count: d.visits.this_month },
+			{ key: "calendar", label: __("Calendar") },
 			{ key: "team", label: __("Sales Team") },
 			{ key: "customers", label: __("Customers"), count: d.customers.total },
 			{ key: "expenses", label: __("Expenses"), count: d.expenses.pending_count, alert: d.expenses.pending_count > 0 },
@@ -140,6 +142,7 @@ class TPDashboard {
 						<span class="dot"></span>${this.esc(__(s + " Stage"))}<span class="n">${d.visits.stages[s].this_month}</span></div>`)
 					.join("")}<span class="tpd-muted" style="margin-left:auto">${__("visits this month · a visit with both stages counts in both")}</span></div>
 				<div class="tpd-visit-stage"></div>`,
+			calendar: `<div class="tpd-cal"></div>`,
 			team: `
 				<div class="tpd-panel"><h4>${__("Sales person-wise")}<span class="tpd-muted">${__("application lines; click a row to open the Development Board")}</span></h4>
 					<div class="tpd-table-wrap tpd-people"></div></div>`,
@@ -164,6 +167,7 @@ class TPDashboard {
 		this.render_customers(d);
 		this.render_money(d.expenses);
 		this.render_charts(d);
+		if (key === "calendar") this.render_calendar();
 		if (key === "visits") {
 			this.$body.find(".tpd-subtab").on("click", (e) => this.show_visit_stage($(e.currentTarget).data("stage")));
 			this.show_visit_stage(this.visit_stage);
@@ -240,6 +244,96 @@ class TPDashboard {
 				<div class="d">${r.lines.map((l) => `${this.esc([l.application, l.principal].filter(Boolean).join(" · "))}: <span class="tpd-pill ${pill}">${this.esc(__(l.status))}</span>`).join(" &nbsp; ")}</div></div>`,
 			(r) => frappe.set_route("Form", "Daily Visit Report", r.name),
 			__("No {0} visits yet.", [__(stage)]));
+	}
+
+	// ------------------------------------------------------------ Calendar tab: a month of visits + follow-ups
+	cal_add(date, days) {
+		return moment(date).add(days, "days").format("YYYY-MM-DD");
+	}
+
+	render_calendar() {
+		const $cal = this.$body.find(".tpd-cal");
+		if (!$cal.length) return;
+		this.cal_month = this.cal_month || moment().startOf("month").format("YYYY-MM-DD");
+		const first = this.cal_month;
+		const last = moment(first).endOf("month").format("YYYY-MM-DD");
+		// The grid starts on the Monday on/before the 1st and ends on the Sunday on/after the last day
+		const lead = (moment(first).isoWeekday() + 6) % 7;
+		const grid_start = this.cal_add(first, -lead);
+		const trail = (7 - moment(last).isoWeekday()) % 7;
+		const grid_end = this.cal_add(last, trail);
+		$cal.html(`<div class="tpd-loading">${__("Loading...")}</div>`);
+		frappe.call({ method: "techpark.tp_dashboard.get_calendar", args: { start: grid_start, end: grid_end } }).then(({ message: m }) => {
+			if (this.cal_month !== first) return; // month changed meanwhile
+			const by_day = {};
+			const add = (date, item) => (by_day[date] = by_day[date] || []).push(item);
+			m.visits.forEach((v) => add(v.date, { ...v, kind: "visit" }));
+			m.follow_ups.forEach((f) => add(f.date, { ...f, kind: "follow" }));
+			const head = [__("Mon"), __("Tue"), __("Wed"), __("Thu"), __("Fri"), __("Sat"), __("Sun")]
+				.map((d) => `<div class="tpd-cal-dow">${d}</div>`).join("");
+			let cells = "";
+			for (let day = grid_start; day <= grid_end; day = this.cal_add(day, 1)) {
+				const items = by_day[day] || [];
+				const out = day < first || day > last;
+				const chips = items.slice(0, 4).map((it, i) => this.cal_chip(it, day, m.today, `${day}-${i}`)).join("");
+				const more = items.length > 4 ? `<div class="tpd-cal-more" data-day="${day}">+${items.length - 4} ${__("more")}</div>` : "";
+				cells += `<div class="tpd-cal-day ${out ? "out" : ""} ${day === m.today ? "today" : ""}">
+					<div class="tpd-cal-num">${moment(day).date()}</div>${chips}${more}</div>`;
+			}
+			const visits = m.visits.filter((v) => v.date >= first && v.date <= last);
+			const follows = m.follow_ups.filter((f) => f.date >= first && f.date <= last);
+			$cal.html(`
+				<div class="tpd-cal-bar">
+					<button class="btn btn-default btn-sm" data-nav="-1">‹</button>
+					<div class="tpd-cal-title">${moment(first).format("MMMM YYYY")}</div>
+					<button class="btn btn-default btn-sm" data-nav="1">›</button>
+					<button class="btn btn-default btn-xs" data-nav="0">${__("Today")}</button>
+					<div class="tpd-cal-legend">
+						<span><i style="background:${TPD_STAGE_COLOR.Development}"></i>${__("Development visit")}</span>
+						<span><i style="background:${TPD_STAGE_COLOR.Sales}"></i>${__("Sales visit")}</span>
+						<span><i style="background:${TPD_COLORS.violet}"></i>${__("Follow-up")}</span>
+						<span><i style="background:${TPD_COLORS.red}"></i>${__("Overdue")}</span>
+					</div>
+					<div class="tpd-muted" style="margin-left:auto">${__("{0} visits · {1} follow-ups this month", [visits.length, follows.length])}</div>
+				</div>
+				<div class="tpd-cal-grid">${head}${cells}</div>`);
+			this.cal_items = Object.values(by_day).flat();
+			$cal.find("[data-nav]").on("click", (e) => {
+				const n = Number($(e.currentTarget).data("nav"));
+				this.cal_month = moment(first).add(n, "months").startOf("month").format("YYYY-MM-DD");
+				if (!n) this.cal_month = moment().startOf("month").format("YYYY-MM-DD");
+				this.render_calendar();
+			});
+			$cal.find(".tpd-cal-chip").on("click", (e) => {
+				const it = $(e.currentTarget).data();
+				frappe.set_route("Form", it.doctype, it.name);
+			});
+			$cal.find(".tpd-cal-more").on("click", (e) => this.cal_day_dialog($(e.currentTarget).data("day"), by_day, m.today));
+		});
+	}
+
+	cal_chip(it, day, today, key) {
+		if (it.kind === "visit") {
+			const color = TPD_STAGE_COLOR[it.stage] || TPD_COLORS.slate;
+			const title = [it.customer, it.application, it.status, it.by].filter(Boolean).join(" · ");
+			return `<div class="tpd-cal-chip ${it.draft ? "draft" : ""}" style="--c:${color}" data-doctype="Daily Visit Report" data-name="${this.esc(it.name)}" title="${this.esc(title)}">
+				${this.esc(it.customer || it.name)}${it.application ? ` <span>· ${this.esc(it.application)}</span>` : ""}</div>`;
+		}
+		const color = day < today ? TPD_COLORS.red : TPD_COLORS.violet;
+		return `<div class="tpd-cal-chip follow" style="--c:${color}" data-doctype="ToDo" data-name="${this.esc(it.name)}" title="${this.esc([it.customer, it.action, it.by].filter(Boolean).join(" · "))}">
+			⏰ ${this.esc(it.customer || __("Follow-up"))} <span>· ${this.esc(it.action)}</span></div>`;
+	}
+
+	cal_day_dialog(day, by_day, today) {
+		const d = new frappe.ui.Dialog({ title: frappe.datetime.str_to_user(day), fields: [{ fieldtype: "HTML", fieldname: "list" }] });
+		const html = (by_day[day] || []).map((it, i) => this.cal_chip(it, day, today, i)).join("");
+		d.fields_dict.list.$wrapper.html(`<div class="tpd-cal-daylist">${html}</div>`);
+		d.fields_dict.list.$wrapper.find(".tpd-cal-chip").on("click", (e) => {
+			const it = $(e.currentTarget).data();
+			d.hide();
+			frappe.set_route("Form", it.doctype, it.name);
+		});
+		d.show();
 	}
 
 	// Greeting only: the numbers are in the tabs (the user asked to drop the header's number cards).

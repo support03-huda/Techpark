@@ -17,12 +17,14 @@
   "size",
   "importance",
   "sales_person",
+  "joint_with",
   "invoice_oc",
   "section_status",
   "stage",
   "status",
   "progress",
   "lead_status",
+  "present_status",
   "column_break_status",
   "next_action",
   "next_action_date",
@@ -138,6 +140,12 @@
    "in_standard_filter": 1
   },
   {
+   "fieldname": "joint_with",
+   "fieldtype": "Data",
+   "label": "Joint Visit With",
+   "read_only": 1
+  },
+  {
    "fieldname": "invoice_oc",
    "fieldtype": "Data",
    "label": "Invoice / OC No.",
@@ -180,6 +188,12 @@
    "default": "Open",
    "read_only": 1,
    "in_standard_filter": 1
+  },
+  {
+   "fieldname": "present_status",
+   "fieldtype": "Small Text",
+   "label": "Present Status",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_status",
@@ -311,7 +325,7 @@
    "group": "Visits"
   }
  ],
- "modified": "2026-11-07 13:00:00.000000",
+ "modified": "2026-11-12 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",

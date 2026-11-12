@@ -24,8 +24,7 @@ add_to_apps_screen = [
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/techpark/css/techpark_workspace_tabs.css"
-app_include_js = ["/assets/techpark/js/techpark.js", "/assets/techpark/js/techpark_workspace_tabs.js"]
+app_include_js = ["/assets/techpark/js/techpark.js"]
 
 # Expense Approvals menu only for users who can approve (see techpark/boot.py).
 extend_bootinfo = "techpark.boot.extend_bootinfo"

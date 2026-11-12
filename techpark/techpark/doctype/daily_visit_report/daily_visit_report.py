@@ -172,6 +172,7 @@ class DailyVisitReport(Document):
 	def validate(self):
 		self.distributor = DISTRIBUTOR
 		self.validate_visited_by()
+		self.clean_joint_visitors()
 		self.validate_dates()
 		self.validate_plant()
 		self.set_contact()
@@ -214,6 +215,16 @@ class DailyVisitReport(Document):
 			self.visited_by = frappe.session.user
 		elif self.has_value_changed("visited_by"):
 			frappe.throw(_("Only a manager can change the Employee of a visit."))
+
+	def clean_joint_visitors(self):
+		"""Colleagues on the visit: not the Employee, each once."""
+		seen = {self.visited_by}
+		rows = []
+		for row in self.get("joint_visitors") or []:
+			if row.user and row.user not in seen:
+				seen.add(row.user)
+				rows.append(row)
+		self.set("joint_visitors", rows)
 
 	def validate_dates(self):
 		if getdate(self.visit_date) > getdate(today()):

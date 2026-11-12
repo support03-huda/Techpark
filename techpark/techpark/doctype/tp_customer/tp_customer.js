@@ -69,8 +69,19 @@ frappe.ui.form.on("TP Customer Technical Lead", {
 	principal(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
 	},
-	progress: (frm) => techpark.customer_master.render_technical(frm),
+	technical_leads_add: (frm) => techpark.customer_master.render_technical(frm),
+	technical_leads_remove: (frm) => techpark.customer_master.render_technical(frm),
+	application: (frm) => techpark.customer_master.render_technical(frm),
+	grinding_process: (frm) => techpark.customer_master.render_technical(frm),
+	supplier_product_category: (frm) => techpark.customer_master.render_technical(frm),
 	annual_demand_amount: (frm) => techpark.customer_master.render_technical(frm),
+	annual_quantity: (frm) => techpark.customer_master.render_technical(frm),
+	share_noritake: (frm) => techpark.customer_master.render_technical(frm),
+	share_tyrolit: (frm) => techpark.customer_master.render_technical(frm),
+	share_gno: (frm) => techpark.customer_master.render_technical(frm),
+	share_cumi: (frm) => techpark.customer_master.render_technical(frm),
+	share_other: (frm) => techpark.customer_master.render_technical(frm),
+	progress: (frm) => techpark.customer_master.render_technical(frm),
 });
 frappe.ui.form.on("TP Customer Turnover", {
 	turnovers_add: (frm) => techpark.customer_master.render_commercial(frm),
@@ -95,10 +106,6 @@ frappe.ui.form.on("TP Customer Visit", {
 	principal(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
 	},
-});
-frappe.ui.form.on("TP Customer Technical Lead", {
-	technical_leads_add: (frm) => techpark.customer_master.render_technical(frm),
-	technical_leads_remove: (frm) => techpark.customer_master.render_technical(frm),
 });
 frappe.ui.form.on("Company contacts", {
 	person_name: (frm) => techpark.customer_master.set_contact_options(frm),
@@ -274,24 +281,47 @@ techpark.customer_master.render_commercial = function (frm) {
 	);
 };
 
-// Technical Lead tab: Demand Survey tiles above the Technical Leads table
-techpark.customer_master.render_technical = function (frm) {
+// Technical Lead tab: small cards (main info of each lead) above the table; a click opens the row.
+techpark.customer_master.render_technical = async function (frm) {
 	if (!frm.fields_dict.technical_html) return;
 	const M = techpark.customer_master;
+	const esc = frappe.utils.escape_html;
+	const $wrapper = frm.fields_dict.technical_html.$wrapper;
 	const leads = frm.doc.technical_leads || [];
-	const demand = leads.reduce((sum, r) => sum + (r.annual_demand_amount || 0), 0);
-	const count = (status) => leads.filter((r) => r.progress === status).length;
-	let html = M.stats_html([
-		{ label: __("Technical Leads"), value: leads.length },
-		{ label: __("Annual Demand"), value: demand ? format_currency(demand, "INR") : "—" },
-		{ label: __("Approved"), value: count("Approved") },
-		{ label: __("Quoted / Under Trial"), value: count("Quoted") + count("Under Trial") + count("Trial Order Received") },
-		{ label: __("Not Started"), value: count("Not Started") },
-	]);
-	html += `<p class="text-muted small" style="margin:0;">${__(
-		"One row per application (Demand Survey): process, principal category, annual demand, competitor share, machine, size, progress, issue and action plan. Open a row to fill all columns."
-	)}</p>`;
-	frm.fields_dict.technical_html.$wrapper.html(M.wrap(html));
+	const token = (M._lead_token = (M._lead_token || 0) + 1);
+	if (!leads.length) return $wrapper.empty();
+
+	const cat_ids = [...new Set(leads.map((r) => r.supplier_product_category).filter(Boolean))];
+	const categories = cat_ids.length
+		? Object.fromEntries((await M.get_list("Supplier Product Category", { name: ["in", cat_ids] }, ["name", "category_name"])).map((c) => [String(c.name), c.category_name]))
+		: {};
+	if (token !== M._lead_token) return;
+
+	const money = (v) => (!v ? "" : v >= 1e7 ? `₹${(v / 1e7).toFixed(2)} Cr` : `₹${(v / 1e5).toFixed(1)} L`);
+	const SHARES = [["share_noritake", "N"], ["share_tyrolit", "Tyrolit"], ["share_asahi", "Asahi"], ["share_tvmk", "TVMK"], ["share_gno", "GNO"], ["share_cumi", "Cumi"], ["share_other", "Other"]];
+	const PROGRESS = { Approved: "green", "Evaluation Failed": "red", "Not Started": "gray", Quoted: "orange" };
+
+	const cards = leads.map((r) => {
+		const sub = [r.grinding_process, categories[String(r.supplier_product_category)]].filter(Boolean).map(esc).join(" · ");
+		const demand = [money(r.annual_demand_amount), r.annual_quantity ? format_number(r.annual_quantity, null, 0) + " " + __("pcs") : ""].filter(Boolean).join(" · ");
+		const shares = SHARES.filter(([f]) => r[f]).sort((a, b) => r[b[0]] - r[a[0]]).slice(0, 3).map(([f, l]) => `${l} ${Math.round(r[f])}%`).join("  ");
+		const pills = [
+			r.progress ? `<span class="indicator-pill ${PROGRESS[r.progress] || "blue"}">${esc(__(r.progress))}</span>` : "",
+			r.current_status ? `<span class="indicator-pill ${r.stage === "Sales" ? "blue" : "orange"}">${esc(__(r.current_status))}</span>` : "",
+		].join(" ");
+		return `<div class="tp-lead-card" data-row="${esc(r.name)}" style="cursor:pointer; border:1px solid var(--border-color); border-top:3px solid #8e2229; border-radius:var(--border-radius); padding:10px 12px; background:var(--fg-color);">
+			<div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(r.application || __("(no application)"))}</div>
+			<div class="text-muted" style="font-size:11px; min-height:16px;">${sub}</div>
+			${demand ? `<div style="font-size:12px; margin-top:6px;">${esc(demand)}</div>` : ""}
+			${shares ? `<div class="text-muted" style="font-size:11px; margin-top:2px;">${esc(shares)}</div>` : ""}
+			${pills.trim() ? `<div style="margin-top:8px;">${pills}</div>` : ""}
+		</div>`;
+	});
+	$wrapper.html(`<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px; padding:12px 0 4px;">${cards.join("")}</div>`);
+	$wrapper.find(".tp-lead-card").on("click", function () {
+		const row = frm.fields_dict.technical_leads.grid.get_row($(this).data("row"));
+		if (row) row.show_form();
+	});
 };
 
 techpark.customer_master.contact_label = function (c) {
@@ -493,6 +523,7 @@ techpark.customer_master.render_visits = function (frm) {
 
 	let html = `<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
 		<span class="text-muted small" style="margin-right:4px;">${__("Show visits")}:</span>${buttons}
+		${frappe.model.can_create("Daily Visit Report") ? `<button type="button" class="btn btn-sm btn-primary tp-add-visit" style="margin-left:auto;">+ ${__("Add Visit")}</button>` : ""}
 	</div>`;
 	html += M.stats_html([
 		{ label: __("Visits"), value: visits.length },
@@ -502,12 +533,17 @@ techpark.customer_master.render_visits = function (frm) {
 		{ label: __("Latest Lead Status"), value: latest ? latest.lead_status : "—" },
 	]);
 	html += `<div class="tp-principal-status" style="margin-bottom:12px;"></div>`;
-	html += `<p class="text-muted small" style="margin:0;">${__(
-		"Add a row to log a visit — it is saved as a Daily Visit Report. Principals and their Development / Sales status are updated on the Visit Report itself (click its DVR ID)."
-	)}</p>`;
 
 	const wrapper = frm.fields_dict.visits_html.$wrapper;
 	wrapper.html(M.wrap(html));
+	// A new visit (DVR) for this customer: customer filled in, then contacts / open lines load on the visit
+	wrapper.find(".tp-add-visit").on("click", () => {
+		frappe.new_doc("Daily Visit Report", {
+			customer: frm.doc.name,
+			customer_name: frm.doc.customer_name,
+			visit_date: frappe.datetime.get_today(),
+		});
+	});
 	wrapper.find(".tp-visit-period").on("click", function () {
 		frm.__visit_period = $(this).data("period");
 		M.render_visits(frm);

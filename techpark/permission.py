@@ -58,7 +58,11 @@ def dvr_query_conditions(user=None, doctype=None):
 	if is_manager(user):
 		return ""
 	user = frappe.db.escape(user)
-	return f"(`tabDaily Visit Report`.visited_by = {user} or `tabDaily Visit Report`.owner = {user})"
+	return (
+		f"(`tabDaily Visit Report`.visited_by = {user} or `tabDaily Visit Report`.owner = {user}"
+		f" or exists (select 1 from `tabDVR Joint Visitor` j where j.parenttype = 'Daily Visit Report'"
+		f" and j.parent = `tabDaily Visit Report`.name and j.user = {user}))"
+	)
 
 
 def dvr_has_permission(doc, ptype=None, user=None):
@@ -67,7 +71,8 @@ def dvr_has_permission(doc, ptype=None, user=None):
 	if is_manager(user) or doc.is_new():
 		return True
 	if user not in (doc.visited_by, doc.owner):
-		return False
+		# A colleague on a joint visit may read it (the visit stays its Employee's)
+		return ptype in READ_PTYPES and user in {r.user for r in doc.get("joint_visitors") or []}
 	return not (ptype in LOCKED_PTYPES and is_locked(doc, user))
 
 

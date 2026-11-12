@@ -37,7 +37,8 @@ def get_columns():
 		{"fieldname": "regularised", "label": _("Regularised"), "fieldtype": "Data", "width": 110},
 		{"fieldname": "importance", "label": _("Importance"), "fieldtype": "Data", "width": 90},
 		{"fieldname": "stage", "label": _("Stage"), "fieldtype": "Data", "width": 100},
-		{"fieldname": "lead_stage", "label": _("Present Status"), "fieldtype": "Data", "width": 140},
+		{"fieldname": "lead_stage", "label": _("Status"), "fieldtype": "Data", "width": 140},
+		{"fieldname": "present_status", "label": _("Present Status"), "fieldtype": "Data", "width": 260},
 		{"fieldname": "stage_completed", "label": _("Progress"), "fieldtype": "Percent", "width": 85},
 		{"fieldname": "next_action", "label": _("Next Action"), "fieldtype": "Data", "width": 220},
 		{"fieldname": "next_action_date", "label": _("Next Action By"), "fieldtype": "Date", "width": 110},
@@ -69,7 +70,7 @@ def get_data(filters):
 		fields=[
 			"name", "customer", "customer_name", "application", "principal", "category_name", "spec", "size",
 			"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
-			"next_action_date", "follow_up", "last_visit", "last_dvr", "visits", "remarks",
+			"next_action_date", "follow_up", "last_visit", "last_dvr", "visits", "remarks", "present_status", "joint_with",
 			"invoice_oc", "samples", "trials", "bulk_trial_po", "regularised",
 		],
 		limit_page_length=0,
@@ -113,6 +114,7 @@ def get_data(filters):
 				"regularised": o.regularised,
 				"stage": o.stage,
 				"lead_stage": o.status,
+				"present_status": " ".join((o.present_status or "").split()),
 				"stage_completed": o.progress or STAGE_PROGRESS.get(o.status, 0),
 				"lead_status": o.lead_status,
 				"last_visit": o.last_visit,
@@ -120,7 +122,9 @@ def get_data(filters):
 				"next_action": o.next_action,
 				"next_action_date": o.next_action_date,
 				"follow_up": follow_up_state(o, open_todos, now),
-				"salesperson": frappe.utils.get_fullname(o.sales_person) if o.sales_person else "",
+				"salesperson": " / ".join(
+					filter(None, [frappe.utils.get_fullname(o.sales_person) if o.sales_person else "", (o.joint_with or "").replace(", ", " / ")])
+				),
 				"remarks": o.remarks,
 				"dvr": o.last_dvr,
 			}

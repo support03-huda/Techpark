@@ -39,9 +39,7 @@ frappe.ui.form.on("Daily Visit Report", {
 		frm.set_query("principal", () => ({ filters: { is_active: 1 } }));
 		// Application = one of the customer's Technical Leads for the principal
 		frm.set_query("technical_lead", () => {
-			const filters = { customer: frm.doc.customer || "" };
-			if (frm.doc.principal) filters.principal = frm.doc.principal;
-			return { filters };
+			return { filters: { customer: frm.doc.customer || "", principal: frm.doc.principal || "" } };
 		});
 		frm.set_query("supplier_product_category", () => ({
 			filters: { principal: frm.doc.principal || "", is_active: 1 },
@@ -193,6 +191,7 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 	if (!row.technical_lead) return;
 	const lead = await frappe.db.get_value("TP Technical Lead", row.technical_lead, [
 		"customer", "principal", "application", "supplier_product_category", "size_od", "size_t", "size_id",
+		"stage", "current_status",
 	]).then((r) => r.message || {});
 	if (lead.customer && frm.doc.customer && lead.customer !== frm.doc.customer) {
 		frappe.msgprint(__("This Technical Lead belongs to another customer."));
@@ -209,6 +208,17 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 			supplier_product_category: lead.supplier_product_category || "",
 			...(size ? { size } : {}),
 		});
+		// Continue from where the line stands (its last visit)
+		const visit_stage = frm.doc.dvr_stage;
+		if (lead.current_status && lead.stage === visit_stage) {
+			const field = visit_stage === "Sales" ? "sales_status" : "development_status";
+			if (!row[field]) await frappe.model.set_value(row.doctype, row.name, field, lead.current_status);
+		}
+		if (lead.stage === "Sales" && visit_stage === "Development") {
+			frappe.msgprint(__("{0} is already in the Sales stage ({1}). Set the visit's Stage to Sales.", [
+				lead.application, __(lead.current_status || "Sales"),
+			]));
+		}
 	} finally {
 		techpark.dvr.filling_from_lead = false;
 	}

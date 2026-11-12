@@ -22,6 +22,7 @@
   "distributor",
   "visited_by",
   "employee_name",
+  "joint_visitors",
   "plant",
   "plant_name",
   "segment_application",
@@ -30,6 +31,7 @@
   "technical_lead",
   "application",
   "supplier_product_category",
+  "product_name",
   "column_break_principal",
   "development_status",
   "sales_status",
@@ -155,7 +157,6 @@
    "options": "Visit\nPhone Call\nEmail\nVideo Call\nWhatsApp\nMeeting",
    "default": "Visit",
    "reqd": 1,
-   "in_list_view": 1,
    "in_standard_filter": 1
   },
   {
@@ -193,6 +194,12 @@
    "fieldtype": "Data",
    "label": "Employee Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "joint_visitors",
+   "fieldtype": "Table MultiSelect",
+   "label": "Joint Visit With",
+   "options": "DVR Joint Visitor"
   },
   {
    "fieldname": "plant",
@@ -237,15 +244,18 @@
    "fieldtype": "Link",
    "label": "Application",
    "options": "TP Technical Lead",
-   "allow_on_submit": 1
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.principal"
   },
   {
    "fieldname": "application",
    "fieldtype": "Data",
-   "label": "Application Name",
+   "label": "Application Line",
    "bold": 1,
    "read_only_depends_on": "eval:doc.technical_lead",
-   "allow_on_submit": 1
+   "allow_on_submit": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "supplier_product_category",
@@ -253,6 +263,17 @@
    "in_standard_filter": 1,
    "label": "Principal Product Category",
    "options": "Supplier Product Category",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "product_name",
+   "fieldtype": "Data",
+   "label": "Product",
+   "fetch_from": "supplier_product_category.category_name",
+   "read_only": 1,
+   "depends_on": "eval:false",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "allow_on_submit": 1
   },
   {
@@ -319,7 +340,6 @@
    "label": "Principals",
    "read_only": 1,
    "hidden": 1,
-   "in_list_view": 1,
    "in_standard_filter": 0,
    "allow_on_submit": 1
   },
@@ -410,7 +430,7 @@
   {
    "fieldname": "discussion_notes",
    "fieldtype": "Text",
-   "label": "Discussion / Meeting Notes",
+   "label": "Present Status / Discussion",
    "reqd": 1
   },
   {
@@ -476,7 +496,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-06 21:00:00.000000",
+ "modified": "2026-11-12 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

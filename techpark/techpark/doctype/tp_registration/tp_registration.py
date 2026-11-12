@@ -9,9 +9,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, now_datetime
-from frappe.utils.data import get_url_to_workspace
 
-from techpark.login import WORKSPACE
+from techpark.login import HOME
 from techpark.registration import find_employee_by_email, get_free_employees, is_approver
 
 APPROVER_ROLE = "TechPark Approver"
@@ -80,11 +79,11 @@ class TPRegistration(Document):
 		record.save(ignore_permissions=True)
 
 	def send_welcome_mail(self, user, role):
-		"""Welcome email with the set-password link; after setting it the person lands on the TechPark desk."""
+		"""Welcome email with the set-password link; after setting it the person lands on the TechPark Dashboard."""
 		if not has_outgoing_email():
 			return False
 		# Where /update-password sends the person once the password is set.
-		frappe.db.set_value("User", user.name, "redirect_url", get_url_to_workspace(WORKSPACE, 1))
+		frappe.db.set_value("User", user.name, "redirect_url", frappe.utils.get_url(HOME))
 		frappe.cache.hdel("redirect_after_login", user.name)
 		link = user._reset_password()
 		message = f"""
