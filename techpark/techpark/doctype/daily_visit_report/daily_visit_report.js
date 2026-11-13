@@ -274,7 +274,7 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 // on an earlier visit?
 // Then the row starts in the Sales stage.
 techpark.dvr.check_development = async function (frm, row) {
-	if (!row.principal || frm.doc.docstatus !== 0) return;
+	if (!row.principal || !frm.doc.customer || frm.doc.docstatus !== 0) return;
 	const done = await frappe.xcall("techpark.techpark.doctype.daily_visit_report.daily_visit_report.development_done", {
 		customer: frm.doc.customer,
 		principal: row.principal,

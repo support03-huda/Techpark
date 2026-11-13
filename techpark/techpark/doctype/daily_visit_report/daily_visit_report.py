@@ -115,7 +115,7 @@ def dvr_stage(stages):
 
 
 @frappe.whitelist()
-def development_done(customer, principal, supplier_product_category=None, exclude=None, application=None, spec=None):
+def development_done(customer=None, principal=None, supplier_product_category=None, exclude=None, application=None, spec=None):
 	"""True when an earlier submitted visit of this customer recorded a successful trial (or already
 	reached the Sales stage) for this application line, principal, product category and spec."""
 	if not (customer and principal):
