@@ -63,6 +63,7 @@ TABLES = {
 		"display": lambda names: _lead_status(names),
 		"fields": [
 			"principal",
+			"application_master",
 			"application",
 			"grinding_process",
 			"supplier_product_category",

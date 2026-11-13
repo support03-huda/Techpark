@@ -47,3 +47,4 @@ techpark.patches.technical_lead_status
 techpark.patches.remove_techpark_workspace
 techpark.patches.dvr_product_name
 techpark.patches.technical_lead_status #present status
+techpark.patches.link_common_applications

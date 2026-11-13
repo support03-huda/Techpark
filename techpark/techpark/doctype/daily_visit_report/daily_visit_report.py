@@ -18,6 +18,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate, today
 
+from techpark.application import get_or_create_lead
 from techpark.opportunity import refresh_opportunity, sync_visit
 from techpark.permission import is_locked, is_manager
 
@@ -256,8 +257,18 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def set_lead_from_application(self):
+		"""Application picked from the common list: use (or make) the customer's Technical Lead for it."""
+		if not (self.get("application_master") and self.customer and self.principal):
+			return
+		if self.technical_lead and frappe.db.get_value("TP Technical Lead", self.technical_lead, "application_master") == self.application_master:
+			return
+		self.technical_lead = get_or_create_lead(self.customer, self.principal, self.application_master)
+
 	def line_to_row(self):
 		"""The visit's Application Line fields -> its first principal row (made if missing)."""
+		if self.docstatus == 0:
+			self.set_lead_from_application()
 		if not (self.development_status or self.sales_status or self.technical_lead):
 			return  # no line entered here (e.g. a visit from the customer's Visits tab): add_row_from_summary
 		row = self.principals[0] if self.principals else self.append("principals", {})

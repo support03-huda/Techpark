@@ -141,8 +141,12 @@ def get_chart(rows):
 	return {
 		"data": {
 			"labels": stages,
-			"datasets": [{"name": _("Opportunities"), "values": [sum(r["lead_stage"] == s for r in rows) for s in stages]}],
+			"datasets": [
+				{"name": _(stage), "values": [sum(r["lead_stage"] == s and r["stage"] == stage for r in rows) for s in stages]}
+				for stage in ("Development", "Sales")
+			],
 		},
 		"type": "bar",
-		"colors": ["#2490ef"],
+		"colors": ["#f59f00", "#228be6"],
+		"barOptions": {"stacked": 1, "spaceRatio": 0.35},
 	}

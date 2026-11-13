@@ -74,7 +74,7 @@ def _meta_checks():
 
 	def dvr():
 		f = _fields("Daily Visit Report")
-		for n in ("dvr_stage", "principal", "technical_lead", "application", "development_status", "sales_status", "opportunity"):
+		for n in ("dvr_stage", "principal", "application_master", "application", "development_status", "sales_status", "opportunity"):
 			expect(n in f and not f[n].hidden, f"DVR.{n} missing or hidden")
 		for n in ("contact", "contact_designation", "contact_phone", "visit_purpose", "department",
 		          "application_potentials", "competitor_line_activity", "segment_application", "principals"):
@@ -219,7 +219,26 @@ def _dvr_checks(ctx):
 	check("DVR: Sales visit requires Sales Status", sales_needs_status)
 	check("DVR: Sales visit", sales_visit)
 	check("DVR: Development visit blocked once the line is in Sales", development_after_sales)
+	def common_application():
+		# An application from the common list that this customer does not have yet
+		industry = frappe.db.get_value("TP Customer", ctx.customer, "industry_domain")
+		app = frappe.get_doc({"doctype": "Customer Application", "application_name": "Run Checks Common App",
+		                      "industry_domain": industry, "is_active": 1}).insert()
+		from techpark.application import application_query
+		listed = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer})]
+		expect(app.name in listed, "common application of the customer's industry not in the dropdown")
+		dvr = frappe.get_doc({
+			"doctype": "Daily Visit Report", "visit_date": today(), "customer": ctx.customer, "dvr_type": "Visit",
+			"dvr_stage": "Development", "visited_by": "Administrator", "principal": ctx.lead1.principal,
+			"application_master": app.name, "development_status": "Introduction", "discussion_notes": "run_checks",
+		}).insert()
+		lead = frappe.db.get_value("TP Technical Lead", dvr.technical_lead, ["customer", "application_master", "application"], as_dict=True)
+		expect(lead and lead.customer == ctx.customer and lead.application_master == app.name, "customer's lead not made")
+		expect(dvr.application == "Run Checks Common App", f"application name {dvr.application!r}")
+		return f"dropdown ok; lead {dvr.technical_lead} made for the customer"
+
 	check("DVR: lead of another customer is blocked", cross_customer_lead)
+	check("DVR: common Application list -> customer's lead made", common_application)
 
 
 # ---------------------------------------------------------------------------
@@ -287,6 +306,17 @@ def _report_checks(ctx):
 	check("Report: Development Board", board)
 	check("Report: Application Development Status", application_report)
 	check("Report: TP Tour Expense", tour_expense)
+
+	def application_wise():
+		from frappe.desk.query_report import run
+
+		result = run("Application Wise Status", filters={})
+		rows = result["result"]
+		groups = [r for r in rows if r.get("is_group")]
+		expect(groups, "no application groups")
+		return f"{len(groups)} applications, {len(rows) - len(groups)} customer lines"
+
+	check("Report: Application Wise Status", application_wise)
 
 
 # ---------------------------------------------------------------------------

@@ -28,6 +28,7 @@
   "segment_application",
   "section_principal",
   "principal",
+  "application_master",
   "technical_lead",
   "application",
   "supplier_product_category",
@@ -240,19 +241,27 @@
    "allow_on_submit": 1
   },
   {
-   "fieldname": "technical_lead",
+   "fieldname": "application_master",
    "fieldtype": "Link",
    "label": "Application",
+   "options": "Customer Application",
+   "depends_on": "eval:doc.principal",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "technical_lead",
+   "fieldtype": "Link",
+   "label": "Technical Lead",
    "options": "TP Technical Lead",
    "allow_on_submit": 1,
-   "depends_on": "eval:doc.principal"
+   "hidden": 1
   },
   {
    "fieldname": "application",
    "fieldtype": "Data",
    "label": "Application Line",
    "bold": 1,
-   "read_only_depends_on": "eval:doc.technical_lead",
+   "read_only_depends_on": "eval:doc.technical_lead || doc.application_master",
    "allow_on_submit": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
@@ -496,7 +505,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-12 17:00:00.000000",
+ "modified": "2026-11-13 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
