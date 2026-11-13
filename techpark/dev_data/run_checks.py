@@ -74,8 +74,16 @@ def _meta_checks():
 
 	def dvr():
 		f = _fields("Daily Visit Report")
-		for n in ("dvr_stage", "principal", "application_master", "application", "development_status", "sales_status", "opportunity"):
+		for n in ("dvr_stage", "principal", "application_master", "spec", "size", "production_line", "customer_product",
+		          "development_status", "sales_status", "opportunity"):
 			expect(n in f and not f[n].hidden, f"DVR.{n} missing or hidden")
+		for n in ("application", "supplier_product_category", "technical_lead"):
+			expect(f[n].hidden, f"DVR.{n} should be hidden (filled from the Application)")
+		expect(f["spec"].label == "Principal Product Spec" and f["size"].label == "Principal Product Size", "spec / size labels")
+		order = [x.fieldname for x in frappe.get_meta("Daily Visit Report").fields]
+		section = order[order.index("section_principal") + 1 : order.index("column_break_principal")]
+		left = [n for n in section if not f[n].hidden and f[n].depends_on != "eval:false"]
+		expect(left == ["principal", "application_master", "customer_product", "production_line"], f"left side {left}")
 		for n in ("contact", "contact_designation", "contact_phone", "visit_purpose", "department",
 		          "application_potentials", "competitor_line_activity", "segment_application", "principals"):
 			expect(f[n].hidden, f"DVR.{n} should be hidden")
@@ -98,6 +106,16 @@ def _meta_checks():
 	check("meta: TP Technical Lead", technical_lead)
 	check("meta: DVR form", dvr)
 	check("meta: TP Customer tabs", customer)
+
+	def hierarchy():
+		expect("industry_domain" in _fields("Customer Product"), "Customer Product has no Industry Segment")
+		f = _fields("Customer Application")
+		expect(f["product"].reqd, "Application master: Product should be required")
+		for n in ("supplier_product_category", "principal", "spec", "size", "production_line"):
+			expect(n in f, f"Application master.{n} missing")
+		return "Industry Segment -> Product -> Application"
+
+	check("meta: Industry Segment -> Product -> Application", hierarchy)
 
 
 # ---------------------------------------------------------------------------
@@ -220,25 +238,89 @@ def _dvr_checks(ctx):
 	check("DVR: Sales visit", sales_visit)
 	check("DVR: Development visit blocked once the line is in Sales", development_after_sales)
 	def common_application():
-		# An application from the common list that this customer does not have yet
-		industry = frappe.db.get_value("TP Customer", ctx.customer, "industry_domain")
-		app = frappe.get_doc({"doctype": "Customer Application", "application_name": "Run Checks Common App",
-		                      "industry_domain": industry, "is_active": 1}).insert()
-		from techpark.application import application_query
-		listed = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer})]
-		expect(app.name in listed, "common application of the customer's industry not in the dropdown")
+		# Bearing -> BB -> "Run Checks Common App", usable by any customer
+		industry = frappe.db.get_value("TP Customer", ctx.customer, "industry_domain") or frappe.db.get_value("Industry Domain", {})
+		product = frappe.get_doc({"doctype": "Customer Product", "product_name": "Run Checks BB", "industry_domain": industry}).insert()
+		category = frappe.db.get_value("Supplier Product Category", {"principal": ctx.lead1.principal}, "name")
+		app = frappe.get_doc({
+			"doctype": "Customer Application", "application_name": "Run Checks Common App", "product": product.name,
+			"supplier_product_category": category, "spec": "RC-SPEC", "size": "100x20x30", "production_line": "Line RC",
+			"is_active": 1,
+		}).insert()
+		expect(app.industry_domain == industry, "Industry Segment not taken from the Product")
+		ctx.common_app = app
+		from techpark.application import application_query, line_details
+		rows = application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer, "principal": ctx.lead1.principal})
+		listed = {r[0]: r for r in rows}
+		expect(app.name in listed, "common application not in the dropdown")
+		expect(listed[app.name][1] == "Run Checks BB", f"dropdown does not show the product: {listed[app.name]}")
+		other = frappe.db.get_value("Principal", {"name": ("!=", ctx.lead1.principal)})
+		if category and other:
+			hidden = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer, "principal": other})]
+			expect(app.name not in hidden, "another principal's application shows in the dropdown")
+		someone = frappe.db.get_value("TP Customer", {"name": ("!=", ctx.customer)})
+		if someone:
+			anyone = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": someone, "principal": ctx.lead1.principal})]
+			expect(app.name in anyone, "application not offered to another customer")
+		filled = line_details(ctx.customer, ctx.lead1.principal, app.name)["application"]
+		for k, v in (("spec", "RC-SPEC"), ("size", "100x20x30"), ("production_line", "Line RC"), ("product", product.name)):
+			expect(str(filled.get(k)) == str(v), f"autofill {k}: {filled.get(k)!r}")
 		dvr = frappe.get_doc({
 			"doctype": "Daily Visit Report", "visit_date": today(), "customer": ctx.customer, "dvr_type": "Visit",
 			"dvr_stage": "Development", "visited_by": "Administrator", "principal": ctx.lead1.principal,
 			"application_master": app.name, "development_status": "Introduction", "discussion_notes": "run_checks",
+			"spec": filled.spec, "size": filled.size, "production_line": filled.production_line, "customer_product": filled.product,
 		}).insert()
-		lead = frappe.db.get_value("TP Technical Lead", dvr.technical_lead, ["customer", "application_master", "application"], as_dict=True)
-		expect(lead and lead.customer == ctx.customer and lead.application_master == app.name, "customer's lead not made")
+		lead = frappe.get_doc("TP Technical Lead", dvr.technical_lead)
+		expect(lead.customer == ctx.customer and lead.application_master == app.name, "customer's lead not made")
+		expect(lead.production_line == "Line RC" and str(lead.product) == str(product.name), "lead did not take Production Line / Product")
+		if category:
+			expect(str(lead.supplier_product_category) == str(category), f"lead category {lead.supplier_product_category!r}, expected {category!r} (master principal {frappe.db.get_value('Customer Application', app.name, 'principal')!r})")
 		expect(dvr.application == "Run Checks Common App", f"application name {dvr.application!r}")
-		return f"dropdown ok; lead {dvr.technical_lead} made for the customer"
+		expect(dvr.product_name == "Run Checks BB", f"DVR list Product {dvr.product_name!r}")
+		ctx.common_dvr = dvr
+		return f"dropdown + autofill ok; lead {dvr.technical_lead} made"
+
+	def submitted_keeps_name():
+		# The master is renamed later: a submitted visit keeps its name and the customer still saves
+		dvr = ctx.common_dvr
+		dvr.submit()
+		frappe.db.set_value("Customer Application", ctx.common_app.name, "application_name", "Run Checks Renamed")
+		frappe.get_doc("TP Technical Lead", dvr.technical_lead).save()
+		frappe.get_doc("TP Customer", ctx.customer).save()
+		dvr.reload()
+		expect(dvr.application == "Run Checks Common App", f"submitted visit renamed to {dvr.application!r}")
+		return "customer saves, visit keeps its name"
+
+	def development_done_without_customer():
+		from techpark.techpark.doctype.daily_visit_report.daily_visit_report import development_done
+
+		expect(development_done(principal=ctx.lead1.principal) is False, "should be False")
+		return "no error"
+
+	def own_data_only():
+		from techpark.permission import dvr_query_conditions, is_manager
+
+		email = "run.checks.salesmanager@example.com"
+		user = frappe.get_doc({"doctype": "User", "email": email, "first_name": "RC", "send_welcome_email": 0,
+		                       "roles": [{"role": "Sales Manager"}, {"role": "Sales User"}]}).insert(ignore_permissions=True)
+		expect(not is_manager(user.name), "a Sales Manager should not see everyone's")
+		expect(dvr_query_conditions(user.name), "no DVR filter for a Sales Manager")
+		expect(is_manager("Administrator"), "admin should see all")
+		frappe.set_user(email)
+		try:
+			seen = frappe.get_list("Daily Visit Report", pluck="name", limit_page_length=0)
+		finally:
+			frappe.set_user("Administrator")
+		expect(ctx.common_dvr.name not in seen, "sees someone else's DVR")
+		return f"sees {len(seen)} DVRs (own only)"
 
 	check("DVR: lead of another customer is blocked", cross_customer_lead)
-	check("DVR: common Application list -> customer's lead made", common_application)
+	check("DVR: Application -> everything autofills, lead made", common_application)
+	if ctx.get("common_dvr"):
+		check("DVR: submitted visit keeps its name when the master is renamed", submitted_keeps_name)
+		check("DVR: each user sees only their own", own_data_only)
+	check("DVR: principal picked before customer -> no error", development_done_without_customer)
 
 
 # ---------------------------------------------------------------------------
@@ -312,9 +394,10 @@ def _report_checks(ctx):
 
 		result = run("Application Wise Status", filters={})
 		rows = result["result"]
-		groups = [r for r in rows if r.get("is_group")]
-		expect(groups, "no application groups")
-		return f"{len(groups)} applications, {len(rows) - len(groups)} customer lines"
+		levels = {i: [r for r in rows if r.get("indent") == i] for i in range(4)}
+		expect(levels[0] and levels[1] and levels[2], "missing Industry / Product / Application levels")
+		expect(all(r.get("is_group") for i in (0, 1, 2) for r in levels[i]), "group rows")
+		return f"{len(levels[0])} segments, {len(levels[1])} products, {len(levels[2])} applications, {len(levels[3])} customer lines"
 
 	check("Report: Application Wise Status", application_wise)
 

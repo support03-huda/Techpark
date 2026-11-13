@@ -1,6 +1,6 @@
 # Copyright (c) 2026, Techpark International
-"""Record-level access: a Sales User sees only their own Daily Visit Reports;
-Sales Managers and admins see everyone's. Visit Reports lock for salespeople a set
+"""Record-level access: every user sees only their own Daily Visit Reports (and those they joined);
+admins see everyone's. Visit Reports lock for salespeople a set
 number of days after they were entered (TechPark Settings).
 
 Expenses follow the reporting line (TP Team Member): approvers and admins see all of them,
@@ -10,8 +10,8 @@ import frappe
 from frappe import _
 from frappe.utils import date_diff, getdate, today
 
-# Roles that see every DVR and may change locked entries.
-MANAGER_ROLES = {"Sales Manager", "TechPark Approver", "System Manager"}
+# Admin roles: see every DVR / dashboard and may change locked entries.
+MANAGER_ROLES = {"TechPark Approver", "System Manager"}
 # Actions the lock takes away from a salesperson.
 LOCKED_PTYPES = {"write", "submit", "cancel", "delete", "amend"}
 # Roles that give the final approval of expenses and see everybody's.
@@ -28,7 +28,7 @@ def is_manager(user=None):
 def has_app_permission():
 	"""TechPark tile on the apps screen: salespeople, managers and admins."""
 	user = frappe.session.user
-	return user == "Administrator" or bool((MANAGER_ROLES | {"Sales User"}) & set(frappe.get_roles(user)))
+	return user == "Administrator" or bool((MANAGER_ROLES | {"Sales Manager", "Sales User"}) & set(frappe.get_roles(user)))
 
 
 def is_locked(doc, user=None):

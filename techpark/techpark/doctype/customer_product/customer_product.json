@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "product_name",
+  "industry_domain",
   "product_category",
   "segment",
   "description",
@@ -20,6 +21,14 @@
    "in_list_view": 1,
    "label": "Product name",
    "reqd": 1
+  },
+  {
+   "fieldname": "industry_domain",
+   "fieldtype": "Link",
+   "label": "Industry Segment",
+   "options": "Industry Domain",
+   "in_list_view": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "product_category",
@@ -48,7 +57,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-16 12:43:30.664357",
+ "modified": "2026-11-13 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Product",
@@ -98,5 +107,6 @@
  "sort_order": "DESC",
  "states": [],
  "title_field": "product_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "industry_domain"
 }

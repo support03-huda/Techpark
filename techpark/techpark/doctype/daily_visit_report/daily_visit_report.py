@@ -343,7 +343,9 @@ class DailyVisitReport(Document):
 				frappe.throw(
 					_("Application {0} is a Technical Lead of another customer.").format(frappe.bold(lead.application))
 				)
-			row.application = (lead and lead.application) or row.application
+			# A submitted visit keeps the name it was made with (the lead may be renamed later)
+			if self.docstatus == 0 or not row.application:
+				row.application = (lead and lead.application) or row.application
 		for field in ("application", "spec", "size"):
 			row.set(field, (row.get(field) or "").strip() or None)
 		if not row.application:

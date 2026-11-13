@@ -10,7 +10,7 @@ their own work, managers the whole team.
 import frappe
 from frappe.utils import add_days, getdate, today
 
-MANAGER_ROLES = {"Sales Manager", "System Manager"}
+from techpark.permission import MANAGER_ROLES
 PROSPECT_STALE_DAYS = 7
 LEAD_REPORT = "Application Development Status"
 

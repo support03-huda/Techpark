@@ -10,14 +10,18 @@ from frappe.utils import cstr
 class TPTechnicalLead(Document):
 	def validate(self):
 		if self.application_master:
-			# Common application list (industry-wise): the name comes from the master
+			# Common application list: the name (and defaults) come from the master
 			master = frappe.db.get_value(
-				"Customer Application", self.application_master, ["application_name", "grinding_process", "product"], as_dict=True
+				"Customer Application", self.application_master, ["application_name", "grinding_process", "product", "supplier_product_category", "principal", "production_line"],
+				as_dict=True,
 			)
 			if master:
 				self.application = master.application_name
 				self.grinding_process = self.grinding_process or master.grinding_process
 				self.product = self.product or master.product
+				self.production_line = self.production_line or master.production_line
+				if not self.supplier_product_category and master.supplier_product_category and master.principal == self.principal:
+					self.supplier_product_category = master.supplier_product_category
 		self.application = cstr(self.application).strip()
 		if not self.application:
 			frappe.throw(_("Pick the Application."))

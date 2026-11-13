@@ -57,12 +57,12 @@
   {
    "fieldname": "spec",
    "fieldtype": "Data",
-   "label": "Wheel Spec"
+   "label": "Principal Product Spec"
   },
   {
    "fieldname": "size",
    "fieldtype": "Data",
-   "label": "Size"
+   "label": "Principal Product Size"
   },
   {
    "fieldname": "supplier_product_category",
@@ -177,7 +177,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-11-06 14:00:00.000000",
+ "modified": "2026-11-13 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "DVR Principal",

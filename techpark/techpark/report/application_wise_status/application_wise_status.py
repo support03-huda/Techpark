@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Techpark International
-"""Application Wise Status: every application of the common list (Customer Application) with the
+"""Application Wise Status: Industry Segment -> Product -> Application (the common list) -> the
 customers that have it (their Technical Lead) and where each stands (its opportunity from visits).
-A group row per application with its totals, the customers under it. Salespeople see the status
+Group rows carry their totals. Salespeople see the status
 only of their own opportunities."""
 
 import frappe
@@ -22,11 +22,9 @@ def execute(filters=None):
 
 def get_columns():
 	return [
-		{"fieldname": "label", "label": _("Application / Customer"), "fieldtype": "Data", "width": 260},
+		{"fieldname": "label", "label": _("Industry / Product / Application / Customer"), "fieldtype": "Data", "width": 300},
 		{"fieldname": "customers", "label": _("Customers"), "fieldtype": "Int", "width": 90},
-		{"fieldname": "industry", "label": _("Industry"), "fieldtype": "Data", "width": 110},
-		{"fieldname": "product", "label": _("Product"), "fieldtype": "Data", "width": 120},
-		{"fieldname": "process", "label": _("Process"), "fieldtype": "Data", "width": 110},
+				{"fieldname": "process", "label": _("Process"), "fieldtype": "Data", "width": 110},
 		{"fieldname": "principal", "label": _("Principal"), "fieldtype": "Data", "width": 95},
 		{"fieldname": "category", "label": _("Category"), "fieldtype": "Data", "width": 120},
 		{"fieldname": "demand", "label": _("Annual Demand"), "fieldtype": "Currency", "options": "currency", "width": 130},
@@ -111,59 +109,85 @@ def get_data(filters):
 	for l in leads:
 		by_app.setdefault(l.application_master, []).append(l)
 
+	# Industry Segment -> Product -> Application
+	tree = {}
+	for app_name in by_app:
+		app = apps[app_name]
+		industry = app.industry_domain or _("No Industry Segment")
+		product = products.get(str(app.product)) or _("No Product")
+		tree.setdefault(industry, {}).setdefault(product, []).append(app_name)
+
+	def leads_of(app_names):
+		return [l for a in app_names for l in by_app[a]]
+
+	def demand(rows):
+		return sum(flt(l.annual_demand_amount) for l in rows)
+
 	data, groups = [], []
-	for app_name in sorted(by_app, key=lambda a: (-sum(flt(l.annual_demand_amount) for l in by_app[a]), apps[a].application_name)):
-		app, rows = apps[app_name], by_app[app_name]
-		dev = sum(1 for l in rows if l.stage == "Development")
-		sales = sum(1 for l in rows if l.stage == "Sales")
-		demand = sum(flt(l.annual_demand_amount) for l in rows)
-		group = {
-			"name": app_name,
-			"parent": None,
-			"indent": 0,
-			"is_group": 1,
-			"label": app.application_name,
-			"customers": len({l.customer for l in rows}),
-			"industry": app.industry_domain,
-			"product": products.get(str(app.product), ""),
-			"process": app.grinding_process,
-			"demand": demand,
-			"quantity": sum(flt(l.annual_quantity) for l in rows),
-			"stage": " · ".join(p for p in (f"{dev} {_('Dev')}" if dev else "", f"{sales} {_('Sales')}" if sales else "") if p),
-			"progress": ", ".join(f"{n} {p}" for p, n in _count(l.progress for l in rows)),
-			"_dev": dev,
-			"_sales": sales,
-		}
-		data.append(group)
-		groups.append(group)
-		for l in sorted(rows, key=lambda l: -flt(l.annual_demand_amount)):
-			o = opps.get(l.opportunity) or frappe._dict()
-			person = frappe.utils.get_fullname(o.sales_person) if o.sales_person else ""
-			data.append(
-				{
-					"name": l.name,
-					"parent": app_name,
-					"indent": 1,
-					"label": l.customer_name or l.customer,
-					"principal": l.principal,
-					"category": categories.get(str(l.supplier_product_category), ""),
-					"process": l.grinding_process,
-					"demand": flt(l.annual_demand_amount) or None,
-					"quantity": flt(l.annual_quantity) or None,
-					"share": "  ".join(f"{label} {round(flt(l.get(f)))}%" for f, label in SHARES if l.get(f)),
-					"progress": l.progress,
-					"stage": l.stage,
-					"status": l.current_status,
-					"present_status": " ".join((o.present_status or "").split()),
-					"next_action": o.next_action,
-					"next_action_date": o.next_action_date,
-					"last_visit": l.last_visit,
-					"sales_person": " / ".join(filter(None, [person, (o.joint_with or "").replace(", ", " / ")])),
-					"lead": l.name,
-					"opportunity": l.opportunity,
-				}
-			)
+	for industry in sorted(tree, key=lambda i: -demand(leads_of(a for p in tree[i].values() for a in p))):
+		industry_key = "IND::" + industry
+		data.append(_group_row(industry_key, None, 0, industry, leads_of(a for p in tree[industry].values() for a in p)))
+		for product in sorted(tree[industry], key=lambda p: -demand(leads_of(tree[industry][p]))):
+			product_key = f"PRD::{industry}::{product}"
+			data.append(_group_row(product_key, industry_key, 1, product, leads_of(tree[industry][product])))
+			for app_name in sorted(tree[industry][product], key=lambda a: (-demand(by_app[a]), apps[a].application_name)):
+				app, rows = apps[app_name], by_app[app_name]
+				group = _group_row(app_name, product_key, 2, app.application_name, rows)
+				group.update(
+					{
+						"process": app.grinding_process,
+						"progress": ", ".join(f"{n} {p}" for p, n in _count(l.progress for l in rows)),
+					}
+				)
+				data.append(group)
+				groups.append(group)
+				for l in sorted(rows, key=lambda l: -flt(l.annual_demand_amount)):
+					o = opps.get(l.opportunity) or frappe._dict()
+					person = frappe.utils.get_fullname(o.sales_person) if o.sales_person else ""
+					data.append(
+						{
+							"name": l.name,
+							"parent": app_name,
+							"indent": 3,
+							"label": l.customer_name or l.customer,
+							"principal": l.principal,
+							"category": categories.get(str(l.supplier_product_category), ""),
+							"process": l.grinding_process,
+							"demand": flt(l.annual_demand_amount) or None,
+							"quantity": flt(l.annual_quantity) or None,
+							"share": "  ".join(f"{label} {round(flt(l.get(f)))}%" for f, label in SHARES if l.get(f)),
+							"progress": l.progress,
+							"stage": l.stage,
+							"status": l.current_status,
+							"present_status": " ".join((o.present_status or "").split()),
+							"next_action": o.next_action,
+							"next_action_date": o.next_action_date,
+							"last_visit": l.last_visit,
+							"sales_person": " / ".join(filter(None, [person, (o.joint_with or "").replace(", ", " / ")])),
+							"lead": l.name,
+							"opportunity": l.opportunity,
+						}
+					)
 	return data, groups
+
+
+def _group_row(key, parent, indent, label, rows):
+	"""A group row (industry segment, product or application) with its totals."""
+	dev = sum(1 for l in rows if l.stage == "Development")
+	sales = sum(1 for l in rows if l.stage == "Sales")
+	return {
+		"name": key,
+		"parent": parent,
+		"indent": indent,
+		"is_group": 1,
+		"label": label,
+		"customers": len({l.customer for l in rows}),
+		"demand": sum(flt(l.annual_demand_amount) for l in rows),
+		"quantity": sum(flt(l.annual_quantity) for l in rows),
+		"stage": " · ".join(p for p in (f"{dev} {_('Dev')}" if dev else "", f"{sales} {_('Sales')}" if sales else "") if p),
+		"_dev": dev,
+		"_sales": sales,
+	}
 
 
 def _count(values):

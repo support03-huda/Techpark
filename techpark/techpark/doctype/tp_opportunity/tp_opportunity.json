@@ -116,12 +116,12 @@
   {
    "fieldname": "spec",
    "fieldtype": "Data",
-   "label": "Wheel Spec"
+   "label": "Principal Product Spec"
   },
   {
    "fieldname": "size",
    "fieldtype": "Data",
-   "label": "Size"
+   "label": "Principal Product Size"
   },
   {
    "fieldname": "importance",
@@ -325,7 +325,7 @@
    "group": "Visits"
   }
  ],
- "modified": "2026-11-12 17:00:00.000000",
+ "modified": "2026-11-13 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",

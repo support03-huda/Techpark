@@ -160,7 +160,7 @@ frappe.ui.form.on("Daily Visit Report", {
 			customer: d.customer, principal: d.principal, application: d.application_master,
 		});
 		if (lead) {
-			if (d.technical_lead === lead) techpark.dvr.fill_from_lead(frm, d);
+			if (d.technical_lead === lead) await techpark.dvr.fill_from_lead(frm, d);
 			else await frm.set_value("technical_lead", lead); // triggers fill_from_lead
 		} else {
 			// New for this customer: its Technical Lead is made when the visit is saved
@@ -170,8 +170,9 @@ frappe.ui.form.on("Daily Visit Report", {
 			} finally {
 				techpark.dvr.filling_from_lead = false;
 			}
-			techpark.dvr.check_development(frm, d);
 		}
+		await techpark.dvr.fill_from_application(frm, application, !lead);
+		if (!lead) techpark.dvr.check_development(frm, d);
 	},
 
 	// Picking a Technical Lead fills the line from it
@@ -207,6 +208,25 @@ frappe.ui.form.on("Daily Visit Report", {
 // "Create a new TP Technical Lead" opens the full Technical Lead form pre-filled; after
 // saving it Frappe returns to this visit and sets the new lead. The link control reads
 // this from the visit's own copy of the field, so it is set on every refresh (the name changes on save).
+// The Application master's defaults (category, spec, size); overwrite = a new line, else only blanks
+techpark.dvr.fill_from_application = async function (frm, app, overwrite) {
+	if (!app) return;
+	const d = frm.doc, values = {};
+	const put = (field, value) => { if (value && (overwrite || !d[field])) values[field] = value; };
+	if (app.supplier_product_category && (!app.principal || app.principal === d.principal)) put("supplier_product_category", app.supplier_product_category);
+	put("spec", app.spec);
+	put("size", app.size);
+	put("production_line", app.production_line);
+	put("customer_product", app.product);
+	if (!Object.keys(values).length) return;
+	techpark.dvr.filling_from_lead = true;
+	try {
+		await frm.set_value(values);
+	} finally {
+		techpark.dvr.filling_from_lead = false;
+	}
+};
+
 techpark.dvr.set_new_application_defaults = async function (frm) {
 	const df = frappe.meta.get_docfield("Daily Visit Report", "application_master", frm.doc.name);
 	if (!df) return;
@@ -233,7 +253,7 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 	if (!row.technical_lead) return;
 	const lead = await frappe.db.get_value("TP Technical Lead", row.technical_lead, [
 		"customer", "principal", "application", "supplier_product_category", "size_od", "size_t", "size_id",
-		"stage", "current_status", "application_master",
+		"stage", "current_status", "application_master", "production_line", "product",
 	]).then((r) => r.message || {});
 	if (lead.customer && frm.doc.customer && lead.customer !== frm.doc.customer) {
 		frappe.msgprint(__("This Technical Lead belongs to another customer."));
@@ -253,6 +273,13 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 			supplier_product_category: lead.supplier_product_category || "",
 			...(size ? { size } : {}),
 		});
+		if (row === frm.doc) {
+			// the customer's own Production Line / Product (from the Technical Lead)
+			const own = {};
+			if (lead.production_line) own.production_line = lead.production_line;
+			if (lead.product) own.customer_product = lead.product;
+			if (Object.keys(own).length) await frm.set_value(own);
+		}
 		// Continue from where the line stands (its last visit)
 		const visit_stage = frm.doc.dvr_stage;
 		if (lead.current_status && lead.stage === visit_stage) {

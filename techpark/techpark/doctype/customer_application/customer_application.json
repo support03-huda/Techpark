@@ -7,10 +7,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "application_name",
   "industry_domain",
   "product",
+  "application_name",
   "grinding_process",
+  "supplier_product_category",
+  "principal",
+  "spec",
+  "size",
+  "production_line",
   "division",
   "department",
   "application_code",
@@ -20,19 +25,14 @@
  ],
  "fields": [
   {
-   "fieldname": "application_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Application Name",
-   "reqd": 1
-  },
-  {
    "fieldname": "industry_domain",
    "fieldtype": "Link",
-   "label": "Industry",
+   "label": "Industry Segment",
    "options": "Industry Domain",
+   "in_standard_filter": 1,
    "in_list_view": 1,
-   "in_standard_filter": 1
+   "fetch_from": "product.industry_domain",
+   "fetch_if_empty": 1
   },
   {
    "fieldname": "product",
@@ -40,13 +40,53 @@
    "label": "Product",
    "options": "Customer Product",
    "in_list_view": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "application_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Application Name",
+   "reqd": 1
   },
   {
    "fieldname": "grinding_process",
    "fieldtype": "Data",
    "label": "Process",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "supplier_product_category",
+   "fieldtype": "Link",
+   "label": "Principal Product Category",
+   "options": "Supplier Product Category",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "principal",
+   "fieldtype": "Link",
+   "label": "Principal",
+   "options": "Principal",
+   "fetch_from": "supplier_product_category.principal",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "spec",
+   "fieldtype": "Data",
+   "label": "Principal Product Spec"
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "label": "Principal Product Size"
+  },
+  {
+   "fieldname": "production_line",
+   "fieldtype": "Data",
+   "label": "Production Line"
   },
   {
    "fieldname": "division",
@@ -89,7 +129,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-13 12:00:00.000000",
+ "modified": "2026-11-13 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Application",
@@ -140,6 +180,6 @@
  "states": [],
  "title_field": "application_name",
  "track_changes": 1,
- "search_fields": "industry_domain,product,grinding_process",
+ "search_fields": "product,grinding_process,supplier_product_category",
  "quick_entry": 0
 }

@@ -29,6 +29,8 @@
   "section_principal",
   "principal",
   "application_master",
+  "customer_product",
+  "production_line",
   "technical_lead",
   "application",
   "supplier_product_category",
@@ -249,6 +251,20 @@
    "allow_on_submit": 1
   },
   {
+   "fieldname": "customer_product",
+   "fieldtype": "Link",
+   "label": "Product",
+   "options": "Customer Product",
+   "allow_on_submit": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "production_line",
+   "fieldtype": "Data",
+   "label": "Production Line",
+   "allow_on_submit": 1
+  },
+  {
    "fieldname": "technical_lead",
    "fieldtype": "Link",
    "label": "Technical Lead",
@@ -264,7 +280,8 @@
    "read_only_depends_on": "eval:doc.technical_lead || doc.application_master",
    "allow_on_submit": 1,
    "in_list_view": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "hidden": 1
   },
   {
    "fieldname": "supplier_product_category",
@@ -272,13 +289,14 @@
    "in_standard_filter": 1,
    "label": "Principal Product Category",
    "options": "Supplier Product Category",
-   "allow_on_submit": 1
+   "allow_on_submit": 1,
+   "hidden": 1
   },
   {
    "fieldname": "product_name",
    "fieldtype": "Data",
    "label": "Product",
-   "fetch_from": "supplier_product_category.category_name",
+   "fetch_from": "customer_product.product_name",
    "read_only": 1,
    "depends_on": "eval:false",
    "in_list_view": 1,
@@ -309,13 +327,13 @@
   {
    "fieldname": "spec",
    "fieldtype": "Data",
-   "label": "Wheel Spec",
+   "label": "Principal Product Spec",
    "allow_on_submit": 1
   },
   {
    "fieldname": "size",
    "fieldtype": "Data",
-   "label": "Size",
+   "label": "Principal Product Size",
    "allow_on_submit": 1
   },
   {
@@ -505,7 +523,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-13 12:00:00.000000",
+ "modified": "2026-11-13 18:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
