@@ -51,6 +51,7 @@ def execute():
 		_dvr_checks(ctx)
 		_customer_checks(ctx)
 		_report_checks(ctx)
+		_pending_work_checks(ctx)
 	finally:
 		frappe.db.rollback()
 		frappe.flags.mute_emails = False
@@ -400,6 +401,61 @@ def _report_checks(ctx):
 		return f"{len(levels[0])} segments, {len(levels[1])} products, {len(levels[2])} applications, {len(levels[3])} customer lines"
 
 	check("Report: Application Wise Status", application_wise)
+
+
+# ---------------------------------------------------------------------------
+def _pending_work_checks(ctx):
+	from frappe.utils import add_days
+
+	email = "run.checks.pending@example.com"
+
+	def assign_and_remind():
+		if not frappe.db.exists("User", email):
+			frappe.get_doc({"doctype": "User", "email": email, "first_name": "RC Pending", "send_welcome_email": 0,
+			                "roles": [{"role": "Sales User"}]}).insert(ignore_permissions=True)
+		work = frappe.get_doc({
+			"doctype": "TP Pending Work", "task": "Run checks: send trial report", "customer": ctx.get("customer"),
+			"due_date": add_days(today(), -1), "priority": "High", "responsible": [{"user": email}],
+		}).insert()
+		ctx.pending = work
+		todo = frappe.db.get_value("ToDo", {"reference_type": "TP Pending Work", "reference_name": work.name, "status": "Open"}, "allocated_to")
+		expect(todo == email, f"assignment {todo!r}")
+		from techpark.pending_work import daily
+
+		digests = daily(dry_run=True)
+		expect(email in digests, "responsible person gets no daily reminder")
+		return f"{work.name} assigned; reminder for {email}"
+
+	def visibility():
+		frappe.set_user(email)
+		try:
+			seen = frappe.get_list("TP Pending Work", pluck="name", limit_page_length=0)
+		finally:
+			frappe.set_user("Administrator")
+		expect(ctx.pending.name in seen, "responsible person cannot see it")
+		other = frappe.get_doc({"doctype": "TP Pending Work", "task": "Run checks: not theirs", "due_date": today(),
+		                        "responsible": [{"user": "Administrator"}]}).insert()
+		frappe.set_user(email)
+		try:
+			seen = frappe.get_list("TP Pending Work", pluck="name", limit_page_length=0)
+		finally:
+			frappe.set_user("Administrator")
+		expect(other.name not in seen, "sees someone else's pending work")
+		return "own only"
+
+	def done_closes():
+		work = frappe.get_doc("TP Pending Work", ctx.pending.name)
+		work.status = "Done"
+		work.save()
+		expect(work.completed_on, "completed on not set")
+		left = frappe.db.count("ToDo", {"reference_type": "TP Pending Work", "reference_name": work.name, "status": "Open"})
+		expect(left == 0, f"{left} assignments still open")
+		return "assignment closed"
+
+	check("Pending Work: assigned + daily reminder", assign_and_remind)
+	if ctx.get("pending"):
+		check("Pending Work: each user sees only their own", visibility)
+		check("Pending Work: Done closes the assignment", done_closes)
 
 
 # ---------------------------------------------------------------------------

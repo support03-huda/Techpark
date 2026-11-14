@@ -1,0 +1,214 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "PW-.#####",
+ "creation": "2026-11-14 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "task",
+  "category",
+  "customer",
+  "customer_name",
+  "principal",
+  "application",
+  "opportunity",
+  "column_break_main",
+  "status",
+  "priority",
+  "due_date",
+  "responsible",
+  "responsible_names",
+  "completed_on",
+  "section_details",
+  "details",
+  "column_break_details",
+  "latest_update"
+ ],
+ "fields": [
+  {
+   "fieldname": "task",
+   "fieldtype": "Data",
+   "label": "Pending Work",
+   "reqd": 1,
+   "in_list_view": 1,
+   "bold": 1,
+   "columns": 4
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "\nCosting & Offers\nSO's\nOC's to make\nRoutine monthly work\nDesp. / invoices (Techpark)\nDespatches (Direct)\nOthers",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "TP Customer",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "fetch_from": "customer.customer_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "principal",
+   "fieldtype": "Link",
+   "label": "Principal",
+   "options": "Principal",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "application",
+   "fieldtype": "Link",
+   "label": "Application",
+   "options": "Customer Application"
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "options": "TP Opportunity"
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nIn Progress\nDone\nCancelled",
+   "default": "Open",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "\nLow\nMedium\nHigh",
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date",
+   "in_list_view": 1,
+   "columns": 1
+  },
+  {
+   "fieldname": "responsible",
+   "fieldtype": "Table MultiSelect",
+   "label": "Responsible",
+   "options": "TP Pending Work User"
+  },
+  {
+   "fieldname": "responsible_names",
+   "fieldtype": "Data",
+   "label": "Responsible",
+   "read_only": 1,
+   "hidden": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
+   "fieldname": "completed_on",
+   "fieldtype": "Date",
+   "label": "Completed On",
+   "read_only": 1,
+   "depends_on": "eval:doc.completed_on"
+  },
+  {
+   "fieldname": "section_details",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Small Text",
+   "label": "Details"
+  },
+  {
+   "fieldname": "column_break_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "latest_update",
+   "fieldtype": "Small Text",
+   "label": "Latest Update"
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-14 14:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Pending Work",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "TechPark Approver",
+   "share": 1,
+   "write": 1,
+   "delete": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "category,customer_name,status,due_date",
+ "show_title_field_in_link": 1,
+ "title_field": "task",
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1,
+ "quick_entry": 0
+}

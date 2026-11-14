@@ -289,8 +289,18 @@ def get_calendar(start, end):
 			"Daily Visit Report", filters={"name": ("in", [t.reference_name for t in todos] or [""])}, fields=["name", "customer_name"]
 		)
 	}
+	pending = frappe.get_list(
+		"TP Pending Work",
+		filters={"status": ("in", ("Open", "In Progress")), "due_date": ("between", [start, end])},
+		fields=["name", "task", "due_date", "customer_name", "responsible_names"],
+		limit_page_length=1000,
+	)
 	return {
 		"today": str(now),
+		"pending": [
+			{"name": p.name, "date": str(p.due_date), "task": p.task, "customer": p.customer_name, "by": p.responsible_names}
+			for p in pending
+		],
 		"visits": [
 			{
 				"name": v.name, "date": str(v.visit_date), "customer": v.customer_name, "stage": v.dvr_stage,

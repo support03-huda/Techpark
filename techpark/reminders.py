@@ -285,9 +285,9 @@ def render(user, sections):
 	return "".join(html)
 
 
-def deliver(digests, subject, link_to, dry_run=False):
+def deliver(digests, subject, link_to, dry_run=False, setting="enable_reminders"):
 	# A preview still shows what would go out while reminders are switched off.
-	if dry_run or not get_setting("enable_reminders"):
+	if dry_run or not get_setting(setting):
 		return digests
 	from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 

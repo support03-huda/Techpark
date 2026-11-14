@@ -143,12 +143,14 @@ permission_query_conditions = {
 	"Daily Visit Report": "techpark.permission.dvr_query_conditions",
 	"TP Expense": "techpark.permission.expense_query_conditions",
 	"TP Opportunity": "techpark.permission.opportunity_query_conditions",
+	"TP Pending Work": "techpark.permission.pending_work_query_conditions",
 }
 
 has_permission = {
 	"Daily Visit Report": "techpark.permission.dvr_has_permission",
 	"TP Expense": "techpark.permission.expense_has_permission",
 	"TP Opportunity": "techpark.permission.own_record_has_permission",
+	"TP Pending Work": "techpark.permission.pending_work_has_permission",
 }
 
 # Refuse changes to entries locked for salespeople.
@@ -213,9 +215,9 @@ doc_events = {
 scheduler_events = {
 	"cron": {
 		# Every day at 09:00: overdue follow-ups escalated to managers.
-		"0 9 * * *": ["techpark.reminders.daily"],
+		"0 9 * * *": ["techpark.reminders.daily", "techpark.pending_work.daily"],
 		# Mondays at 09:00: cold prospects, customers not visited, pending actions by principal.
-		"0 9 * * 1": ["techpark.reminders.weekly"],
+		"0 9 * * 1": ["techpark.reminders.weekly", "techpark.pending_work.weekly"],
 		# 09:00 on the first day of every quarter: customer data still missing.
 		"0 9 1 1,4,7,10 *": ["techpark.reminders.quarterly"],
 	},

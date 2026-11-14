@@ -49,3 +49,4 @@ techpark.patches.dvr_product_name
 techpark.patches.technical_lead_status #present status
 techpark.patches.link_common_applications
 techpark.patches.product_industry_segment
+techpark.patches.pending_work_kanban

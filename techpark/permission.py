@@ -150,3 +150,22 @@ def expense_has_permission(doc, ptype=None, user=None):
 	if ptype in READ_PTYPES:
 		return doc.employee in team
 	return doc.employee == team[0]
+
+
+def pending_work_query_conditions(user=None, doctype=None):
+	"""Pending Work: people see what they are responsible for or raised; admins see all."""
+	user = user or frappe.session.user
+	if is_manager(user):
+		return ""
+	user = frappe.db.escape(user)
+	return (
+		f"(`tabTP Pending Work`.owner = {user} or exists (select 1 from `tabTP Pending Work User` r"
+		f" where r.parenttype = 'TP Pending Work' and r.parent = `tabTP Pending Work`.name and r.user = {user}))"
+	)
+
+
+def pending_work_has_permission(doc, ptype=None, user=None):
+	user = user or frappe.session.user
+	if is_manager(user) or doc.is_new() or ptype == "create":
+		return True
+	return user == doc.owner or user in {r.user for r in doc.get("responsible") or []}

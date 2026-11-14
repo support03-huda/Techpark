@@ -269,6 +269,7 @@ class TPDashboard {
 			const add = (date, item) => (by_day[date] = by_day[date] || []).push(item);
 			m.visits.forEach((v) => add(v.date, { ...v, kind: "visit" }));
 			m.follow_ups.forEach((f) => add(f.date, { ...f, kind: "follow" }));
+			(m.pending || []).forEach((p) => add(p.date, { ...p, kind: "pending" }));
 			const head = [__("Mon"), __("Tue"), __("Wed"), __("Thu"), __("Fri"), __("Sat"), __("Sun")]
 				.map((d) => `<div class="tpd-cal-dow">${d}</div>`).join("");
 			let cells = "";
@@ -292,6 +293,7 @@ class TPDashboard {
 						<span><i style="background:${TPD_STAGE_COLOR.Development}"></i>${__("Development visit")}</span>
 						<span><i style="background:${TPD_STAGE_COLOR.Sales}"></i>${__("Sales visit")}</span>
 						<span><i style="background:${TPD_COLORS.violet}"></i>${__("Follow-up")}</span>
+						<span><i style="background:${TPD_COLORS.teal || "#0ca678"}"></i>${__("Pending work")}</span>
 						<span><i style="background:${TPD_COLORS.red}"></i>${__("Overdue")}</span>
 					</div>
 					<div class="tpd-muted" style="margin-left:auto">${__("{0} visits · {1} follow-ups this month", [visits.length, follows.length])}</div>
@@ -318,6 +320,11 @@ class TPDashboard {
 			const title = [it.customer, it.application, it.status, it.by].filter(Boolean).join(" · ");
 			return `<div class="tpd-cal-chip ${it.draft ? "draft" : ""}" style="--c:${color}" data-doctype="Daily Visit Report" data-name="${this.esc(it.name)}" title="${this.esc(title)}">
 				${this.esc(it.customer || it.name)}${it.application ? ` <span>· ${this.esc(it.application)}</span>` : ""}</div>`;
+		}
+		if (it.kind === "pending") {
+			const color = day < today ? TPD_COLORS.red : TPD_COLORS.teal || "#0ca678";
+			return `<div class="tpd-cal-chip follow" style="--c:${color}" data-doctype="TP Pending Work" data-name="${this.esc(it.name)}" title="${this.esc([it.task, it.customer, it.by].filter(Boolean).join(" · "))}">
+				📌 ${this.esc(it.task)}${it.customer ? ` <span>· ${this.esc(it.customer)}</span>` : ""}</div>`;
 		}
 		const color = day < today ? TPD_COLORS.red : TPD_COLORS.violet;
 		return `<div class="tpd-cal-chip follow" style="--c:${color}" data-doctype="ToDo" data-name="${this.esc(it.name)}" title="${this.esc([it.customer, it.action, it.by].filter(Boolean).join(" · "))}">

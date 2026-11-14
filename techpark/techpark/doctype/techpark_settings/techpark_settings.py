@@ -10,6 +10,8 @@ DEFAULTS = {
 	# Master switch for every reminder; off until turned on in TechPark Settings.
 	"enable_reminders": 0,
 	"reminder_emails": 1,
+	# Pending Work reminders run on their own switch (on).
+	"pending_work_reminders": 1,
 	"follow_up_escalation_days": 3,
 	"prospect_cold_days": 30,
 	"not_visited_days": 60,

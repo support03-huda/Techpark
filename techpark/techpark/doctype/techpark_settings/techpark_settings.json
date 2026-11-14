@@ -7,6 +7,7 @@
   "section_reminders",
   "enable_reminders",
   "reminder_emails",
+  "pending_work_reminders",
   "follow_up_escalation_days",
   "column_break_reminders",
   "prospect_cold_days",
@@ -38,6 +39,12 @@
    "fieldtype": "Check",
    "label": "Also Send Reminders by Email",
    "depends_on": "enable_reminders"
+  },
+  {
+   "default": "1",
+   "fieldname": "pending_work_reminders",
+   "fieldtype": "Check",
+   "label": "Pending Work Reminders"
   },
   {
    "default": "3",
@@ -99,7 +106,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-11-03 12:00:00.000000",
+ "modified": "2026-11-14 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark Settings",
