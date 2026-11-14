@@ -253,7 +253,7 @@ def _dvr_checks(ctx):
 		rows = application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer, "principal": ctx.lead1.principal})
 		listed = {r[0]: r for r in rows}
 		expect(app.name in listed, "common application not in the dropdown")
-		expect(listed[app.name][1] == "Run Checks BB", f"dropdown does not show the product: {listed[app.name]}")
+		expect(listed[app.name][1] == "Run Checks Common App" and listed[app.name][2] == "Run Checks BB", f"dropdown does not show the product: {listed[app.name]}")
 		other = frappe.db.get_value("Principal", {"name": ("!=", ctx.lead1.principal)})
 		if category and other:
 			hidden = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer, "principal": other})]

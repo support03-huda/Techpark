@@ -29,7 +29,7 @@ def application_query(doctype, txt, searchfield, start, page_len, filters):
 	principal_condition = "and (ifnull(a.principal, '') = '' or a.principal = %(principal)s)" if principal else ""
 	return frappe.db.sql(
 		f"""
-		select a.name, p.product_name, a.grinding_process
+		select a.name, a.application_name, p.product_name, a.grinding_process
 		from `tabCustomer Application` a
 		left join `tabCustomer Product` p on p.name = a.product
 		where ifnull(a.is_active, 1) = 1
