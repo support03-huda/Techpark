@@ -14,11 +14,10 @@ from frappe import _
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def application_query(doctype, txt, searchfield, start, page_len, filters):
-	"""Application dropdown on a visit: one common list for every customer (the customer's own first),
-	limited to the picked principal's applications and those without a principal."""
+	"""Application dropdown on a visit: one common list for every customer and
+	every principal (the customer's own first)."""
 	filters = filters or {}
 	customer = filters.get("customer")
-	principal = filters.get("principal")
 	own = tuple(
 		frappe.get_all(
 			"TP Technical Lead",
@@ -26,7 +25,6 @@ def application_query(doctype, txt, searchfield, start, page_len, filters):
 			pluck="application_master",
 		)
 	) or ("",)
-	principal_condition = "and (ifnull(a.principal, '') = '' or a.principal = %(principal)s)" if principal else ""
 	return frappe.db.sql(
 		f"""
 		select a.name, a.application_name, p.product_name, a.grinding_process
@@ -34,11 +32,10 @@ def application_query(doctype, txt, searchfield, start, page_len, filters):
 		left join `tabCustomer Product` p on p.name = a.product
 		where ifnull(a.is_active, 1) = 1
 			and (a.application_name like %(txt)s or a.name like %(txt)s or p.product_name like %(txt)s)
-			{principal_condition}
 		order by (a.name in %(own)s) desc, p.product_name, a.application_name
 		limit %(start)s, %(page_len)s
 		""",
-		{"txt": f"%{txt}%", "own": own, "principal": principal, "start": start, "page_len": page_len},
+		{"txt": f"%{txt}%", "own": own, "start": start, "page_len": page_len},
 	)
 
 

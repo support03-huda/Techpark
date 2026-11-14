@@ -257,7 +257,7 @@ def _dvr_checks(ctx):
 		other = frappe.db.get_value("Principal", {"name": ("!=", ctx.lead1.principal)})
 		if category and other:
 			hidden = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": ctx.customer, "principal": other})]
-			expect(app.name not in hidden, "another principal's application shows in the dropdown")
+			expect(app.name in hidden, "application not offered for another principal")
 		someone = frappe.db.get_value("TP Customer", {"name": ("!=", ctx.customer)})
 		if someone:
 			anyone = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": someone, "principal": ctx.lead1.principal})]
