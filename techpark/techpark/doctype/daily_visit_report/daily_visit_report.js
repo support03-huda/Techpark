@@ -112,6 +112,14 @@ frappe.ui.form.on("Daily Visit Report", {
 		techpark.dvr.render_stage(frm);
 	},
 
+	// the banner shows them
+	product_name(frm) {
+		techpark.dvr.render_stage(frm);
+	},
+	production_line(frm) {
+		techpark.dvr.render_stage(frm);
+	},
+
 	// Development or Sales: the rows show only that stage's status, and open lines of that stage are offered
 	dvr_stage(frm) {
 		if (frm.doc.principal) techpark.dvr.update_row(frm, frm.doc);
@@ -517,29 +525,71 @@ techpark.dvr.stage_pill = function (stage) {
 	return `<span class="indicator-pill ${techpark.dvr.STAGE_COLORS[stage]}">${frappe.utils.escape_html(__(stage + " Stage"))}</span>`;
 };
 
-// Banner at the top of the form: which stage this visit is at, and each principal's stage.
+// Banner at the top of the form: the application line, its stage and where it stands.
 techpark.dvr.render_headline = function (frm, rows) {
 	// Own block in the form's message area, so other messages (e.g. the lock notice) stay.
 	const $area = frm.layout.message;
 	$area.find(".tp-stage-banner").remove();
 	if (!$area.children().length) $area.addClass("hidden");
 	if (!rows.length) return;
+	frappe.dom.set_style(`
+		.tp-stage-banner { padding: 14px 16px; background: var(--fg-color); border-bottom: 1px solid var(--border-color); }
+		.tp-sb-card { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; padding: 14px 18px;
+			border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);
+			background: linear-gradient(100deg, var(--tp-sb-soft) 0%, var(--fg-color) 55%); }
+		.tp-sb-card.dev { --tp-sb: var(--orange-500); --tp-sb-soft: var(--orange-50, #fff7ed); }
+		.tp-sb-card.sales { --tp-sb: var(--blue-500); --tp-sb-soft: var(--blue-50, #eff6ff); }
+		.tp-sb-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; flex: none;
+			background: var(--tp-sb); color: #fff; font-weight: 700; font-size: 18px; }
+		.tp-sb-main { flex: 1; min-width: 200px; }
+		.tp-sb-title { font-size: 17px; font-weight: 700; color: var(--heading-color); line-height: 1.3; }
+		.tp-sb-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+		.tp-sb-chip { font-size: 11px; padding: 2px 9px; border-radius: 999px; background: var(--control-bg);
+			color: var(--text-muted); border: 1px solid var(--border-color); }
+		.tp-sb-side { min-width: 240px; flex: 0 1 300px; }
+		.tp-sb-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+		.tp-sb-status { font-size: 13px; font-weight: 600; color: var(--tp-sb); }
+		.tp-sb-pct { font-size: 22px; font-weight: 800; color: var(--heading-color); }
+		.tp-sb-track { display: flex; gap: 4px; margin-top: 6px; }
+		.tp-sb-seg { flex: 1; height: 6px; border-radius: 3px; background: var(--gray-200); overflow: hidden; }
+		.tp-sb-seg > div { height: 100%; border-radius: 3px; }
+		.tp-sb-seg.dev > div { background: var(--orange-500); }
+		.tp-sb-seg.sales > div { background: var(--blue-500); }
+		.tp-sb-legend { display: flex; justify-content: space-between; font-size: 10px; text-transform: uppercase;
+			letter-spacing: .04em; color: var(--text-muted); margin-top: 4px; }
+	`, "tp-stage-banner-css");
 	const esc = frappe.utils.escape_html;
-	const stages = new Set(rows.map((row) => row.stage || "Development"));
-	const stage = stages.size > 1 ? "Development + Sales" : [...stages][0];
-	const principals = rows
+	const cards = rows
 		.map((row) => {
-			const label = [row.application, row.principal, row.category_name].filter(Boolean).map(esc).join(" · ");
-			const status = (row.stage === "Sales" && row.sales_status) || row.development_status || "";
-			return `<span style="margin-right:12px; white-space:nowrap;">${techpark.dvr.stage_pill(row.stage)} <b>${label}</b>${status ? ": " + esc(__(status)) : ""}</span>`;
+			const stage = row.stage || "Development";
+			const sales = stage === "Sales";
+			const status = (sales && row.sales_status) || row.development_status || "";
+			const pct = Math.max(0, Math.min(100, row.progress || 0));
+			const chips = [row.principal, row.category_name, frm.doc.product_name, frm.doc.production_line]
+				.filter(Boolean).map((c) => `<span class="tp-sb-chip">${esc(c)}</span>`).join("");
+			// 0-50% is Development, 50-100% is Sales
+			const dev_fill = Math.min(pct, 50) * 2, sales_fill = Math.max(pct - 50, 0) * 2;
+			return `<div class="tp-sb-card ${sales ? "sales" : "dev"}">
+				<div class="tp-sb-icon">${sales ? "S" : "D"}</div>
+				<div class="tp-sb-main">
+					<div class="tp-sb-title">${esc(row.application || "")}</div>
+					<div class="tp-sb-chips">${chips}</div>
+				</div>
+				<div class="tp-sb-side">
+					<div class="tp-sb-top">
+						<span class="tp-sb-status">${esc(__(status || stage))}</span>
+						<span class="tp-sb-pct">${pct}%</span>
+					</div>
+					<div class="tp-sb-track">
+						<div class="tp-sb-seg dev"><div style="width:${dev_fill}%"></div></div>
+						<div class="tp-sb-seg sales"><div style="width:${sales_fill}%"></div></div>
+					</div>
+					<div class="tp-sb-legend"><span>${__("Development")}</span><span>${__("Sales")}</span></div>
+				</div>
+			</div>`;
 		})
 		.join("");
-	$(`<div class="form-message border-bottom tp-stage-banner ${techpark.dvr.STAGE_COLORS[stage]}">
-		<div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
-			<span style="font-size:14px; font-weight:700; margin-right:12px;">${esc(__(stage + " Stage").toUpperCase())}</span>
-			${principals}
-		</div>
-	</div>`).prependTo($area);
+	$(`<div class="tp-stage-banner">${cards}</div>`).prependTo($area);
 	$area.removeClass("hidden");
 };
 
