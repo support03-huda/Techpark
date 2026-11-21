@@ -10,9 +10,9 @@
   "section_application",
   "industry_domain",
   "product",
+  "column_break_principal",
   "application_name",
   "grinding_process",
-  "column_break_principal",
   "supplier_product_category",
   "principal",
   "spec",
@@ -37,7 +37,7 @@
   {
    "fieldname": "industry_domain",
    "fieldtype": "Link",
-   "label": "Industry Segment",
+   "label": "Industry/Product Segment",
    "options": "Industry Segment",
    "in_standard_filter": 1,
    "in_list_view": 1,
@@ -54,6 +54,10 @@
    "reqd": 1
   },
   {
+   "fieldname": "column_break_principal",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "application_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -62,23 +66,18 @@
   },
   {
    "fieldname": "grinding_process",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Process",
    "in_list_view": 1,
-   "options": "\nInternal Grinding\nCylindrical Grinding\nCenterless Grinding\nSuperfinishing\nSurface Grinding\nEnd-Face Grinding\nDouble Disc Grinding (DDG)",
+   "options": "Process",
    "in_standard_filter": 1
-  },
-  {
-   "fieldname": "column_break_principal",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "supplier_product_category",
    "fieldtype": "Link",
    "label": "Principal Product Category",
    "options": "Supplier Product Category",
-   "in_list_view": 1,
-   "in_standard_filter": 1
+   "hidden": 1
   },
   {
    "fieldname": "principal",
@@ -87,22 +86,25 @@
    "options": "Principal",
    "fetch_from": "supplier_product_category.principal",
    "read_only": 1,
-   "in_standard_filter": 1
+   "hidden": 1
   },
   {
    "fieldname": "spec",
    "fieldtype": "Data",
-   "label": "Principal Product Spec"
+   "label": "Principal Product Spec",
+   "hidden": 1
   },
   {
    "fieldname": "size",
    "fieldtype": "Data",
-   "label": "Principal Product Size"
+   "label": "Principal Product Size",
+   "hidden": 1
   },
   {
    "fieldname": "production_line",
    "fieldtype": "Data",
-   "label": "Production Line"
+   "label": "Production Line",
+   "hidden": 1
   },
   {
    "fieldname": "section_other",
@@ -113,7 +115,8 @@
    "fieldname": "division",
    "fieldtype": "Link",
    "label": "Division",
-   "options": "Customer Division"
+   "options": "Customer Division",
+   "hidden": 1
   },
   {
    "fetch_from": "division.department",
@@ -137,7 +140,8 @@
    "fieldname": "process_stage",
    "fieldtype": "Link",
    "label": "Process stage",
-   "options": "Process stages"
+   "options": "Process stages",
+   "hidden": 1
   },
   {
    "default": "1",
@@ -159,7 +163,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-21 17:00:00.000000",
+ "modified": "2026-11-21 21:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Application",
@@ -210,6 +214,6 @@
  "states": [],
  "title_field": "application_name",
  "track_changes": 1,
- "search_fields": "product,grinding_process,supplier_product_category",
+ "search_fields": "product,grinding_process",
  "quick_entry": 0
 }

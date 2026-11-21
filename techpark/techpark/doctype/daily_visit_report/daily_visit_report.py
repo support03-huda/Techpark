@@ -1,4 +1,4 @@
-# Last edited: 2026-11-13
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Daily Visit Report (DVR) — one record per customer visit, call or meeting.
 
@@ -264,7 +264,11 @@ class DailyVisitReport(Document):
 			return
 		if self.technical_lead and frappe.db.get_value("TP Technical Lead", self.technical_lead, "application_master") == self.application_master:
 			return
-		self.technical_lead = get_or_create_lead(self.customer, self.principal, self.application_master)
+		self.technical_lead = get_or_create_lead(
+			self.customer, self.principal, self.application_master,
+			product=self.customer_product, production_line=self.production_line,
+			supplier_product_category=self.supplier_product_category,
+		)  # 2026-11-21: the visit's line details go to the new lead
 
 	def line_to_row(self):
 		"""The visit's Application Line fields -> its first principal row (made if missing)."""
@@ -451,6 +455,17 @@ class DailyVisitReport(Document):
 		self.add_principal_to_customer()
 		sync_visit(self)
 		self.set_line_opportunity()
+		self.update_lead_spec_size()
+
+	def update_lead_spec_size(self):
+		"""2026-11-21: the visit's Principal Product Spec / Size go to its Technical Lead (client)."""
+		if not self.get("technical_lead"):
+			return
+		values = {f: self.get(f) for f in ("spec", "size") if self.get(f)}
+		if not values:
+			return
+		frappe.db.set_value("TP Technical Lead", self.technical_lead, values)
+		frappe.db.set_value("TP Customer Technical Lead", {"record": self.technical_lead}, values, update_modified=False)
 
 	def set_line_opportunity(self):
 		"""sync_visit links the row to its TP Opportunity; show it on the visit too."""
@@ -466,6 +481,7 @@ class DailyVisitReport(Document):
 		self.activate_customer()
 		sync_visit(self)
 		self.set_line_opportunity()
+		self.update_lead_spec_size()  # 2026-11-21
 
 	def on_cancel(self):
 		for todo in [self.follow_up, *(row.follow_up for row in self.principals)]:

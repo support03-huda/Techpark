@@ -225,10 +225,7 @@ techpark.dvr.fill_from_application = async function (frm, app, overwrite) {
 	if (!app) return;
 	const d = frm.doc, values = {};
 	const put = (field, value) => { if (value && (overwrite || !d[field])) values[field] = value; };
-	if (app.supplier_product_category && (!app.principal || app.principal === d.principal)) put("supplier_product_category", app.supplier_product_category);
-	put("spec", app.spec);
-	put("size", app.size);
-	put("production_line", app.production_line);
+	// 2026-11-21: category / spec / size / line removed from the Application master (client): only the Product comes from it
 	put("customer_product", app.product);
 	if (!Object.keys(values).length) return;
 	techpark.dvr.filling_from_lead = true;
@@ -242,12 +239,9 @@ techpark.dvr.fill_from_application = async function (frm, app, overwrite) {
 techpark.dvr.set_new_application_defaults = async function (frm) {
 	const df = frappe.meta.get_docfield("Daily Visit Report", "application_master", frm.doc.name);
 	if (!df) return;
-	const industry = frm.doc.customer
-		? (await frappe.db.get_value("TP Customer", frm.doc.customer, "industry_domain")).message?.industry_domain
-		: "";
+	// 2026-11-21: the customer's Industry Domain is not an Industry/Product Segment: only the name is passed
 	df.get_route_options_for_new_doc = (field) => ({
 		application_name: (field.get_input_value && field.get_input_value()) || "",
-		industry_domain: industry || "",
 	});
 };
 
@@ -264,14 +258,15 @@ techpark.dvr.set_new_lead_defaults = function (frm) {
 techpark.dvr.fill_from_lead = async function (frm, row) {
 	if (!row.technical_lead) return;
 	const lead = await frappe.db.get_value("TP Technical Lead", row.technical_lead, [
-		"customer", "principal", "application", "supplier_product_category", "size_od", "size_t", "size_id",
+		"customer", "principal", "application", "supplier_product_category", "spec", "size", "size_od", "size_t", "size_id",
 		"stage", "current_status", "application_master", "production_line", "product",
 	]).then((r) => r.message || {});
 	if (lead.customer && frm.doc.customer && lead.customer !== frm.doc.customer) {
 		frappe.msgprint(__("This Technical Lead belongs to another customer."));
 		return frappe.model.set_value(row.doctype, row.name, "technical_lead", "");
 	}
-	const size = [lead.size_od, lead.size_t, lead.size_id].filter(Boolean).join(" x ");
+	// 2026-11-21: one Size field on the lead (old OD / T / ID as fallback)
+	const size = lead.size || [lead.size_od, lead.size_t, lead.size_id].filter(Boolean).join(" x ");
 	techpark.dvr.filling_from_lead = true;
 	try {
 		if (lead.principal && row.principal !== lead.principal) {
@@ -284,6 +279,7 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 			application: lead.application || "",
 			supplier_product_category: lead.supplier_product_category || "",
 			...(size ? { size } : {}),
+			...(lead.spec ? { spec: lead.spec } : {}),  // 2026-11-21: spec back from the lead
 		});
 		if (row === frm.doc) {
 			// the customer's own Production Line / Product (from the Technical Lead)

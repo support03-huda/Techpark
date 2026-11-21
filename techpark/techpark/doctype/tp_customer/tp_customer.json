@@ -103,15 +103,15 @@
   {
    "fieldname": "industry_domain",
    "fieldtype": "Link",
-   "label": "Main Industry Segment",
-   "options": "Industry Segment",
-   "hidden": 1,
-   "read_only": 1
+   "label": "Industry Domain",
+   "options": "Industry Domain",
+   "in_list_view": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "segments",
    "fieldtype": "Table MultiSelect",
-   "label": "Industry Segment",
+   "label": "Industry/Product Segment",
    "options": "Organizaton Segment"
   },
   {
@@ -192,7 +192,7 @@
   {
    "fieldname": "handled_by",
    "fieldtype": "Table MultiSelect",
-   "label": "Handled By (Agents)",
+   "label": "Handled By (Employee)",
    "options": "Customer Agent"
   },
   {
@@ -460,7 +460,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-21 17:00:00.000000",
+ "modified": "2026-11-21 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

@@ -54,3 +54,8 @@ techpark.patches.pending_work_kanban
 techpark.patches.merge_product_segment #2026-11-21
 techpark.patches.application_process_list
 techpark.patches.dvr_process
+techpark.patches.customer_industry_domain
+techpark.patches.process_master
+techpark.patches.lead_division_process_stage
+techpark.patches.lead_competitor_shares
+techpark.patches.lead_spec_from_dvr

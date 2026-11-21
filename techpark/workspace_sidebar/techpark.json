@@ -299,8 +299,30 @@
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
-   "label": "Industry Segment",
+   "label": "Industry Domain",
+   "link_to": "Industry Domain",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Industry/Product Segment",
    "link_to": "Industry Segment",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 1,
+   "collapsible": 1,
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Process",
+   "link_to": "Process",
    "link_type": "DocType",
    "show_arrow": 0,
    "type": "Link"
@@ -345,17 +367,6 @@
    "keep_closed": 0,
    "label": "Customer Department",
    "link_to": "Customer Department",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Department Type",
-   "link_to": "Department Type",
    "link_type": "DocType",
    "show_arrow": 0,
    "type": "Link"
@@ -416,7 +427,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-21 17:00:00.000000",
+ "modified": "2026-11-21 20:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark",

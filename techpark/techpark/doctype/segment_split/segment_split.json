@@ -13,7 +13,7 @@
   {
    "fieldname": "segment",
    "fieldtype": "Link",
-   "label": "Industry Segment",
+   "label": "Industry/Product Segment",
    "options": "Industry Segment"
   }
  ],
@@ -21,7 +21,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-11-21 17:00:00.000000",
+ "modified": "2026-11-21 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Segment Split",

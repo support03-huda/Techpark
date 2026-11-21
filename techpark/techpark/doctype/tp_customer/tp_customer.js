@@ -1,4 +1,4 @@
-// Last edited: 2026-11-12
+// Last edited: 2026-11-21
 // Copyright (c) 2026, Techpark International
 // Plants / Products Info / Commercial / Technical Lead / Visits tabs: summary tiles
 // above editable tables. These and the Contacts table are synced to the real records on
@@ -77,11 +77,8 @@ frappe.ui.form.on("TP Customer Technical Lead", {
 	supplier_product_category: (frm) => techpark.customer_master.render_technical(frm),
 	annual_demand_amount: (frm) => techpark.customer_master.render_technical(frm),
 	annual_quantity: (frm) => techpark.customer_master.render_technical(frm),
-	share_noritake: (frm) => techpark.customer_master.render_technical(frm),
-	share_tyrolit: (frm) => techpark.customer_master.render_technical(frm),
-	share_gno: (frm) => techpark.customer_master.render_technical(frm),
-	share_cumi: (frm) => techpark.customer_master.render_technical(frm),
-	share_other: (frm) => techpark.customer_master.render_technical(frm),
+	// 2026-11-21: Principal share + up to 4 competitors
+	principal_share: (frm) => techpark.customer_master.render_technical(frm),
 	progress: (frm) => techpark.customer_master.render_technical(frm),
 });
 frappe.ui.form.on("TP Customer Turnover", {
@@ -299,13 +296,17 @@ techpark.customer_master.render_technical = async function (frm) {
 	if (token !== M._lead_token) return;
 
 	const money = (v) => (!v ? "" : v >= 1e7 ? `₹${(v / 1e7).toFixed(2)} Cr` : `₹${(v / 1e5).toFixed(1)} L`);
-	const SHARES = [["share_noritake", "N"], ["share_tyrolit", "Tyrolit"], ["share_asahi", "Asahi"], ["share_tvmk", "TVMK"], ["share_gno", "GNO"], ["share_cumi", "Cumi"], ["share_other", "Other"]];
+	// 2026-11-21: Principal share only (competitors are on the Technical Lead)
+	const share_list = (r) => [
+		...(r.principal_share ? [`${r.principal || __("Principal")} ${Math.round(r.principal_share)}%`] : []),
+		// 2026-11-21: competitors are shown on the Technical Lead only (client)
+	];
 	const PROGRESS = { Approved: "green", "Evaluation Failed": "red", "Not Started": "gray", Quoted: "orange" };
 
 	const cards = leads.map((r) => {
 		const sub = [r.grinding_process, categories[String(r.supplier_product_category)]].filter(Boolean).map(esc).join(" · ");
 		const demand = [money(r.annual_demand_amount), r.annual_quantity ? format_number(r.annual_quantity, null, 0) + " " + __("pcs") : ""].filter(Boolean).join(" · ");
-		const shares = SHARES.filter(([f]) => r[f]).sort((a, b) => r[b[0]] - r[a[0]]).slice(0, 3).map(([f, l]) => `${l} ${Math.round(r[f])}%`).join("  ");
+		const shares = share_list(r).slice(0, 3).join("  ");
 		const pills = [
 			r.progress ? `<span class="indicator-pill ${PROGRESS[r.progress] || "blue"}">${esc(__(r.progress))}</span>` : "",
 			r.current_status ? `<span class="indicator-pill ${r.stage === "Sales" ? "blue" : "orange"}">${esc(__(r.current_status))}</span>` : "",

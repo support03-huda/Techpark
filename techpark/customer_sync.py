@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-22
 # Copyright (c) 2026, Techpark International
 """Two-way sync between the TP Customer tabs and the real records.
 
@@ -70,6 +70,8 @@ TABLES = {
 			"supplier_product_category",
 			"product",
 			"production_line",
+			"division",  # 2026-11-21: moved from the Application master
+			"process_stage",
 			"distribution_channel",
 			"contact_person",
 			"progress",
@@ -83,6 +85,16 @@ TABLES = {
 			"share_gno",
 			"share_cumi",
 			"share_other",
+			"principal_share",
+			# 2026-11-22: Competitor 1-4 shown on the customer's tab too
+			"competitor_1",
+			"competitor_1_share",
+			"competitor_2",
+			"competitor_2_share",
+			"competitor_3",
+			"competitor_3_share",
+			"competitor_4",
+			"competitor_4_share",
 			"other_competitors",
 			"machine_maker",
 			"machine_quantity",
@@ -90,6 +102,8 @@ TABLES = {
 			"size_od",
 			"size_t",
 			"size_id",
+			"size",  # 2026-11-21: one Size field
+			"spec",  # 2026-11-21: Spec / Size come from the DVR
 			"x_layer",
 			"dresser_details",
 			"issue",

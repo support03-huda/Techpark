@@ -9,7 +9,6 @@ from frappe import _
 from frappe.utils import getdate, today
 
 from techpark.opportunity import follow_up_state
-from techpark.techpark.doctype.tp_customer.tp_customer import industry_segments
 from techpark.techpark.doctype.daily_visit_report.daily_visit_report import STAGE_PROGRESS
 
 IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
@@ -27,7 +26,7 @@ def get_columns():
 		{"fieldname": "salesperson", "label": _("Sales Person"), "fieldtype": "Data", "width": 130},
 		{"fieldname": "region", "label": _("Region"), "fieldtype": "Data", "width": 100},
 		{"fieldname": "customer_name", "label": _("Customer"), "fieldtype": "Data", "width": 180},
-		{"fieldname": "industry", "label": _("Industry Segment"), "fieldtype": "Data", "width": 130},
+		{"fieldname": "industry", "label": _("Industry Domain"), "fieldtype": "Data", "width": 130},  # 2026-11-21: the customer's Industry Domain
 		{"fieldname": "application", "label": _("Application / Line"), "fieldtype": "Data", "width": 180},
 		{"fieldname": "principal", "label": _("Principal"), "fieldtype": "Link", "options": "Principal", "width": 95},
 		{"fieldname": "spec", "label": _("Principal Product Spec"), "fieldtype": "Data", "width": 150},
@@ -85,7 +84,6 @@ def get_data(filters):
 			fields=["name", "territory_region", "industry_domain"],
 		)
 	}
-	segments = industry_segments(customers)
 	open_todos = set(
 		frappe.get_all(
 			"ToDo",
@@ -103,7 +101,7 @@ def get_data(filters):
 				"customer": o.customer,
 				"customer_name": o.customer_name,
 				"region": customer.territory_region,
-				"industry": segments.get(o.customer) or customer.industry_domain,
+				"industry": customer.industry_domain,
 				"application": o.application,
 				"principal": o.principal,
 				"supplier_product_category": o.category_name,

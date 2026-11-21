@@ -7,22 +7,23 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cstr
 
+from techpark.shares import validate_shares
+
 
 class TPTechnicalLead(Document):
 	def validate(self):
 		if self.application_master:
 			# Common application list: the name (and defaults) come from the master
 			master = frappe.db.get_value(
-				"Customer Application", self.application_master, ["application_name", "grinding_process", "product", "supplier_product_category", "principal", "production_line"],
+				"Customer Application", self.application_master, ["application_name", "grinding_process", "product"],
 				as_dict=True,
 			)
 			if master:
 				self.application = master.application_name
 				self.grinding_process = master.grinding_process
 				self.product = self.product or master.product
-				self.production_line = self.production_line or master.production_line
-				if not self.supplier_product_category and master.supplier_product_category and master.principal == self.principal:
-					self.supplier_product_category = master.supplier_product_category
+				# 2026-11-21: category / line no longer on the Application master (client)
+		validate_shares(self)  # 2026-11-21: Principal + 4 competitors, max 100%
 		self.application = cstr(self.application).strip()
 		if not self.application:
 			frappe.throw(_("Pick the Application."))

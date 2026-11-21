@@ -1,4 +1,4 @@
-# Last edited: 2026-11-14
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Common Application list (Customer Application master), the same for every customer.
 
@@ -59,8 +59,9 @@ def line_details(customer, principal, application):
 	}
 
 
-def get_or_create_lead(customer, principal, application):
+def get_or_create_lead(customer, principal, application, **defaults):
 	"""The customer's Technical Lead for this application (made on the first visit)."""
+	# 2026-11-21: a new lead takes the visit's Product / Production Line / Category (no longer on the master)
 	lead = frappe.db.get_value(
 		"TP Technical Lead", {"customer": customer, "principal": principal, "application_master": application}, "name"
 	)
@@ -68,7 +69,10 @@ def get_or_create_lead(customer, principal, application):
 		return lead
 	return (
 		frappe.get_doc(
-			{"doctype": "TP Technical Lead", "customer": customer, "principal": principal, "application_master": application}
+			{
+				"doctype": "TP Technical Lead", "customer": customer, "principal": principal, "application_master": application,
+				**{k: v for k, v in defaults.items() if v},
+			}
 		)
 		.insert(ignore_permissions=True)
 		.name

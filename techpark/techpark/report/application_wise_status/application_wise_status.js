@@ -4,7 +4,7 @@
 
 frappe.query_reports["Application Wise Status"] = {
 	filters: [
-		{ fieldname: "industry_domain", label: __("Industry Segment"), fieldtype: "Link", options: "Industry Segment" },
+		{ fieldname: "industry_domain", label: __("Industry/Product Segment"), fieldtype: "Link", options: "Industry Segment" }, // 2026-11-21: label per client
 		{
 			fieldname: "product", label: __("Product"), fieldtype: "Link", options: "Customer Product",
 			get_query: () => {

@@ -1,4 +1,4 @@
-# Last edited: 2026-11-13
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Application Wise Status: Industry Segment -> Product -> Application (the common list) -> the
 customers that have it (their Technical Lead) and where each stands (its opportunity from visits).
@@ -9,10 +9,7 @@ import frappe
 from frappe import _
 from frappe.utils import flt
 
-SHARES = (
-	("share_noritake", "N"), ("share_tyrolit", "Tyrolit"), ("share_asahi", "Asahi"), ("share_tvmk", "TVMK"),
-	("share_gno", "GNO"), ("share_cumi", "Cumi"), ("share_other", "Other"),
-)
+from techpark.shares import FIELDS as SHARE_FIELDS, share_parts  # 2026-11-21: Principal + up to 4 competitors
 
 
 def execute(filters=None):
@@ -71,7 +68,7 @@ def get_data(filters):
 		fields=[
 			"name", "customer", "customer_name", "application_master", "principal", "supplier_product_category",
 			"grinding_process", "annual_demand_amount", "annual_quantity", "progress", "stage", "current_status",
-			"opportunity", "last_visit", *[f for f, _l in SHARES],
+			"opportunity", "last_visit", *SHARE_FIELDS,
 		],
 		limit_page_length=0,
 	)
@@ -114,7 +111,7 @@ def get_data(filters):
 	tree = {}
 	for app_name in by_app:
 		app = apps[app_name]
-		industry = app.industry_domain or _("No Industry Segment")
+		industry = app.industry_domain or _("No Industry/Product Segment")  # 2026-11-21: label per client
 		product = products.get(str(app.product)) or _("No Product")
 		tree.setdefault(industry, {}).setdefault(product, []).append(app_name)
 
@@ -156,7 +153,7 @@ def get_data(filters):
 							"process": l.grinding_process,
 							"demand": flt(l.annual_demand_amount) or None,
 							"quantity": flt(l.annual_quantity) or None,
-							"share": "  ".join(f"{label} {round(flt(l.get(f)))}%" for f, label in SHARES if l.get(f)),
+							"share": "  ".join(share_parts(l)),
 							"progress": l.progress,
 							"stage": l.stage,
 							"status": l.current_status,

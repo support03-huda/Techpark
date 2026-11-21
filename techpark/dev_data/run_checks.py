@@ -68,7 +68,7 @@ def _meta_checks():
 	def technical_lead():
 		f = _fields("TP Technical Lead")
 		for n in ("customer", "principal", "application", "grinding_process", "supplier_product_category",
-		          "annual_demand_amount", "share_noritake", "machine_maker", "size_od", "progress", "issue", "action_plan"):
+		          "annual_demand_amount", "principal_share", "competitor_4_share", "machine_maker", "size", "progress", "issue", "action_plan"):
 			expect(n in f, f"TP Technical Lead.{n} missing")
 		expect("process" not in f, "a field named 'process' would break Meta")
 		expect(not frappe.get_meta("TP Technical Lead").quick_entry, "quick entry must be off (full form opens)")
@@ -85,7 +85,7 @@ def _meta_checks():
 		order = [x.fieldname for x in frappe.get_meta("Daily Visit Report").fields]
 		section = order[order.index("section_principal") + 1 : order.index("column_break_principal")]
 		left = [n for n in section if not f[n].hidden and f[n].depends_on != "eval:false"]
-		expect(left == ["principal", "application_master", "customer_product", "production_line"], f"left side {left}")
+		expect(left == ["principal", "application_master", "grinding_process", "customer_product", "production_line"], f"left side {left}")  # 2026-11-21: Process shown
 		for n in ("contact", "contact_designation", "contact_phone", "visit_purpose", "department",
 		          "application_potentials", "competitor_line_activity", "segment_application", "principals"):
 			expect(f[n].hidden, f"DVR.{n} should be hidden")
@@ -114,7 +114,7 @@ def _meta_checks():
 		f = _fields("Customer Application")
 		expect(f["product"].reqd, "Application master: Product should be required")
 		for n in ("supplier_product_category", "principal", "spec", "size", "production_line"):
-			expect(n in f, f"Application master.{n} missing")
+			expect(f[n].hidden, f"Application master.{n} should be hidden")  # 2026-11-21: removed per client
 		return "Industry Segment -> Product -> Application"
 
 	check("meta: Industry Segment -> Product -> Application", hierarchy)
@@ -241,12 +241,11 @@ def _dvr_checks(ctx):
 	check("DVR: Development visit blocked once the line is in Sales", development_after_sales)
 	def common_application():
 		# Bearing -> BB -> "Run Checks Common App", usable by any customer
-		industry = frappe.db.get_value("TP Customer", ctx.customer, "industry_domain") or frappe.db.get_value("Industry Domain", {})
+		industry = frappe.db.get_value("Industry Segment", {})  # 2026-11-21: products use Industry/Product Segment
 		product = frappe.get_doc({"doctype": "Customer Product", "product_name": "Run Checks BB", "industry_domain": industry}).insert()
 		category = frappe.db.get_value("Supplier Product Category", {"principal": ctx.lead1.principal}, "name")
 		app = frappe.get_doc({
 			"doctype": "Customer Application", "application_name": "Run Checks Common App", "product": product.name,
-			"supplier_product_category": category, "spec": "RC-SPEC", "size": "100x20x30", "production_line": "Line RC",
 			"is_active": 1,
 		}).insert()
 		expect(app.industry_domain == industry, "Industry Segment not taken from the Product")
@@ -265,19 +264,19 @@ def _dvr_checks(ctx):
 			anyone = [r[0] for r in application_query("Customer Application", "Run Checks", "name", 0, 20, {"customer": someone, "principal": ctx.lead1.principal})]
 			expect(app.name in anyone, "application not offered to another customer")
 		filled = line_details(ctx.customer, ctx.lead1.principal, app.name)["application"]
-		for k, v in (("spec", "RC-SPEC"), ("size", "100x20x30"), ("production_line", "Line RC"), ("product", product.name)):
-			expect(str(filled.get(k)) == str(v), f"autofill {k}: {filled.get(k)!r}")
+		expect(str(filled.get("product")) == str(product.name), f"autofill product: {filled.get('product')!r}")
 		dvr = frappe.get_doc({
 			"doctype": "Daily Visit Report", "visit_date": today(), "customer": ctx.customer, "dvr_type": "Visit",
 			"dvr_stage": "Development", "visited_by": "Administrator", "principal": ctx.lead1.principal,
 			"application_master": app.name, "development_status": "Introduction", "discussion_notes": "run_checks",
-			"spec": filled.spec, "size": filled.size, "production_line": filled.production_line, "customer_product": filled.product,
+			"spec": "RC-SPEC", "size": "100x20x30", "production_line": "Line RC", "customer_product": filled.product,
+			"supplier_product_category": category,
 		}).insert()
 		lead = frappe.get_doc("TP Technical Lead", dvr.technical_lead)
 		expect(lead.customer == ctx.customer and lead.application_master == app.name, "customer's lead not made")
 		expect(lead.production_line == "Line RC" and str(lead.product) == str(product.name), "lead did not take Production Line / Product")
 		if category:
-			expect(str(lead.supplier_product_category) == str(category), f"lead category {lead.supplier_product_category!r}, expected {category!r} (master principal {frappe.db.get_value('Customer Application', app.name, 'principal')!r})")
+			expect(str(lead.supplier_product_category) == str(category), f"lead category {lead.supplier_product_category!r}, expected {category!r}")
 		expect(dvr.application == "Run Checks Common App", f"application name {dvr.application!r}")
 		expect(dvr.product_name == "Run Checks BB", f"DVR list Product {dvr.product_name!r}")
 		ctx.common_dvr = dvr

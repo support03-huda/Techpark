@@ -174,7 +174,7 @@ def missing_customer_data(digests):
 			for label, ok in (
 				(_("Primary contact"), c.primary_contact_name),
 				(_("Plant"), c.name in has["plant"]),
-				(_("Industry Segment"), c.industry_domain),
+				(_("Industry Domain"), c.industry_domain),  # 2026-11-21: Customer's Industry Domain
 				(_("Region"), c.territory_region),
 				(_("Turnover {0}").format(fy), c.name in has["turnover"]),
 				(_("Segment / line application"), c.name in has["segment"]),

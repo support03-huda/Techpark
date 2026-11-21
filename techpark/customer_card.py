@@ -9,6 +9,8 @@ values are resolved to their names (units, products, applications, …) so it re
 import frappe
 from frappe.utils import cint
 
+from techpark.shares import FIELDS as SHARE_FIELDS, share_parts
+
 # Title field of each linked master
 TITLE_FIELDS = {
 	"Plant": "plant_name",
@@ -17,6 +19,7 @@ TITLE_FIELDS = {
 	"Product Category": "category_name",
 	"Product Segment": "segment_name",
 	"Industry Segment": "industry_name",
+	"Industry Domain": "industry_name",  # 2026-11-21: Customer's Industry Domain
 	"Customer Application": "application_name",
 	"TP Competitor": "competitor_name",
 	"Consumption Type": "comsumption_type_name",
@@ -65,6 +68,16 @@ def get_customer_card(customer):
 	card["contacts"] = [c for c in doc.contacts if cint(c.is_active)]
 	card["agents"] = [frappe.utils.get_fullname(a.agent) for a in doc.handled_by]
 	card["principals"] = [p.principal for p in doc.principals]
+	# 2026-11-21: Principal + up to 4 competitors
+	leads = {
+		l.name: l
+		for l in frappe.get_all(
+			"TP Technical Lead",
+			filters={"name": ("in", [r.record for r in doc.technical_leads if r.record] or [""])},
+			fields=["name", "principal", *SHARE_FIELDS],
+		)
+	}
+	card["lead_shares"] = {r.name: share_parts(leads.get(r.record) or r) for r in doc.technical_leads}
 	return card
 
 

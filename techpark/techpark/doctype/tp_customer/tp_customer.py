@@ -28,7 +28,7 @@ def own_visits(customer, user=None):
 
 
 def industry_segments(customers):
-	"""{customer: "Bearing, Steel"} — all Industry Segments of each customer."""
+	"""{customer: "Bearing, Steel"} — all Industry/Product Segments of each customer."""
 	out = {}
 	for row in frappe.get_all(
 		"Organizaton Segment",
@@ -106,14 +106,14 @@ class TPCustomer(Document):
 			frappe.flags.tp_customer_sync = False
 
 	def set_industry_segments(self):
-		"""Industry Segment is a multi-select; the first one is kept as the customer's main segment."""
+		"""Industry/Product Segment is a multi-select: no duplicates."""
+		# 2026-11-21: Industry Domain is its own field again, no longer the first segment (client)
 		seen, rows = set(), []
 		for row in self.segments:
 			if row.segment and row.segment not in seen:
 				seen.add(row.segment)
 				rows.append(row)
 		self.segments = rows
-		self.industry_domain = rows[0].segment if rows else None
 
 	def validate_duplicate_name(self):
 		duplicate = frappe.db.get_value(
