@@ -1,3 +1,4 @@
+# Last edited: 2026-11-03
 # Copyright (c) 2026, Techpark International
 """Visiting card scan: read a card photo with OpenAI and return the details for the TP Customer form."""
 

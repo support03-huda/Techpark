@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """TechPark's "Competitor" DocType clashed with ERPNext's "Competitor" (DocType names are
 global), so it is now "TP Competitor".
 

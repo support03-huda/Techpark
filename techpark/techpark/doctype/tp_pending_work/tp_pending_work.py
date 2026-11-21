@@ -1,3 +1,4 @@
+# Last edited: 2026-11-14
 # Copyright (c) 2026, Techpark International
 """Pending Work: a task with its responsible people and due date (the sheet they kept in Teams).
 Each responsible person gets it assigned (their ToDo list) and a daily reminder (techpark.pending_work)."""

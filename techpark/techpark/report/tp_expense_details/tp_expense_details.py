@@ -1,3 +1,4 @@
+# Last edited: 2026-10-29
 # Copyright (c) 2026, Techpark International
 """Expense Details report: one row per bill, with the expense it belongs to and its Tally account."""
 

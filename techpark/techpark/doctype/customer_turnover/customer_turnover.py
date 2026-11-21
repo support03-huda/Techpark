@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Customer Turnover — code 601, 602 …; one record per customer, plant and financial year."""
 

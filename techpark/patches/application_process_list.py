@@ -1,3 +1,4 @@
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Application "Process" is now a fixed list (the client's grinding processes). Old free text that is
 one of them is kept; anything else moves into the Description. Technical Leads copy the master's Process."""

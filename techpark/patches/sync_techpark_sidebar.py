@@ -1,3 +1,4 @@
+# Last edited: 2026-11-03
 """Frappe 16.54 skipped the updated TechPark sidebar on migrate, so it still showed Plants.
 Load it from the app file again (one customer = one site: no Plants link)."""
 

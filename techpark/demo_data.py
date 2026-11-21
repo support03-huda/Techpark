@@ -1,3 +1,4 @@
+# Last edited: 2026-11-07
 # Copyright (c) 2026, Techpark International
 """Wipe all TechPark data on a site and load demo data (5 fictional customers).
 

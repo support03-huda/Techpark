@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Territory / Region — sales territory on a customer (West - MH, East - WB, …), grouped by zone."""
 

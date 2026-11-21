@@ -1,3 +1,4 @@
+// Last edited: 2026-09-26
 frappe.listview_settings["TP Customer"] = {
 	add_fields: ["customer_status"],
 	get_indicator(doc) {

@@ -1,3 +1,4 @@
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Where each development stands: one row per opportunity (customer + application / line + principal +
 wheel spec), like the client's Development Status and Sales Follow-up sheets. The status is the line's

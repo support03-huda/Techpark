@@ -1,3 +1,4 @@
+# Last edited: 2026-10-29
 """Expenses were taken out of TechPark (only DVR and Customer Master stay): delete the
 expense charts and number cards, the Visit Expense DocType and its table with all records.
 Migrate alone would leave the charts, cards and the table behind."""

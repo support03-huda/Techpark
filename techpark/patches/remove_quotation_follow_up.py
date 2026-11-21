@@ -1,3 +1,4 @@
+# Last edited: 2026-11-06
 """TP Quotation and TP Sales Follow-up were dropped (2026-11-06): the sales follow-up stays in the
 visit's Sales stage with its next-action reminders. Remove them from sites that already had them."""
 

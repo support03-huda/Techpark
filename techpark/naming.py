@@ -1,3 +1,4 @@
+# Last edited: 2026-10-24
 """Sequential numeric codes (10001, 10002 … / 101, 102 …) as required by the client spec."""
 
 import frappe

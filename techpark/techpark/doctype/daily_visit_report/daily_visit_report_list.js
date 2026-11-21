@@ -1,3 +1,4 @@
+// Last edited: 2026-10-30
 // Indicator: the visit's stage (Development / Sales), with Won / Lost / On Hold called out.
 // Colours match techpark.dvr.STAGE_COLORS in daily_visit_report.js.
 frappe.listview_settings["Daily Visit Report"] = {

@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """Customer entry spec update:
 
 * create the Territory Region master (Region became a link) and fill each customer's Zone,

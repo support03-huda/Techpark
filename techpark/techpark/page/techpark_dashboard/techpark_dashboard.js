@@ -1,3 +1,4 @@
+// Last edited: 2026-11-14
 // Copyright (c) 2026, Techpark International
 // TechPark Dashboard (same look as the UG dashboard): greeting with the headline numbers, clickable KPI cards
 // for follow-ups and the development funnel, charts of visits / pipeline / principals, what needs action,

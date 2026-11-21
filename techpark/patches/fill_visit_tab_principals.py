@@ -1,3 +1,4 @@
+# Last edited: 2026-10-30
 """Principal-wise Status on every visit, and DVR Type / Department / Principals on the customers'
 Visits tab rows, so the tab matches its visits (otherwise saving a customer would see a change on a
 submitted visit and refuse)."""

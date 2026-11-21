@@ -1,3 +1,4 @@
+# Last edited: 2026-11-04
 """TechPark logo on the login page (and desk) from the app, not an uploaded file.
 Its size comes from public/css/techpark_web.css, so the CSS first put in Website Settings
 Head HTML is removed."""

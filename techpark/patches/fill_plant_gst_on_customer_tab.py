@@ -1,3 +1,4 @@
+# Last edited: 2026-10-30
 """Copy GSTIN / GST Registration Type from each Plant to its row on the customer's Plants tab, so
 saving a customer (which pushes the tab rows to the Plant records) does not blank them."""
 

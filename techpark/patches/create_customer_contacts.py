@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """Turn the rows of every customer's Contacts tab into Customer Contact records (CON-0001 …)
 and link each row to its record, so expenses and visits can point to the person met.
 

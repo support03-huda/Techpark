@@ -1,3 +1,4 @@
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Customer Card: everything known about a customer in one structure.
 

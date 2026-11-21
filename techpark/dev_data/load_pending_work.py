@@ -1,3 +1,4 @@
+# Last edited: 2026-11-14
 # Copyright (c) 2026, Techpark International
 """Load the "TP Pending Work" tab of their Teams sheet as Pending Work records, exactly as written
 there (one record per filled cell, the column as its Category). Nothing else is filled in.

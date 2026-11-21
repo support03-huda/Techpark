@@ -1,3 +1,4 @@
+// Last edited: 2026-11-06
 // Copyright (c) 2026, Techpark International
 // Opportunity colour by result, else by stage; overdue next action in red.
 

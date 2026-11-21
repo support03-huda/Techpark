@@ -1,3 +1,4 @@
+// Last edited: 2026-11-12
 // Copyright (c) 2026, Techpark International
 // Shared by the Development Board and the Sales Board pages (included by their page scripts).
 // Every application line (TP Opportunity) of that stage under its customer, with its status on the

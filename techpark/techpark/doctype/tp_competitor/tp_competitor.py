@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Competitor brands seen on customer lines. Not called "Competitor": ERPNext has a DocType with that name."""
 

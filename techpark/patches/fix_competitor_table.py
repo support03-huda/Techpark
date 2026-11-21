@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """Repair `tabCompetitor` on sites where ERPNext took over the "Competitor" DocType name
 from TechPark.
 

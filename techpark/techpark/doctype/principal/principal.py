@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Principal — the brands TechPark distributes for (Noritake, Everloy, ALMT)."""
 

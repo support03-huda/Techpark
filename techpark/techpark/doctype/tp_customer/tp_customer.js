@@ -1,3 +1,4 @@
+// Last edited: 2026-11-12
 // Copyright (c) 2026, Techpark International
 // Plants / Products Info / Commercial / Technical Lead / Visits tabs: summary tiles
 // above editable tables. These and the Contacts table are synced to the real records on

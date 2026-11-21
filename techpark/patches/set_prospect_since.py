@@ -1,3 +1,4 @@
+# Last edited: 2026-09-26
 """Backfill "Prospect Since" for customers that were already Prospects before the field existed,
 so the "Customer Prospect Over 7 Days" notification can count from their creation date."""
 

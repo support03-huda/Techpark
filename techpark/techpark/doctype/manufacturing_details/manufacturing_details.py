@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Manufacturing Details — code 901, 902 … as per the approved client spec."""
 

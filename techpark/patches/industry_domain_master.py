@@ -1,3 +1,4 @@
+# Last edited: 2026-10-24
 """Industry on the Customer Master became a dropdown: create the standard industries
 and one for every industry already typed on a customer, so existing values stay valid."""
 

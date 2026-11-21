@@ -1,3 +1,4 @@
+# Last edited: 2026-10-24
 """Product ID starts at 201 (approved spec): renumber existing products 1, 2 … to 201, 202 …
 (links on production records follow the rename) and let new products continue from there."""
 

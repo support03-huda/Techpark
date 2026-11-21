@@ -1,3 +1,4 @@
+# Last edited: 2026-09-26
 """Rename TechPark's "Customer" DocType to "TP Customer".
 
 ERPNext ships its own "Customer" DocType; on a site with both apps, whichever

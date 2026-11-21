@@ -1,3 +1,4 @@
+# Last edited: 2026-10-29
 """Principal-wise DVR: every existing visit gets a principal row made from its single
 Principal / Lead Stage / Lead Status, the old Lead Stage names become the new statuses (also on the
 customers' Visits tab), and DVR Type / Department are filled in (Visit, Sales)."""

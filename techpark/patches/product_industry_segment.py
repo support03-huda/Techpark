@@ -1,3 +1,4 @@
+# Last edited: 2026-11-13
 # Copyright (c) 2026, Techpark International
 """Industry Segment -> Product -> Application: a product takes the industry segment of the
 applications already made with it."""

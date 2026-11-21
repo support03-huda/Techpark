@@ -1,3 +1,4 @@
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Reminder digests, sent as a bell notification and an email (from the site's outgoing
 account) to each salesperson and manager. Limits come from TechPark Settings, and nothing

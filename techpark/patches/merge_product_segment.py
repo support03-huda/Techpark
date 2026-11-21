@@ -1,3 +1,4 @@
+# Last edited: 2026-11-21
 # Copyright (c) 2026, Techpark International
 """Product Segment and Industry Domain were the same thing: every Segment field now picks from the
 Industry Segment (Industry Domain) master. Old Product Segment ids become Industry Segment names, and a

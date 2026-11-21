@@ -1,3 +1,4 @@
+// Last edited: 2026-10-24
 frappe.listview_settings["TP Registration"] = {
 	get_indicator(doc) {
 		const colors = { Pending: "orange", Approved: "green", Rejected: "red" };

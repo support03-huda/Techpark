@@ -1,3 +1,4 @@
+# Last edited: 2026-10-24
 # Copyright (c) 2026, Techpark International
 """Health check: run every TechPark report, dashboard chart and number card, and preview
 the reminder digests, printing OK / FAIL for each. Nothing is changed or sent.

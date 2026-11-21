@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """The "Qualified Leads" number card counted Frappe CRM leads, which are not TechPark data.
 It is replaced on the dashboard by "Overdue Follow-ups"; remove the old standard card."""
 

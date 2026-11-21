@@ -1,3 +1,4 @@
+# Last edited: 2026-10-30
 """The "TechPark Today" Custom HTML Block is no longer used: the workspace is built from Frappe's own widgets."""
 
 import frappe

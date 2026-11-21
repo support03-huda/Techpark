@@ -1,3 +1,4 @@
+# Last edited: 2026-11-06
 """The client's development cycle (2026-11-06): move visits to the new statuses, give every principal row
 an application line and build the TP Opportunity of each line from the submitted visits."""
 

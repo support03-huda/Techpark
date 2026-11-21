@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 # Copyright (c) 2026, Techpark International
 """Abrasive / Wheel Consumption — code 701, 702 … as per the approved client spec."""
 

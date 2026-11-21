@@ -1,3 +1,4 @@
+# Last edited: 2026-11-02
 """One customer = one site: the Plant is hidden, so the customer shows the address and GST details
 (taken from its plant where the customer has none), and records without a plant get the customer's."""
 

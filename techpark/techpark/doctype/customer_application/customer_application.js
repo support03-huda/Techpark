@@ -1,3 +1,4 @@
+// Last edited: 2026-11-13
 // Copyright (c) 2026, SWSPL and contributors
 // Industry Segment -> Product -> Application: the Product list shows the segment's products only.
 

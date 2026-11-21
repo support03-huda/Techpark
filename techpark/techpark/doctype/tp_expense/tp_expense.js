@@ -1,3 +1,4 @@
+// Last edited: 2026-10-29
 // Copyright (c) 2026, Techpark International
 // Expense claim: own user filled in, bills limited to own visits and active expense types, the customer
 // taken from the visit, a running total, and the buttons of the approval steps

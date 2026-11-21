@@ -1,3 +1,4 @@
+# Last edited: 2026-11-14
 # Copyright (c) 2026, Techpark International
 """Record-level access: every user sees only their own Daily Visit Reports (and those they joined);
 admins see everyone's. Visit Reports lock for salespeople a set

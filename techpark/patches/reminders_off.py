@@ -1,3 +1,4 @@
+# Last edited: 2026-10-26
 """All TechPark reminders start switched off (TechPark Settings > Enable Reminders)."""
 
 import frappe

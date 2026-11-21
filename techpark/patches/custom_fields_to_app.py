@@ -1,3 +1,4 @@
+# Last edited: 2026-10-30
 """GSTIN / GST Registration Type (Plant) and Customer No. (TP Customer) were first added on the live
 site as Custom Fields; they are standard fields of the app now. Remove the Custom Fields before the
 model sync: deleting a Custom Field keeps its column, so the values stay and the standard field uses it."""

@@ -1,3 +1,4 @@
+# Last edited: 2026-11-07
 import frappe
 
 # Desk users land on the TechPark Dashboard page after login (the old TechPark workspace was removed).

@@ -1,3 +1,4 @@
+# Last edited: 2026-10-30
 """Stage (Development / Sales / Development + Sales) on every visit, from its principal rows."""
 
 import frappe

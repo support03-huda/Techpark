@@ -1,3 +1,4 @@
+# Last edited: 2026-11-06
 # Copyright (c) 2026, Techpark International
 """One application line per visit: fill the visit's new line fields from its first principal row."""
 

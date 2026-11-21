@@ -1,3 +1,4 @@
+// Last edited: 2026-11-21
 // Copyright (c) 2026, Techpark International
 // Customer Visit (DVR): one application line per visit. The Stage (Development / Sales) is chosen
 // first, then the line (principal, the customer's Technical Lead, category) and its status. On save the

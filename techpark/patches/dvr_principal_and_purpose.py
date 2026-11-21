@@ -1,3 +1,4 @@
+# Last edited: 2026-10-21
 """DVR spec update: create the Principals, move existing visits to the approved
 Visit Purpose options (Routine / Trial / Issue / Commercial / Stock) and stamp
 the fixed distributor "TP"."""
