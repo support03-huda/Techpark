@@ -173,7 +173,7 @@ def missing_customer_data(digests):
 			for label, ok in (
 				(_("Primary contact"), c.primary_contact_name),
 				(_("Plant"), c.name in has["plant"]),
-				(_("Industry"), c.industry_domain),
+				(_("Industry Segment"), c.industry_domain),
 				(_("Region"), c.territory_region),
 				(_("Turnover {0}").format(fy), c.name in has["turnover"]),
 				(_("Segment / line application"), c.name in has["segment"]),
@@ -287,7 +287,8 @@ def render(user, sections):
 
 def deliver(digests, subject, link_to, dry_run=False, setting="enable_reminders"):
 	# A preview still shows what would go out while reminders are switched off.
-	if dry_run or not get_setting(setting):
+	# "Enable Reminders" is the master switch; `setting` can turn off one kind on its own.
+	if dry_run or not get_setting("enable_reminders") or not get_setting(setting):
 		return digests
 	from frappe.desk.doctype.notification_log.notification_log import enqueue_create_notification
 

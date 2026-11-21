@@ -119,6 +119,9 @@ frappe.ui.form.on("Daily Visit Report", {
 	production_line(frm) {
 		techpark.dvr.render_stage(frm);
 	},
+	grinding_process(frm) {
+		techpark.dvr.render_stage(frm);
+	},
 
 	// Development or Sales: the rows show only that stage's status, and open lines of that stage are offered
 	dvr_stage(frm) {
@@ -565,7 +568,7 @@ techpark.dvr.render_headline = function (frm, rows) {
 			const sales = stage === "Sales";
 			const status = (sales && row.sales_status) || row.development_status || "";
 			const pct = Math.max(0, Math.min(100, row.progress || 0));
-			const chips = [row.principal, row.category_name, frm.doc.product_name, frm.doc.production_line]
+			const chips = [row.principal, frm.doc.grinding_process, row.category_name, frm.doc.product_name, frm.doc.production_line]
 				.filter(Boolean).map((c) => `<span class="tp-sb-chip">${esc(c)}</span>`).join("");
 			// 0-50% is Development, 50-100% is Sales
 			const dev_fill = Math.min(pct, 50) * 2, sales_fill = Math.max(pct - 50, 0) * 2;

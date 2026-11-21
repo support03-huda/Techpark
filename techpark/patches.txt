@@ -2,6 +2,7 @@
 techpark.patches.rename_customer_to_tp_customer
 techpark.patches.rename_competitor_to_tp_competitor
 techpark.patches.custom_fields_to_app
+techpark.patches.rename_industry_domain
 # Patches added in this section will be executed before doctypes are migrated
 # Read docs to understand patches: https://frappeframework.com/docs/v14/user/en/database-migrations
 
@@ -50,3 +51,6 @@ techpark.patches.technical_lead_status #present status
 techpark.patches.link_common_applications
 techpark.patches.product_industry_segment
 techpark.patches.pending_work_kanban
+techpark.patches.merge_product_segment #2026-11-21
+techpark.patches.application_process_list
+techpark.patches.dvr_process

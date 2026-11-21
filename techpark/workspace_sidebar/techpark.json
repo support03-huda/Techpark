@@ -252,61 +252,6 @@
    "type": "Link"
   },
   {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Wheel Specification",
-   "link_to": "Wheel Specification",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Wheel Consumption",
-   "link_to": "Wheel Consumption",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Product Production",
-   "link_to": "Customer Product Production",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Manufacturing Detail",
-   "link_to": "Manufacturing Details",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Segment Application",
-   "link_to": "Customer Segment Application",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
    "child": 0,
    "collapsible": 1,
    "indent": 1,
@@ -354,8 +299,8 @@
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
-   "label": "Industry Domain",
-   "link_to": "Industry Domain",
+   "label": "Industry Segment",
+   "link_to": "Industry Segment",
    "link_type": "DocType",
    "show_arrow": 0,
    "type": "Link"
@@ -431,17 +376,6 @@
    "collapsible": 1,
    "indent": 0,
    "keep_closed": 0,
-   "label": "Product Segment",
-   "link_to": "Product Segment",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
    "label": "Customer Product",
    "link_to": "Customer Product",
    "link_type": "DocType",
@@ -455,17 +389,6 @@
    "keep_closed": 0,
    "label": "Competitor",
    "link_to": "TP Competitor",
-   "link_type": "DocType",
-   "show_arrow": 0,
-   "type": "Link"
-  },
-  {
-   "child": 1,
-   "collapsible": 1,
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Consumption Type",
-   "link_to": "Consumption Type",
    "link_type": "DocType",
    "show_arrow": 0,
    "type": "Link"
@@ -493,7 +416,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-14 12:00:00.000000",
+ "modified": "2026-11-21 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark",

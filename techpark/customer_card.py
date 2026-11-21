@@ -15,6 +15,7 @@ TITLE_FIELDS = {
 	"Customer Product": "product_name",
 	"Product Category": "category_name",
 	"Product Segment": "segment_name",
+	"Industry Segment": "industry_name",
 	"Customer Application": "application_name",
 	"TP Competitor": "competitor_name",
 	"Consumption Type": "comsumption_type_name",

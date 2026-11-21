@@ -23,6 +23,7 @@
   "total_employees",
   "established_year",
   "handled_by",
+  "comments",
   "section_visiting_card",
   "visiting_card",
   "column_break_card",
@@ -102,14 +103,15 @@
   {
    "fieldname": "industry_domain",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Industry Domain",
-   "options": "Industry Domain"
+   "label": "Main Industry Segment",
+   "options": "Industry Segment",
+   "hidden": 1,
+   "read_only": 1
   },
   {
    "fieldname": "segments",
    "fieldtype": "Table MultiSelect",
-   "label": "Segments",
+   "label": "Industry Segment",
    "options": "Organizaton Segment"
   },
   {
@@ -194,9 +196,15 @@
    "options": "Customer Agent"
   },
   {
+   "fieldname": "comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
    "fieldname": "section_visiting_card",
    "fieldtype": "Section Break",
-   "label": "Visiting Card"
+   "label": "Visiting Card",
+   "hidden": 1
   },
   {
    "fieldname": "visiting_card",
@@ -215,7 +223,8 @@
   {
    "fieldname": "section_primary_contact",
    "fieldtype": "Section Break",
-   "label": "Primary Contact"
+   "label": "Primary Contact",
+   "hidden": 1
   },
   {
    "fieldname": "primary_contact_name",
@@ -451,7 +460,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-12 18:00:00.000000",
+ "modified": "2026-11-21 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

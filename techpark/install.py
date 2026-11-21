@@ -61,8 +61,8 @@ def after_install():
 def seed_industries(extra=()):
 	for industry in [*INDUSTRIES, *extra]:
 		industry = (industry or "").strip()
-		if industry and not frappe.db.exists("Industry Domain", industry):
-			frappe.get_doc({"doctype": "Industry Domain", "industry_name": industry}).insert(ignore_permissions=True)
+		if industry and not frappe.db.exists("Industry Segment", industry):
+			frappe.get_doc({"doctype": "Industry Segment", "industry_name": industry}).insert(ignore_permissions=True)
 
 
 def seed_regions():

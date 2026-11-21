@@ -29,6 +29,7 @@
   "section_principal",
   "principal",
   "application_master",
+  "grinding_process",
   "customer_product",
   "production_line",
   "technical_lead",
@@ -249,6 +250,15 @@
    "options": "Customer Application",
    "depends_on": "eval:doc.principal",
    "allow_on_submit": 1
+  },
+  {
+   "fieldname": "grinding_process",
+   "fieldtype": "Data",
+   "label": "Process",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "fetch_from": "application_master.grinding_process",
+   "depends_on": "eval:doc.application_master"
   },
   {
    "fieldname": "customer_product",
@@ -523,7 +533,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-13 18:30:00.000000",
+ "modified": "2026-11-21 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

@@ -38,7 +38,7 @@
    "fieldname": "industry_domain",
    "fieldtype": "Link",
    "label": "Industry Segment",
-   "options": "Industry Domain",
+   "options": "Industry Segment",
    "in_standard_filter": 1,
    "in_list_view": 1,
    "fetch_from": "product.industry_domain",
@@ -62,9 +62,11 @@
   },
   {
    "fieldname": "grinding_process",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "label": "Process",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "options": "\nInternal Grinding\nCylindrical Grinding\nCenterless Grinding\nSuperfinishing\nSurface Grinding\nEnd-Face Grinding\nDouble Disc Grinding (DDG)",
+   "in_standard_filter": 1
   },
   {
    "fieldname": "column_break_principal",
@@ -157,7 +159,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-14 15:00:00.000000",
+ "modified": "2026-11-21 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Application",

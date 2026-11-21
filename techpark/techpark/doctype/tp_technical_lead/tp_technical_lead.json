@@ -47,6 +47,7 @@
   "size_t",
   "size_id",
   "x_layer",
+  "dresser_details",
   "section_plan",
   "issue",
   "column_break_plan",
@@ -80,14 +81,16 @@
    "label": "Principal",
    "options": "Principal",
    "in_list_view": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "reqd": 1
   },
   {
    "fieldname": "application_master",
    "fieldtype": "Link",
    "label": "Application",
    "options": "Customer Application",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "reqd": 1
   },
   {
    "fieldname": "application",
@@ -95,14 +98,16 @@
    "label": "Application Name",
    "in_list_view": 1,
    "fetch_from": "application_master.application_name",
-   "read_only_depends_on": "eval:doc.application_master"
+   "read_only_depends_on": "eval:doc.application_master",
+   "hidden": 1
   },
   {
    "fieldname": "grinding_process",
    "fieldtype": "Data",
    "label": "Process",
    "fetch_from": "application_master.grinding_process",
-   "fetch_if_empty": 1
+   "fetch_if_empty": 1,
+   "read_only": 1
   },
   {
    "fieldname": "supplier_product_category",
@@ -292,6 +297,11 @@
    "label": "X Layer"
   },
   {
+   "fieldname": "dresser_details",
+   "fieldtype": "Small Text",
+   "label": "Dresser Details"
+  },
+  {
    "fieldname": "section_plan",
    "fieldtype": "Section Break",
    "label": "Issue & Action Plan"
@@ -317,7 +327,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-13 12:00:00.000000",
+ "modified": "2026-11-21 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",

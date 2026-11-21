@@ -329,10 +329,16 @@ def _customer_checks(ctx):
 	if not ctx.get("customer"):
 		return
 
+	def new_master(name):
+		# Application is required on a Technical Lead: a fresh master for each test line
+		product = frappe.db.get_value("Customer Application", {"product": ("is", "set")}, "product")
+		return frappe.get_doc({"doctype": "Customer Application", "application_name": name, "product": product,
+		                       "grinding_process": "Internal Grinding"}).insert().name
+
 	def products_info():
 		c = frappe.get_doc("TP Customer", ctx.customer)
 		c.abrasive_consumption_cr = 24
-		c.append("technical_leads", {"principal": ctx.lead1.principal, "application": "Run Checks Line", "progress": "Quoted"})
+		c.append("technical_leads", {"principal": ctx.lead1.principal, "application_master": new_master("Run Checks Line"), "progress": "Quoted"})
 		c.save()
 		c.reload()
 		lead = next((r for r in c.technical_leads if r.application == "Run Checks Line"), None)
@@ -342,7 +348,8 @@ def _customer_checks(ctx):
 
 	def lead_record_to_tab():
 		lead = frappe.get_doc({"doctype": "TP Technical Lead", "customer": ctx.customer, "principal": ctx.lead1.principal,
-		                       "application": "Run Checks From Record"}).insert()
+		                       "application_master": new_master("Run Checks From Record")}).insert()
+		expect(lead.grinding_process == "Internal Grinding", f"process from the master: {lead.grinding_process!r}")
 		on_tab = frappe.db.exists("TP Customer Technical Lead", {"parent": ctx.customer, "record": lead.name})
 		expect(on_tab, "a lead made on its own form did not appear on the customer's tab")
 		return lead.name

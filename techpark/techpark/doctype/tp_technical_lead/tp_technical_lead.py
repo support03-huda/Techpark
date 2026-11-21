@@ -17,7 +17,7 @@ class TPTechnicalLead(Document):
 			)
 			if master:
 				self.application = master.application_name
-				self.grinding_process = self.grinding_process or master.grinding_process
+				self.grinding_process = master.grinding_process
 				self.product = self.product or master.product
 				self.production_line = self.production_line or master.production_line
 				if not self.supplier_product_category and master.supplier_product_category and master.principal == self.principal:

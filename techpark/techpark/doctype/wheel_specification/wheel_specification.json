@@ -60,8 +60,8 @@
   {
    "fieldname": "segment",
    "fieldtype": "Link",
-   "label": "Segment",
-   "options": "Product Segment"
+   "label": "Industry Segment",
+   "options": "Industry Segment"
   },
   {
    "fieldname": "wheel_specification",
@@ -109,7 +109,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-02 12:00:00.000000",
+ "modified": "2026-11-21 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Wheel Specification",

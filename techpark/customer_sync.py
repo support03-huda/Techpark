@@ -90,6 +90,7 @@ TABLES = {
 			"size_t",
 			"size_id",
 			"x_layer",
+			"dresser_details",
 			"issue",
 			"action_plan",
 			"remarks",

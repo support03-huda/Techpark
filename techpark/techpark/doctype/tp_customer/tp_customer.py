@@ -26,6 +26,20 @@ def own_visits(customer, user=None):
 	)
 
 
+def industry_segments(customers):
+	"""{customer: "Bearing, Steel"} — all Industry Segments of each customer."""
+	out = {}
+	for row in frappe.get_all(
+		"Organizaton Segment",
+		filters={"parenttype": "TP Customer", "parent": ("in", list(customers) or [""])},
+		fields=["parent", "segment"],
+		order_by="idx",
+	):
+		if row.segment:
+			out.setdefault(row.parent, []).append(row.segment)
+	return {c: ", ".join(s) for c, s in out.items()}
+
+
 class TPCustomer(Document):
 	def autoname(self):
 		self.name = next_numeric_name(self.doctype, CUSTOMER_CODE_START)
@@ -69,6 +83,7 @@ class TPCustomer(Document):
 		self.validate_duplicate_name()
 		self.validate_established_year()
 		self.remove_duplicate_principals()
+		self.set_industry_segments()
 		self.validate_contacts()
 		self.sync_plant()
 		self.track_inactivation()
@@ -88,6 +103,16 @@ class TPCustomer(Document):
 				frappe.delete_doc("Plant", plant, ignore_permissions=True)
 		finally:
 			frappe.flags.tp_customer_sync = False
+
+	def set_industry_segments(self):
+		"""Industry Segment is a multi-select; the first one is kept as the customer's main segment."""
+		seen, rows = set(), []
+		for row in self.segments:
+			if row.segment and row.segment not in seen:
+				seen.add(row.segment)
+				rows.append(row)
+		self.segments = rows
+		self.industry_domain = rows[0].segment if rows else None
 
 	def validate_duplicate_name(self):
 		duplicate = frappe.db.get_value(
