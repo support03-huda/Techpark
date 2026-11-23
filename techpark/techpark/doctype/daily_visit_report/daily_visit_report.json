@@ -62,6 +62,7 @@
   "customer_requirement",
   "column_break_notes",
   "next_action",
+  "column_break_next_action",
   "next_action_date",
   "section_links",
   "actions_html",
@@ -477,13 +478,17 @@
   },
   {
    "fieldname": "column_break_notes",
-   "fieldtype": "Column Break"
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "next_action",
    "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Next Action"
+  },
+  {
+   "fieldname": "column_break_next_action",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "next_action_date",
@@ -533,7 +538,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-21 18:00:00.000000",
+ "modified": "2026-11-23 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

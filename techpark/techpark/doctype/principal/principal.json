@@ -9,7 +9,11 @@
  "field_order": [
   "principal_name",
   "is_active",
-  "description"
+  "description",
+  "section_notion",
+  "notion_enabled",
+  "notion_database_id",
+  "notion_token"
  ],
  "fields": [
   {
@@ -32,6 +36,30 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "section_notion",
+   "fieldtype": "Section Break",
+   "label": "Notion",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "notion_enabled",
+   "fieldtype": "Check",
+   "label": "Push to Notion"
+  },
+  {
+   "fieldname": "notion_database_id",
+   "fieldtype": "Data",
+   "label": "Notion Database ID",
+   "depends_on": "eval:doc.notion_enabled"
+  },
+  {
+   "fieldname": "notion_token",
+   "fieldtype": "Password",
+   "label": "Notion Integration Secret",
+   "depends_on": "eval:doc.notion_enabled",
+   "length": 250
   }
  ],
  "grid_page_length": 50,
@@ -46,7 +74,7 @@
    "link_fieldname": "principal"
   }
  ],
- "modified": "2026-10-21 12:00:00.000000",
+ "modified": "2026-11-22 11:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Principal",

@@ -43,6 +43,9 @@
   "section_notes",
   "remarks",
   "hold_cancel_reason",
+  "section_notion",
+  "notion_page_url",
+  "notion_pushed_on",
   "section_history",
   "history"
  ],
@@ -302,6 +305,28 @@
    "depends_on": "eval:[\"On Hold\",\"Cancelled\",\"Trial Failed\"].includes(doc.status)"
   },
   {
+   "fieldname": "section_notion",
+   "fieldtype": "Section Break",
+   "label": "Notion",
+   "collapsible": 1,
+   "depends_on": "eval:doc.notion_page_url"
+  },
+  {
+   "fieldname": "notion_page_url",
+   "fieldtype": "Data",
+   "label": "Notion Page",
+   "options": "URL",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "notion_pushed_on",
+   "fieldtype": "Datetime",
+   "label": "Sent to Notion On",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
    "fieldname": "section_history",
    "fieldtype": "Section Break",
    "label": "Stage History"
@@ -325,7 +350,7 @@
    "group": "Visits"
   }
  ],
- "modified": "2026-11-13 17:00:00.000000",
+ "modified": "2026-11-22 11:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",

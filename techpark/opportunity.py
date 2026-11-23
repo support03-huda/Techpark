@@ -1,4 +1,4 @@
-# Last edited: 2026-11-12
+# Last edited: 2026-11-22
 # Copyright (c) 2026, Techpark International
 """Developments / opportunities from the visits.
 
@@ -120,6 +120,13 @@ def refresh_opportunity(name):
 	doc.flags.ignore_permissions = True
 	doc.save()
 	update_technical_lead(doc, rows)
+	# 2026-11-22: Sent to Principal -> the principal's Notion database
+	try:
+		from techpark.notion import on_opportunity_refresh
+
+		on_opportunity_refresh(doc)
+	except Exception:
+		frappe.log_error(title="Notion push not queued: " + doc.name)
 
 
 def update_technical_lead(doc, rows):
