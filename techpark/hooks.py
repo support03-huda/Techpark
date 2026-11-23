@@ -1,4 +1,4 @@
-# Last edited: 2026-11-14
+# Last edited: 2026-11-23
 app_name = "techpark"
 app_title = "TechPark"
 app_publisher = "SWSPL"
@@ -145,6 +145,7 @@ permission_query_conditions = {
 	"TP Expense": "techpark.permission.expense_query_conditions",
 	"TP Opportunity": "techpark.permission.opportunity_query_conditions",
 	"TP Pending Work": "techpark.permission.pending_work_query_conditions",
+	"TP Customer": "techpark.permission.customer_query_conditions",  # 2026-11-23: only customers they handle
 }
 
 has_permission = {
@@ -152,6 +153,7 @@ has_permission = {
 	"TP Expense": "techpark.permission.expense_has_permission",
 	"TP Opportunity": "techpark.permission.own_record_has_permission",
 	"TP Pending Work": "techpark.permission.pending_work_has_permission",
+	"TP Customer": "techpark.permission.customer_has_permission",  # 2026-11-23
 }
 
 # Refuse changes to entries locked for salespeople.

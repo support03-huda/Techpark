@@ -2,7 +2,8 @@
 frappe.listview_settings["TP Customer"] = {
 	add_fields: ["customer_status"],
 	get_indicator(doc) {
-		const colors = { "Active Customer": "green", Prospect: "orange", Inactive: "red" };
+		// 2026-11-23: + Under Development
+		const colors = { "Active Customer": "green", Prospect: "orange", "Under Development": "blue", Inactive: "red" };
 		if (doc.customer_status) {
 			return [__(doc.customer_status), colors[doc.customer_status] || "gray", `customer_status,=,${doc.customer_status}`];
 		}

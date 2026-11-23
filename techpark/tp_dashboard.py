@@ -1,4 +1,4 @@
-# Last edited: 2026-11-14
+# Last edited: 2026-11-23
 # Copyright (c) 2026, Techpark International
 """Data of the TechPark Dashboard page (techpark-dashboard) and the Development Board page
 (techpark-development-board).
@@ -37,16 +37,21 @@ MONTHS = 12
 
 
 @frappe.whitelist()
-def get_dashboard():
+def get_dashboard(sales_person=None):
 	if not has_app_permission():
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
 	user, team, now = _scope()
+	# 2026-11-23: an admin may look at one sales person's dashboard (Sales Person filter)
+	can_filter = team
+	sp = sales_person if (team and sales_person) else None
+	if sp:
+		user, team = sp, False
 	month_start = get_first_day(now)
 	since = add_months(month_start, -(MONTHS - 1))
 
 	visits = frappe.get_list(
 		"Daily Visit Report",
-		filters={"docstatus": 1, "visit_date": (">=", since)},
+		filters={"docstatus": 1, "visit_date": (">=", since), **({"visited_by": sp} if sp else {})},
 		fields=[
 			"name", "visit_date", "customer", "customer_name", "employee_name", "visit_purpose",
 			"dvr_stage", "dvr_type", "lead_status", "lead_stage",
@@ -58,6 +63,10 @@ def get_dashboard():
 
 	return {
 		"user": {"name": frappe.utils.get_fullname(user), "is_manager": team},
+		# 2026-11-23: Sales Person filter for admins
+		"can_filter": can_filter,
+		"sales_person": sp,
+		"people": _sales_people() if can_filter else [],
 		"today": str(now),
 		"follow_ups": {
 			"overdue": sum(1 for f in follow_ups if f.due and f.due < now),
@@ -90,10 +99,10 @@ def get_dashboard():
 			],
 			"stages": _visits_by_stage(visits, since, month_start),
 		},
-		"pipeline": _pipeline(),
-		"opportunities": _opportunities(now, visits, month_start),
-		"customers": _customers(),
-		"expenses": _expenses(month_start, since),
+		"pipeline": _pipeline(sp),
+		"opportunities": _opportunities(now, visits, month_start, sp),
+		"customers": _customers(sp),
+		"expenses": _expenses(month_start, since, sp),
 	}
 
 
@@ -157,10 +166,10 @@ OPPORTUNITY_FIELDS = [
 IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
 
 
-def _opportunities(now, visits, month_start):
+def _opportunities(now, visits, month_start, sp=None):
 	"""Application lines: totals, the High-importance open ones and a sales-person table."""
 	opps = frappe.get_list(
-		"TP Opportunity", filters={"visits": (">", 0)}, fields=OPPORTUNITY_FIELDS, limit_page_length=0
+		"TP Opportunity", filters={"visits": (">", 0), **({"sales_person": sp} if sp else {})}, fields=OPPORTUNITY_FIELDS, limit_page_length=0
 	)
 	open_ = [o for o in opps if o.lead_status in ("Open", "On Hold")]
 	overdue = lambda o: o.next_action_date and getdate(o.next_action_date) < now
@@ -379,11 +388,11 @@ def _by_principal(visits):
 	return _group(rows, "principal")[:10]
 
 
-def _pipeline():
+def _pipeline(sp=None):
 	"""Principal-wise leads at their latest stage (rows of the Application Development Status report)."""
 	from techpark.techpark.report.application_development_status.application_development_status import get_data
 
-	rows = get_data(frappe._dict())
+	rows = get_data(frappe._dict(visited_by=sp) if sp else frappe._dict())
 	counts = {stage: 0 for stage in PIPELINE}
 	for r in rows:
 		if r.get("lead_stage") in counts:
@@ -399,28 +408,50 @@ def _pipeline():
 	}
 
 
-def _customers():
+def _customers(sp=None):
+	filters = {}
+	if sp:  # 2026-11-23: the customers that sales person handles
+		filters["name"] = ("in", frappe.get_all("Customer Agent", filters={"parenttype": "TP Customer", "agent": sp}, pluck="parent") or [""])
 	customers = frappe.get_list(
-		"TP Customer", fields=["customer_status", "territory_region"], limit_page_length=0
+		"TP Customer", filters=filters, fields=["customer_status", "territory_region"], limit_page_length=0
 	)
+	count = lambda status: sum(1 for c in customers if c.customer_status == status)
 	return {
 		"total": len(customers),
-		"active": sum(1 for c in customers if c.customer_status == "Active Customer"),
-		"prospects": sum(1 for c in customers if c.customer_status == "Prospect"),
+		"active": count("Active Customer"),
+		"prospects": count("Prospect"),
+		# 2026-11-23: a card for every status
+		"under_development": count("Under Development"),
+		"inactive": count("Inactive"),
 		"by_status": _group(customers, "customer_status"),
 		"by_region": _group(customers, "territory_region"),
 	}
 
 
-def _expenses(month_start, since):
+def _sales_people():
+	"""2026-11-23: enabled users with a sales role, for the admin's Sales Person filter."""
+	users = frappe.get_all(
+		"Has Role", filters={"parenttype": "User", "role": ("in", ("Sales User", "Sales Manager"))}, pluck="parent", distinct=True
+	)
+	return [
+		{"value": u.name, "label": u.full_name or u.name}
+		for u in frappe.get_all(
+			"User", filters={"name": ("in", users or [""]), "enabled": 1, "user_type": "System User"}, fields=["name", "full_name"], order_by="full_name"
+		)
+		if u.name not in ("Administrator", "Guest")
+	]
+
+
+def _expenses(month_start, since, sp=None):
+	own = {"employee": sp} if sp else {}
 	expenses = frappe.get_list(
 		"TP Expense",
-		filters={"entry_date": (">=", since)},
+		filters={"entry_date": (">=", since), **own},
 		fields=["entry_date", "employee_name", "status", "total_amount", "passed_amount"],
 		limit_page_length=0,
 	)
 	this_month = [e for e in expenses if getdate(e.entry_date) >= month_start]
-	pending = frappe.get_list("TP Expense", filters={"status": ("in", EXPENSE_PENDING)}, fields=["total_amount"])
+	pending = frappe.get_list("TP Expense", filters={"status": ("in", EXPENSE_PENDING), **own}, fields=["total_amount"])
 	by_employee = {}
 	for e in this_month:
 		by_employee[e.employee_name or "?"] = by_employee.get(e.employee_name or "?", 0) + flt(e.total_amount)

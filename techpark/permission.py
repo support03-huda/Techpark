@@ -1,4 +1,4 @@
-# Last edited: 2026-11-14
+# Last edited: 2026-11-23
 # Copyright (c) 2026, Techpark International
 """Record-level access: every user sees only their own Daily Visit Reports (and those they joined);
 admins see everyone's. Visit Reports lock for salespeople a set
@@ -151,6 +151,24 @@ def expense_has_permission(doc, ptype=None, user=None):
 	if ptype in READ_PTYPES:
 		return doc.employee in team
 	return doc.employee == team[0]
+
+
+# 2026-11-23: a salesperson sees only the customers whose Handled By (Employee) has them; admins see all
+def customer_query_conditions(user=None, doctype=None):
+	user = user or frappe.session.user
+	if is_manager(user):
+		return ""
+	return (
+		"exists (select 1 from `tabCustomer Agent` a where a.parenttype = 'TP Customer'"
+		f" and a.parent = `tabTP Customer`.name and a.agent = {frappe.db.escape(user)})"
+	)
+
+
+def customer_has_permission(doc, ptype=None, user=None):
+	user = user or frappe.session.user
+	if is_manager(user) or doc.is_new() or ptype == "create":
+		return True
+	return user in {r.agent for r in doc.get("handled_by") or []}
 
 
 def pending_work_query_conditions(user=None, doctype=None):

@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-23
 # Copyright (c) 2026, Techpark International
 """Customer Master — code 10001, 10002 … as per the approved client spec."""
 
@@ -47,6 +47,12 @@ class TPCustomer(Document):
 		self.customer_code = self.name
 
 	def before_insert(self):
+		# 2026-11-23: salespeople see only customers they handle -> the creator is added to Handled By
+		from techpark.permission import is_manager
+
+		user = frappe.session.user
+		if not is_manager(user) and user not in {r.agent for r in self.get("handled_by") or []}:
+			self.append("handled_by", {"agent": user})
 		self.set_customer_no()
 
 	def set_customer_no(self):

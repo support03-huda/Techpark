@@ -1,4 +1,4 @@
-// Last edited: 2026-11-14
+// Last edited: 2026-11-23
 // Copyright (c) 2026, Techpark International
 // TechPark Dashboard (same look as the UG dashboard): greeting with the headline numbers, clickable KPI cards
 // for follow-ups and the development funnel, charts of visits / pipeline / principals, what needs action,
@@ -41,10 +41,28 @@ class TPDashboard {
 	}
 
 	refresh() {
-		return frappe.call({ method: "techpark.tp_dashboard.get_dashboard" }).then(({ message }) => {
+		// 2026-11-23: admins pick a sales person to see that person's dashboard
+		return frappe.call({ method: "techpark.tp_dashboard.get_dashboard", args: { sales_person: this.sales_person || null } }).then(({ message }) => {
 			this.data = message;
 			this.loaded = true;
+			this.setup_sales_person(message);
 			this.render();
+		});
+	}
+
+	setup_sales_person(d) {
+		if (!d.can_filter || this.sp_field) return;
+		this.sp_field = this.page.add_field({
+			fieldname: "sales_person",
+			label: __("Sales Person"),
+			fieldtype: "Select",
+			options: [{ value: "", label: __("All (whole team)") }, ...(d.people || [])],
+			change: () => {
+				const v = this.sp_field.get_value() || null;
+				if (v === (this.sales_person || null)) return;
+				this.sales_person = v;
+				this.refresh();
+			},
 		});
 	}
 
@@ -351,7 +369,7 @@ class TPDashboard {
 		const greet = hour < 12 ? __("Good morning") : hour < 17 ? __("Good afternoon") : __("Good evening");
 		return `<div class="tpd-hero">
 			<h2>${this.esc(greet)}${name ? ", " + this.esc(name) : ""}</h2>
-			<div class="tpd-sub">${__("TechPark International")} · ${d.user.is_manager ? __("whole team") : __("your work")} · ${frappe.datetime.str_to_user(d.today)}</div>
+			<div class="tpd-sub">${__("TechPark International")} · ${d.sales_person ? this.esc(d.user.name) : d.user.is_manager ? __("whole team") : __("your work")} · ${frappe.datetime.str_to_user(d.today)}</div>
 		</div>`;
 	}
 
@@ -460,6 +478,9 @@ class TPDashboard {
 			[__("All Customers"), c.total, __("in the customer master"), TPD_COLORS.slate, list()],
 			[__("Active Customers"), c.active, __("buying from us"), TPD_COLORS.green, list("Active Customer")],
 			[__("Prospects"), c.prospects, __("not buying yet"), TPD_COLORS.amber, list("Prospect")],
+			// 2026-11-23: every customer status gets a card
+			[__("Under Development"), c.under_development, __("trials / development going on"), TPD_COLORS.blue, list("Under Development")],
+			[__("Inactive"), c.inactive, __("no longer active"), TPD_COLORS.red, list("Inactive")],
 		]);
 	}
 
@@ -521,7 +542,7 @@ class TPDashboard {
 			});
 		};
 		group_chart(".tpd-chart-region", d.customers.by_region, "bar", [TPD_COLORS.teal]);
-		group_chart(".tpd-chart-status", d.customers.by_status, "pie", [TPD_COLORS.green, TPD_COLORS.amber, TPD_COLORS.slate]);
+		group_chart(".tpd-chart-status", d.customers.by_status, "pie", [TPD_COLORS.green, TPD_COLORS.amber, TPD_COLORS.blue, TPD_COLORS.red, TPD_COLORS.slate]);
 
 		const e = d.expenses;
 		if (e.monthly.some((m) => m.value)) {
