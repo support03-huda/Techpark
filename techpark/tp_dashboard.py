@@ -12,7 +12,7 @@ import frappe
 from frappe.utils import add_days, add_months, flt, formatdate, get_first_day, getdate, today
 
 from techpark.dashboard import PROSPECT_STALE_DAYS, _scope, _stale_prospects
-from techpark.permission import has_app_permission
+from techpark.permission import MANAGER_ROLES, has_app_permission
 
 # Opportunity statuses in pipeline order (the client's development cycle).
 PIPELINE = [
@@ -433,6 +433,9 @@ def _sales_people():
 	users = frappe.get_all(
 		"Has Role", filters={"parenttype": "User", "role": ("in", ("Sales User", "Sales Manager"))}, pluck="parent", distinct=True
 	)
+	# 2026-11-23: admins (e.g. Milind Lokare) stay users but are not in the Sales Person dropdown
+	admins = set(frappe.get_all("Has Role", filters={"parenttype": "User", "role": ("in", list(MANAGER_ROLES))}, pluck="parent"))
+	users = [u for u in users if u not in admins]
 	return [
 		{"value": u.name, "label": u.full_name or u.name}
 		for u in frappe.get_all(
