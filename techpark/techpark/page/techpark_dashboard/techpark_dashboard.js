@@ -26,8 +26,8 @@ class TPDashboard {
 		this.page = page;
 		this.page.set_primary_action(__("New Visit"), () => frappe.new_doc("Daily Visit Report"), "add");
 		this.page.set_secondary_action(__("Refresh"), () => this.refresh(), "refresh");
-		this.page.add_inner_button(__("Development Board"), () => frappe.set_route("techpark-development-board"));
-		this.page.add_inner_button(__("Sales Board"), () => frappe.set_route("techpark-sales-board"));
+		this.page.add_inner_button(__("Development Board"), () => this.go("techpark-development-board"));
+		this.page.add_inner_button(__("Sales Board"), () => this.go("techpark-sales-board"));
 		this.page.add_inner_button(__("New Customer"), () => frappe.new_doc("TP Customer"));
 		this.page.add_inner_button(__("New Expense"), () => frappe.new_doc("TP Expense"));
 		this.visit_stage = "Development";
@@ -66,6 +66,28 @@ class TPDashboard {
 		});
 	}
 
+	// 2026-11-23: with a Sales Person picked, the list / report / board a card opens shows only that person's records
+	go(...args) {
+		const sp = this.sales_person;
+		if (sp) {
+			const KEY = {
+				"TP Customer": "Customer Agent.agent",
+				"Daily Visit Report": "visited_by",
+				"TP Opportunity": "sales_person",
+				"TP Expense": "employee",
+				ToDo: "allocated_to",
+			};
+			const [view, target, opts] = args;
+			if (view === "List" && KEY[target]) args = [view, target, { ...(opts || {}), [KEY[target]]: sp }];
+			else if (view === "query-report") args = [view, target, { ...(opts || {}), visited_by: sp }];
+			else if (["techpark-development-board", "techpark-sales-board"].includes(view)) {
+				args = [view];
+				frappe.route_options = { sales_person: sp };
+			}
+		}
+		frappe.set_route(...args);
+	}
+
 	// ------------------------------------------------------------ helpers
 	esc(v) {
 		return frappe.utils.escape_html(v == null ? "" : String(v));
@@ -96,7 +118,7 @@ class TPDashboard {
 	}
 
 	report(options) {
-		frappe.set_route("query-report", "Application Development Status", Object.assign({ open_only: 0 }, options));
+		this.go("query-report", "Application Development Status", Object.assign({ open_only: 0 }, options));
 	}
 
 	// ------------------------------------------------------------ layout
@@ -216,11 +238,11 @@ class TPDashboard {
 			</div>`);
 
 		const delta = s.last_month ? Math.round(((s.this_month - s.last_month) / s.last_month) * 100) : null;
-		const list = () => frappe.set_route("List", "Daily Visit Report", { docstatus: 1, dvr_stage: ["like", `%${stage}%`] });
+		const list = () => this.go("List", "Daily Visit Report", { docstatus: 1, dvr_stage: ["like", `%${stage}%`] });
 		this.kpis(".tpd-stage-kpis", [
 			[__("Visits This Month"), s.this_month, delta === null ? __("{0} last month", [s.last_month]) : `${delta >= 0 ? "▲" : "▼"} ${Math.abs(delta)}% ${__("vs last month")}`, color, list],
 			[__("Customers Visited"), s.customers_this_month, __("this month"), TPD_COLORS.teal, list],
-			[__("Lines Worked On"), s.lines_this_month, __("application lines this month"), TPD_COLORS.violet, () => frappe.set_route("techpark-development-board")],
+			[__("Lines Worked On"), s.lines_this_month, __("application lines this month"), TPD_COLORS.violet, () => this.go("techpark-development-board")],
 			[__("Last 12 Months"), s.total, __("{0} visits", [__(stage)]), TPD_COLORS.slate, list],
 		]);
 
@@ -261,7 +283,7 @@ class TPDashboard {
 			(r) => `<div class="main"><div class="n">${this.esc(r.customer)}
 					<span class="tpd-muted" style="font-weight:normal"> · ${frappe.datetime.str_to_user(r.date)} · ${this.esc(r.by || "")}</span></div>
 				<div class="d">${r.lines.map((l) => `${this.esc([l.application, l.principal].filter(Boolean).join(" · "))}: <span class="tpd-pill ${pill}">${this.esc(__(l.status))}</span>`).join(" &nbsp; ")}</div></div>`,
-			(r) => frappe.set_route("Form", "Daily Visit Report", r.name),
+			(r) => this.go("Form", "Daily Visit Report", r.name),
 			__("No {0} visits yet.", [__(stage)]));
 	}
 
@@ -327,7 +349,7 @@ class TPDashboard {
 			});
 			$cal.find(".tpd-cal-chip").on("click", (e) => {
 				const it = $(e.currentTarget).data();
-				frappe.set_route("Form", it.doctype, it.name);
+				this.go("Form", it.doctype, it.name);
 			});
 			$cal.find(".tpd-cal-more").on("click", (e) => this.cal_day_dialog($(e.currentTarget).data("day"), by_day, m.today));
 		});
@@ -357,7 +379,7 @@ class TPDashboard {
 		d.fields_dict.list.$wrapper.find(".tpd-cal-chip").on("click", (e) => {
 			const it = $(e.currentTarget).data();
 			d.hide();
-			frappe.set_route("Form", it.doctype, it.name);
+			this.go("Form", it.doctype, it.name);
 		});
 		d.show();
 	}
@@ -387,13 +409,13 @@ class TPDashboard {
 
 	render_action(d) {
 		const f = d.follow_ups;
-		const todo = (date) => () => frappe.set_route("List", "ToDo", { status: "Open", reference_type: "Daily Visit Report", date });
+		const todo = (date) => () => this.go("List", "ToDo", { status: "Open", reference_type: "Daily Visit Report", date });
 		this.kpis(".tpd-action", [
 			[__("Overdue Follow-ups"), f.overdue, __("date has passed: call or visit"), TPD_COLORS.red, todo(["<", frappe.datetime.get_today()])],
 			[__("Due Today"), f.today, __("follow-ups for today"), TPD_COLORS.orange, todo(frappe.datetime.get_today())],
 			[__("Due This Week"), f.week, __("next 7 days"), TPD_COLORS.amber, todo(["between", [frappe.datetime.get_today(), frappe.datetime.add_days(frappe.datetime.get_today(), 7)]])],
-			[__("Prospects Waiting"), f.stale_prospects, __("prospect for {0}+ days", [f.stale_days]), TPD_COLORS.violet, () => frappe.set_route("List", "TP Customer", { customer_status: "Prospect" })],
-			[__("Lines Overdue"), d.opportunities.overdue, __("next action date passed"), TPD_COLORS.maroon, () => frappe.set_route("techpark-development-board")],
+			[__("Prospects Waiting"), f.stale_prospects, __("prospect for {0}+ days", [f.stale_days]), TPD_COLORS.violet, () => this.go("List", "TP Customer", { customer_status: "Prospect" })],
+			[__("Lines Overdue"), d.opportunities.overdue, __("next action date passed"), TPD_COLORS.maroon, () => this.go("techpark-development-board")],
 		]);
 	}
 
@@ -423,7 +445,7 @@ class TPDashboard {
 	render_follow_ups(rows) {
 		this.list(".tpd-follow", rows,
 			(r) => `<div class="main"><div class="n">${this.esc(r.customer)}</div><div class="d">${this.esc(r.note || "")}${r.owner && this.data.user.is_manager ? " · " + this.esc(r.owner) : ""}</div></div>${this.due_pill(r.date)}`,
-			(r) => frappe.set_route("Form", "Daily Visit Report", r.visit),
+			(r) => this.go("Form", "Daily Visit Report", r.visit),
 			__("No open follow-ups. All caught up!"));
 	}
 
@@ -431,14 +453,14 @@ class TPDashboard {
 		this.list(".tpd-hot", rows,
 			(r) => `<div class="main"><div class="n">${this.esc(r.customer)} · ${this.esc(r.application)}</div>
 				<div class="d">${this.esc([r.principal, r.status].filter(Boolean).join(" · "))}</div></div>${this.due_pill(r.date)}`,
-			(r) => frappe.set_route("Form", "TP Opportunity", r.name),
+			(r) => this.go("Form", "TP Opportunity", r.name),
 			__("No High-importance lines. Set Importance on an opportunity."));
 	}
 
 	render_funnel(d) {
 		const o = d.opportunities;
 		const p = d.pipeline;
-		const board = () => frappe.set_route("techpark-development-board");
+		const board = () => this.go("techpark-development-board");
 		this.kpis(".tpd-funnel", [
 			[__("In Development"), o.development, __("enquiry to trial"), TPD_COLORS.orange, () => this.report({ stage: "Development", open_only: 1 })],
 			[__("Trials Running"), p.trials, __("trial PO / sample / trial"), TPD_COLORS.teal, () => this.report({ stage: "Development" })],
@@ -468,12 +490,12 @@ class TPDashboard {
 			<td class="num">${p.visits}</td>
 		</tr>`).join("");
 		$el.html(`<table class="tpd-table"><thead><tr>${head.map((h, i) => `<th class="${i ? "num" : ""}">${this.esc(h)}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table>`);
-		$el.find("tr[data-i]").on("click", () => frappe.set_route("techpark-development-board"));
+		$el.find("tr[data-i]").on("click", () => this.go("techpark-development-board"));
 	}
 
 	render_customers(d) {
 		const c = d.customers;
-		const list = (status) => () => frappe.set_route("List", "TP Customer", status ? { customer_status: status } : {});
+		const list = (status) => () => this.go("List", "TP Customer", status ? { customer_status: status } : {});
 		this.kpis(".tpd-cust-kpis", [
 			[__("All Customers"), c.total, __("in the customer master"), TPD_COLORS.slate, list()],
 			[__("Active Customers"), c.active, __("buying from us"), TPD_COLORS.green, list("Active Customer")],
@@ -485,11 +507,11 @@ class TPDashboard {
 	}
 
 	render_money(e) {
-		const go = (opts) => () => frappe.set_route("List", "TP Expense", opts || {});
+		const go = (opts) => () => this.go("List", "TP Expense", opts || {});
 		this.kpis(".tpd-money", [
 			[__("Claimed This Month"), 0, __("all claims"), TPD_COLORS.blue, go(), this.inr(e.this_month)],
 			[__("Approved This Month"), 0, __("passed amount"), TPD_COLORS.green, go({ status: "Approved" }), this.inr(e.approved_this_month)],
-			[__("Waiting for Approval"), e.pending_count, this.inr(e.pending_amount) + " " + __("pending"), TPD_COLORS.orange, () => frappe.set_route("tp-expense-approvals")],
+			[__("Waiting for Approval"), e.pending_count, this.inr(e.pending_amount) + " " + __("pending"), TPD_COLORS.orange, () => this.go("tp-expense-approvals")],
 		]);
 	}
 

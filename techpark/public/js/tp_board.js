@@ -1,4 +1,4 @@
-// Last edited: 2026-11-12
+// Last edited: 2026-11-23
 // Copyright (c) 2026, Techpark International
 // Shared by the Development Board and the Sales Board pages (included by their page scripts).
 // Every application line (TP Opportunity) of that stage under its customer, with its status on the
@@ -52,6 +52,13 @@ class TPBoard {
 	}
 
 	refresh() {
+		// 2026-11-23: opened from the dashboard with a Sales Person picked -> same filter here
+		const sp = frappe.route_options && frappe.route_options.sales_person;
+		if (sp && this.page.fields_dict.sales_person) {
+			frappe.route_options = null;
+			this.filters.sales_person = sp;
+			this.page.fields_dict.sales_person.set_value(sp);
+		}
 		return frappe
 			.call({ method: "techpark.tp_dashboard.get_development_board", args: { ...this.filters, stage: this.stage } })
 			.then(({ message }) => {
