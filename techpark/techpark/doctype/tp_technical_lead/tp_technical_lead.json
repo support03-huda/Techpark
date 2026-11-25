@@ -422,7 +422,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-21 23:45:00.000000",
+ "modified": "2026-11-25 17:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",
@@ -467,7 +467,7 @@
  ],
  "quick_entry": 0,
  "search_fields": "customer_name,principal,grinding_process",
- "show_title_field_in_link": 1,
+ "show_title_field_in_link": 0,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
