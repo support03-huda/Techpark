@@ -1,4 +1,4 @@
-# Last edited: 2026-11-06
+# Last edited: 2026-11-25
 # Copyright (c) 2026, Techpark International
 """One development / opportunity: a customer's application line with a principal (and product category /
 wheel spec), followed from introduction to regularisation. Its status comes from the visits
@@ -15,8 +15,9 @@ class TPOpportunity(Document):
 		for field in ("application", "spec", "size"):
 			self.set(field, (self.get(field) or "").strip() or None)
 		self.title = " · ".join(p for p in (self.customer_name, self.application, self.principal, self.spec) if p)
-		self.check_key_unchanged()
-		self.check_duplicate()
+		# 2026-11-25: one line per Technical Lead: category / spec follow the latest visit (no key check)
+		if self.is_new():
+			self.check_duplicate()
 
 	def check_key_unchanged(self):
 		"""Product Category and Spec identify the line, like customer / application / principal
@@ -36,10 +37,9 @@ class TPOpportunity(Document):
 	def check_duplicate(self):
 		other = frappe.db.sql(
 			"""select name from `tabTP Opportunity`
-			where customer = %s and application = %s and principal = %s
-				and ifnull(supplier_product_category, '') = %s and ifnull(spec, '') = %s and name != %s
+			where customer = %s and application = %s and principal = %s and name != %s
 			limit 1""",
-			(self.customer, self.application, self.principal, cstr(self.supplier_product_category), cstr(self.spec), self.name or ""),
+			(self.customer, self.application, self.principal, self.name or ""),
 		)
 		if other:
 			frappe.throw(

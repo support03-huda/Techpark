@@ -16,7 +16,9 @@
   "lock_days",
   "section_card_scan",
   "openai_api_key",
-  "openai_model"
+  "openai_model",
+  "section_customer_access",
+  "customer_access"
  ],
  "fields": [
   {
@@ -102,11 +104,22 @@
    "fieldname": "openai_model",
    "fieldtype": "Data",
    "label": "OpenAI Model"
+  },
+  {
+   "fieldname": "section_customer_access",
+   "fieldtype": "Section Break",
+   "label": "Customer Access"
+  },
+  {
+   "fieldname": "customer_access",
+   "fieldtype": "Table",
+   "label": "Also Sees Customers",
+   "options": "TP Customer Access"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-11-14 12:00:00.000000",
+ "modified": "2026-11-25 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark Settings",

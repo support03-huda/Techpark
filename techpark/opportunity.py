@@ -1,4 +1,4 @@
-# Last edited: 2026-11-22
+# Last edited: 2026-11-25
 # Copyright (c) 2026, Techpark International
 """Developments / opportunities from the visits.
 
@@ -22,19 +22,19 @@ def sync_visit(dvr):
 		refresh_opportunity(name)
 
 
-def opportunity_key(customer, row):
-	# As text: Product Categories are numbered (autoincrement) and the column holds text.
-	return (customer, row.application, row.principal, cstr(row.supplier_product_category), cstr(row.spec))
-
-
 def find_or_make(dvr, row):
-	customer, application, principal, category, spec = opportunity_key(dvr.customer, row)
+	"""2026-11-25: one line per Technical Lead (client: the same lead showed twice when its category / spec
+	changed between visits). Product Category and Spec no longer split a line; they follow the latest visit."""
+	customer, application, principal = dvr.customer, row.application, row.principal
+	found = lead_opportunity(row.get("technical_lead"))
+	if found:
+		return found
 	found = frappe.db.sql(
 		"""select name from `tabTP Opportunity`
 		where customer = %s and application = %s and principal = %s
-			and ifnull(supplier_product_category, '') = %s and ifnull(spec, '') = %s
+		order by visits desc, creation
 		limit 1""",
-		(customer, application, principal, category, spec),
+		(customer, application, principal),
 	)
 	if found:
 		return found[0][0]
@@ -54,6 +54,22 @@ def find_or_make(dvr, row):
 	return doc.name
 
 
+def lead_opportunity(lead):
+	"""2026-11-25: the existing line of a Technical Lead (the lead's own link, else one of its visits')."""
+	if not lead:
+		return None
+	found = frappe.db.get_value("TP Technical Lead", lead, "opportunity")
+	if found and frappe.db.exists("TP Opportunity", found):
+		return found
+	found = frappe.db.sql(
+		"""select r.opportunity from `tabDVR Principal` r join `tabTP Opportunity` o on o.name = r.opportunity
+		where r.parenttype = 'Daily Visit Report' and r.technical_lead = %s
+		order by o.creation limit 1""",
+		lead,
+	)
+	return found[0][0] if found else None
+
+
 def refresh_opportunity(name):
 	"""Status, next action, visit dates and stage history of an opportunity from its submitted visits."""
 	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
@@ -66,7 +82,7 @@ def refresh_opportunity(name):
 		return
 	rows = frappe.db.sql(
 		"""
-		select r.stage, r.development_status, r.sales_status, r.size, r.remark, r.technical_lead,
+		select r.stage, r.development_status, r.sales_status, r.size, r.spec, r.supplier_product_category, r.remark, r.technical_lead,
 			r.next_action as row_next_action, r.next_action_date as row_next_action_date, r.follow_up as row_follow_up,
 			d.name as dvr, d.visit_date, d.visited_by, d.next_action, d.next_action_date, d.follow_up,
 			d.discussion_notes
@@ -116,6 +132,11 @@ def refresh_opportunity(name):
 	doc.joint_with = ", ".join(frappe.utils.get_fullname(u) for u in joint) or None
 	if latest.get("size"):
 		doc.size = latest.size
+	# 2026-11-25: category / spec of the latest visit that has them
+	for field in ("spec", "supplier_product_category"):
+		value = next((r.get(field) for r in reversed(rows) if r.get(field)), None)
+		if value:
+			doc.set(field, value)
 	set_milestones(doc, rows)
 	doc.flags.ignore_permissions = True
 	doc.save()

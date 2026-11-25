@@ -59,3 +59,5 @@ techpark.patches.process_master
 techpark.patches.lead_division_process_stage
 techpark.patches.lead_competitor_shares
 techpark.patches.lead_spec_from_dvr
+techpark.patches.merge_lead_opportunities
+techpark.patches.customer_access_rules

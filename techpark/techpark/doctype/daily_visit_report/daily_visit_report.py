@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-25
 # Copyright (c) 2026, Techpark International
 """Daily Visit Report (DVR) — one record per customer visit, call or meeting.
 
@@ -458,10 +458,11 @@ class DailyVisitReport(Document):
 		self.update_lead_spec_size()
 
 	def update_lead_spec_size(self):
-		"""2026-11-21: the visit's Principal Product Spec / Size go to its Technical Lead (client)."""
+		"""2026-11-21: the visit's Principal Product Spec / Size go to its Technical Lead (client).
+		2026-11-25: and its Principal Product Category."""
 		if not self.get("technical_lead"):
 			return
-		values = {f: self.get(f) for f in ("spec", "size") if self.get(f)}
+		values = {f: self.get(f) for f in ("spec", "size", "supplier_product_category") if self.get(f)}
 		if not values:
 			return
 		frappe.db.set_value("TP Technical Lead", self.technical_lead, values)

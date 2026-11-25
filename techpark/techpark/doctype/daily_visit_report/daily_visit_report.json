@@ -301,7 +301,7 @@
    "label": "Principal Product Category",
    "options": "Supplier Product Category",
    "allow_on_submit": 1,
-   "hidden": 1
+   "depends_on": "eval:doc.principal"
   },
   {
    "fieldname": "product_name",
@@ -538,7 +538,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-23 12:00:00.000000",
+ "modified": "2026-11-25 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",
