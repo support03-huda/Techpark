@@ -1,4 +1,4 @@
-# Last edited: 2026-11-25
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """One development / opportunity: a customer's application line with a principal (and product category /
 wheel spec), followed from introduction to regularisation. Its status comes from the visits
@@ -16,7 +16,7 @@ class TPOpportunity(Document):
 			self.set(field, (self.get(field) or "").strip() or None)
 		self.title = " · ".join(p for p in (self.customer_name, self.application, self.principal, self.spec) if p)
 		# 2026-11-25: one line per Technical Lead: category / spec follow the latest visit (no key check)
-		if self.is_new():
+		if self.is_new() and not self.flags.skip_duplicate_check:  # 2026-11-26: lines made from visits are keyed by their lead
 			self.check_duplicate()
 
 	def check_key_unchanged(self):

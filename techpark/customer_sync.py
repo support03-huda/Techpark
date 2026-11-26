@@ -1,4 +1,4 @@
-# Last edited: 2026-11-22
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Two-way sync between the TP Customer tabs and the real records.
 
@@ -62,8 +62,11 @@ TABLES = {
 		"doctype": "TP Technical Lead",
 		# read-only Stage / Current Status come from the lead (set from its opportunity)
 		"display": lambda names: _lead_status(names),
+		# 2026-11-26: shown on the tab but never written back to the lead
+		"read_only": ("lead_created_on",),
 		"fields": [
 			"principal",
+			"lead_created_on",  # 2026-11-26: shown on the tab (read only)
 			"application_master",
 			"application",
 			"grinding_process",
@@ -185,8 +188,13 @@ def push_to_records(customer):
 
 def _upsert_rows(customer, table, cfg):
 	kept = set()
+	duplicates = []
 	for row in customer.get(table) or []:
-		values = {f: row.get(f) for f in cfg["fields"]}
+		# 2026-11-26: a second row for the same record is dropped (a lead showed up to 14 times on one customer)
+		if row.record and row.record in kept:
+			duplicates.append(row)
+			continue
+		values = {f: row.get(f) for f in cfg["fields"] if f not in cfg.get("read_only", ())}  # 2026-11-26
 		_check_plant(customer, table, row, values)
 		try:
 			if row.record and frappe.db.exists(cfg["doctype"], row.record):
@@ -216,6 +224,9 @@ def _upsert_rows(customer, table, cfg):
 			frappe.clear_messages()
 			frappe.throw(_("{0} row #{1}: {2}").format(_(cfg["label"]), row.idx, cstr(e)))
 		kept.add(record.name)
+	for row in duplicates:
+		customer.remove(row)
+		frappe.db.delete(cfg["child"], {"name": row.name})
 	return kept
 
 

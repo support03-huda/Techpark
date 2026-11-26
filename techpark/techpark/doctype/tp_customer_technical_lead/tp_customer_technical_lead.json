@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "record",
+  "lead_created_on",
   "principal",
   "application_master",
   "application",
@@ -71,6 +72,13 @@
    "label": "ID",
    "options": "TP Technical Lead",
    "read_only": 1
+  },
+  {
+   "fieldname": "lead_created_on",
+   "fieldtype": "Datetime",
+   "label": "Created On",
+   "read_only": 1,
+   "no_copy": 1
   },
   {
    "fieldname": "principal",
@@ -398,7 +406,7 @@
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-11-22 10:00:00.000000",
+ "modified": "2026-11-26 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer Technical Lead",

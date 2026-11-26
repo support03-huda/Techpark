@@ -1,4 +1,4 @@
-# Last edited: 2026-11-25
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Developments / opportunities from the visits.
 
@@ -29,7 +29,8 @@ def find_or_make(dvr, row):
 	found = lead_opportunity(row.get("technical_lead"))
 	if found:
 		return found
-	found = frappe.db.sql(
+	# 2026-11-26: a lead without a line yet gets its own (another production line of the same application is another lead)
+	found = None if row.get("technical_lead") else frappe.db.sql(
 		"""select name from `tabTP Opportunity`
 		where customer = %s and application = %s and principal = %s
 		order by visits desc, creation
@@ -50,6 +51,7 @@ def find_or_make(dvr, row):
 			"sales_person": dvr.visited_by,
 		}
 	)
+	doc.flags.skip_duplicate_check = True  # 2026-11-26: the same application on another production line is its own line
 	doc.insert(ignore_permissions=True)
 	return doc.name
 

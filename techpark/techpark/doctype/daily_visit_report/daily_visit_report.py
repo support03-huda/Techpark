@@ -1,4 +1,4 @@
-# Last edited: 2026-11-25
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Daily Visit Report (DVR) — one record per customer visit, call or meeting.
 
@@ -17,7 +17,7 @@ fields (principal, lead status / stage, stage completed) are kept as a summary o
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import getdate, today
+from frappe.utils import cstr, getdate, today
 
 from techpark.application import get_or_create_lead
 from techpark.opportunity import refresh_opportunity, sync_visit
@@ -262,8 +262,16 @@ class DailyVisitReport(Document):
 		"""Application picked from the common list: use (or make) the customer's Technical Lead for it."""
 		if not (self.get("application_master") and self.customer and self.principal):
 			return
-		if self.technical_lead and frappe.db.get_value("TP Technical Lead", self.technical_lead, "application_master") == self.application_master:
-			return
+		# 2026-11-26: the lead must also be of the visit's Production Line (an application can run on several lines)
+		if self.technical_lead:
+			lead = frappe.db.get_value("TP Technical Lead", self.technical_lead, ["application_master", "production_line", "product"], as_dict=True)
+			if (
+				lead
+				and lead.application_master == self.application_master
+				and (not self.production_line or cstr(lead.production_line).strip().lower() == cstr(self.production_line).strip().lower())
+				and (not self.customer_product or cstr(lead.product) == cstr(self.customer_product))  # 2026-11-26: Product too
+			):
+				return
 		self.technical_lead = get_or_create_lead(
 			self.customer, self.principal, self.application_master,
 			product=self.customer_product, production_line=self.production_line,

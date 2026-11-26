@@ -61,3 +61,5 @@ techpark.patches.lead_competitor_shares
 techpark.patches.lead_spec_from_dvr
 techpark.patches.merge_lead_opportunities
 techpark.patches.customer_access_rules
+techpark.patches.dedupe_lead_tab_rows
+techpark.patches.lead_created_on

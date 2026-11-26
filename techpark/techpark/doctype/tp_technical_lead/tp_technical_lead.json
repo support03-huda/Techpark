@@ -8,6 +8,7 @@
  "field_order": [
   "customer",
   "customer_name",
+  "lead_created_on",
   "column_break_customer",
   "principal",
   "application_master",
@@ -83,6 +84,14 @@
    "label": "Customer Name",
    "fetch_from": "customer.customer_name",
    "read_only": 1
+  },
+  {
+   "fieldname": "lead_created_on",
+   "fieldtype": "Datetime",
+   "label": "Created On",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_list_view": 1
   },
   {
    "fieldname": "column_break_customer",
@@ -422,7 +431,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-25 17:30:00.000000",
+ "modified": "2026-11-26 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",

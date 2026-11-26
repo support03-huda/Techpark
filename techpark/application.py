@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Common Application list (Customer Application master), the same for every customer.
 
@@ -10,6 +10,7 @@ the customer's Technical Lead for it is found, or made on save.
 
 import frappe
 from frappe import _
+from frappe.utils import cstr
 
 
 @frappe.whitelist()
@@ -40,16 +41,38 @@ def application_query(doctype, txt, searchfield, start, page_len, filters):
 	)
 
 
-@frappe.whitelist()
-def line_details(customer, principal, application):
-	"""What a visit fills when an application is picked: the customer's Technical Lead for it (if any)."""
-	lead = frappe.db.get_value(
-		"TP Technical Lead",
-		{"customer": customer, "principal": principal, "application_master": application},
-		"name",
+def find_lead(customer, principal, application, production_line=None, product=None):
+	"""2026-11-26: the customer's lead for this application, Product and Production Line: any of them
+	different = another lead (client). Category / Spec / Size only update a lead.
+	No product given = any product; no line and no product given and only one lead: that one."""
+	leads = frappe.db.sql(
+		"""select l.name, ifnull(l.production_line, '') as production_line, ifnull(l.product, '') as product,
+			ifnull(p.product_name, '') as product_name
+		from `tabTP Technical Lead` l left join `tabCustomer Product` p on p.name = l.product
+		where l.customer = %s and l.principal = %s and l.application_master = %s order by l.creation""",
+		(customer, principal, application),
+		as_dict=True,
 	)
+	line, product = cstr(production_line).strip().lower(), cstr(product)
+	match = [
+		l.name for l in leads
+		if l.production_line.strip().lower() == line and (not product or cstr(l.product) == product)
+	]
+	if match:
+		return match[0], leads
+	if not line and not product and len(leads) == 1:
+		return leads[0].name, leads
+	return None, leads
+
+
+@frappe.whitelist()
+def line_details(customer, principal, application, production_line=None):
+	"""What a visit fills when an application is picked: the customer's Technical Lead for it (if any).
+	2026-11-26: with several production lines, all of them come back and the visit asks which one."""
+	lead, leads = find_lead(customer, principal, application, production_line)
 	return {
 		"lead": lead,
+		"leads": leads,
 		"application": frappe.db.get_value(
 			"Customer Application",
 			application,
@@ -60,20 +83,30 @@ def line_details(customer, principal, application):
 
 
 def get_or_create_lead(customer, principal, application, **defaults):
-	"""The customer's Technical Lead for this application (made on the first visit)."""
+	"""The customer's Technical Lead for this application and production line (made on the first visit)."""
 	# 2026-11-21: a new lead takes the visit's Product / Production Line / Category (no longer on the master)
-	lead = frappe.db.get_value(
-		"TP Technical Lead", {"customer": customer, "principal": principal, "application_master": application}, "name"
-	)
+	# 2026-11-26: found by its Production Line too; several lines and none picked -> ask
+	lead, leads = find_lead(customer, principal, application, defaults.get("production_line"), defaults.get("product"))
 	if lead:
 		return lead
-	return (
-		frappe.get_doc(
-			{
-				"doctype": "TP Technical Lead", "customer": customer, "principal": principal, "application_master": application,
-				**{k: v for k, v in defaults.items() if v},
-			}
+	if leads and not cstr(defaults.get("production_line")).strip():
+		frappe.throw(
+			_("This customer has this application on {0} production lines ({1}): enter the Production Line of this visit.").format(
+				len(leads), ", ".join(l.production_line or _("no line") for l in leads)
+			)
 		)
-		.insert(ignore_permissions=True)
-		.name
-	)
+	# 2026-11-26: Technical Leads are made only from a DVR (client); the flag lets this insert through
+	frappe.flags.tp_lead_from_dvr = True
+	try:
+		return (
+			frappe.get_doc(
+				{
+					"doctype": "TP Technical Lead", "customer": customer, "principal": principal, "application_master": application,
+					**{k: v for k, v in defaults.items() if v},
+				}
+			)
+			.insert(ignore_permissions=True)
+			.name
+		)
+	finally:
+		frappe.flags.tp_lead_from_dvr = False

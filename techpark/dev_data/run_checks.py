@@ -76,16 +76,18 @@ def _meta_checks():
 
 	def dvr():
 		f = _fields("Daily Visit Report")
+		# 2026-11-26: Principal Product Category is shown on the DVR (client, 25 Nov)
 		for n in ("dvr_stage", "principal", "application_master", "spec", "size", "production_line", "customer_product",
-		          "development_status", "sales_status", "opportunity"):
+		          "development_status", "sales_status", "opportunity", "supplier_product_category"):
 			expect(n in f and not f[n].hidden, f"DVR.{n} missing or hidden")
-		for n in ("application", "supplier_product_category", "technical_lead"):
+		for n in ("application", "technical_lead"):
 			expect(f[n].hidden, f"DVR.{n} should be hidden (filled from the Application)")
 		expect(f["spec"].label == "Principal Product Spec" and f["size"].label == "Principal Product Size", "spec / size labels")
 		order = [x.fieldname for x in frappe.get_meta("Daily Visit Report").fields]
 		section = order[order.index("section_principal") + 1 : order.index("column_break_principal")]
 		left = [n for n in section if not f[n].hidden and f[n].depends_on != "eval:false"]
-		expect(left == ["principal", "application_master", "grinding_process", "customer_product", "production_line"], f"left side {left}")  # 2026-11-21: Process shown
+		# 2026-11-21: Process shown; 2026-11-26: Principal Product Category shown
+		expect(left == ["principal", "application_master", "grinding_process", "customer_product", "production_line", "supplier_product_category"], f"left side {left}")
 		for n in ("contact", "contact_designation", "contact_phone", "visit_purpose", "department",
 		          "application_potentials", "competitor_line_activity", "segment_application", "principals"):
 			expect(f[n].hidden, f"DVR.{n} should be hidden")
