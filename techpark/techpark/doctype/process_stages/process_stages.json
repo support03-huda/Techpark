@@ -7,6 +7,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "stage_name",
   "stage_code",
   "sequence",
@@ -14,6 +15,16 @@
   "is_active"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "stage_name",
    "fieldtype": "Data",
@@ -46,7 +57,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-16 12:47:39.261696",
+ "modified": "2026-11-27 19:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Process stages",
@@ -73,5 +84,6 @@
  "sort_order": "DESC",
  "states": [],
  "title_field": "stage_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id"
 }

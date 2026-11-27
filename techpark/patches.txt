@@ -69,3 +69,7 @@ techpark.patches.lead_progress_effects
 techpark.patches.development_flow_regularised
 techpark.patches.branding_settings
 techpark.patches.role_settings
+techpark.patches.master_ids
+techpark.patches.status_flow_regularise
+techpark.patches.app_keys
+techpark.patches.master_ids #2026-11-27 all masters

@@ -7,6 +7,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "principal_name",
   "is_active",
   "description",
@@ -17,6 +18,16 @@
   "notion_trigger_status"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "principal_name",
    "fieldtype": "Data",
@@ -83,7 +94,7 @@
    "link_fieldname": "principal"
   }
  ],
- "modified": "2026-11-26 22:00:00.000000",
+ "modified": "2026-11-27 19:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Principal",
@@ -125,5 +136,7 @@
  "sort_field": "principal_name",
  "sort_order": "ASC",
  "states": [],
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id",
+ "title_field": "principal_name"
 }

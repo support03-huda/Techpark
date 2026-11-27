@@ -49,6 +49,14 @@ class TPTechnicalLead(Document):
 
 	def before_insert(self):
 		self.lead_created_on = now_datetime()  # 2026-11-26: when the lead was made (client)
+		if not self.progress:
+			from techpark.statuses import default_lead_progress
+
+			self.progress = default_lead_progress()  # 2026-11-27: To Start (TP Lead Progress > Default)
+		if not self.stage:
+			from techpark.masters import STAGE, K
+
+			self.stage = K(STAGE, "Development")  # 2026-11-27 (client): a new lead starts in Development
 
 	def validate(self):
 		self.check_freeze()  # 2026-11-27

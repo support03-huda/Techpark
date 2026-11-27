@@ -12,7 +12,7 @@ import frappe
 from frappe.utils import add_days, add_months, flt, formatdate, get_first_day, getdate, today
 
 from techpark.dashboard import _scope, _stale_prospects, stale_days
-from techpark.masters import priority_order  # 2026-11-26
+from techpark.masters import CUSTOMER_STATUS, DEV_STATUS, PRIORITY, SALES_STATUS, STAGE, K, key_of, priority_order  # 2026-11-27: App Keys
 from techpark.permission import has_app_permission
 
 # 2026-11-27: the funnel follows the Sort Order of the TP Development / Sales Status masters (was a fixed list)
@@ -114,7 +114,7 @@ def _visits_by_stage(visits, since, month_start):
 	last_month_start = add_months(month_start, -1)
 	out = {}
 	for stage, statuses in (("Development", DEVELOPMENT_PROGRESS), ("Sales", SALES_PROGRESS)):
-		stage_rows = [r for r in rows if r.stage == stage]
+		stage_rows = [r for r in rows if r.stage == K(STAGE, stage)]  # 2026-11-27: stage by App Key
 		for r in stage_rows:
 			r.status = (r.sales_status if stage == "Sales" else r.development_status) or "Not set"
 		parents = {r.parent for r in stage_rows}
@@ -179,7 +179,7 @@ def _opportunities(now, visits, month_start, sp=None):
 		p = people.setdefault(name, {"name": name, "open": 0, "development": 0, "sales": 0, "won": 0, "lost": 0, "overdue": 0})
 		if o.lead_status in ("Open", "On Hold"):
 			p["open"] += 1
-			p["development" if o.stage == "Development" else "sales"] += 1
+			p["development" if o.stage == K(STAGE, "Development") else "sales"] += 1  # 2026-11-27: by App Key
 			p["overdue"] += 1 if overdue(o) else 0
 		elif o.lead_status == "Won":
 			p["won"] += 1
@@ -189,17 +189,17 @@ def _opportunities(now, visits, month_start, sp=None):
 		p["visits"] = visits_this_month.get(p["name"], 0)
 
 	hot = sorted(
-		(o for o in open_ if o.importance == "High"),
+		(o for o in open_ if o.importance == K(PRIORITY, "High")),  # 2026-11-27: by App Key
 		key=lambda o: (o.next_action_date is None, str(o.next_action_date or "")),
 	)
 	return {
 		"total": len(opps),
 		"open": len(open_),
-		"development": sum(1 for o in open_ if o.stage == "Development"),
-		"sales": sum(1 for o in open_ if o.stage == "Sales"),
+		"development": sum(1 for o in open_ if o.stage == K(STAGE, "Development")),  # 2026-11-27: by App Key
+		"sales": sum(1 for o in open_ if o.stage == K(STAGE, "Sales")),
 		"won": sum(1 for o in opps if o.lead_status == "Won"),
 		"lost": sum(1 for o in opps if o.lead_status == "Lost"),
-		"high": sum(1 for o in open_ if o.importance == "High"),
+		"high": sum(1 for o in open_ if o.importance == K(PRIORITY, "High")),
 		"overdue": sum(1 for o in open_ if overdue(o)),
 		"hot": [_line(o) for o in hot[:8]],
 		"by_person": sorted(people.values(), key=lambda p: -p["open"]),
@@ -228,7 +228,7 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 		if value:
 			filters[field] = value
 	if stage in ("Development", "Sales"):
-		filters["stage"] = stage
+		filters["stage"] = K(STAGE, stage)  # 2026-11-27: the page passes the App Key
 	if show == "Open":
 		filters["lead_status"] = ("in", ("Open", "On Hold"))
 	elif show in ("Won", "Lost"):
@@ -243,26 +243,59 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 			fields=["name", "territory_region", "industry_domain", "customer_status"],
 		)
 	}
+	# 2026-11-27: the Technical Lead(s) of each line, shown as its ID on the board
+	# 2026-11-27: and its 7 lead fields (Principal, Product, Application, Production Line, Category, Spec, Size)
+	leads, lead_info = {}, {}
+	for t in frappe.db.sql(
+		"""select l.name, l.opportunity, l.principal, p.product_name, l.application, l.production_line,
+			c.category_name, l.spec, l.size
+		from `tabTP Technical Lead` l
+		left join `tabCustomer Product` p on p.name = l.product
+		left join `tabSupplier Product Category` c on c.name = l.supplier_product_category
+		where l.opportunity in %(opps)s order by l.name""",
+		{"opps": [o.name for o in opps] or [""]},
+		as_dict=True,
+	):
+		leads.setdefault(t.opportunity, []).append(t.name)
+		lead_info.setdefault(t.opportunity, t)
 	rows = []
 	for o in opps:
 		c = customers.get(o.customer) or frappe._dict()
+		t = lead_info.get(o.name) or frappe._dict()
 		rows.append(
 			{
 				**o,
+				"technical_leads": leads.get(o.name, []),
+				"lead_fields": [  # 2026-11-27: in the client's order; the line's own value when the lead has none
+					[frappe._("Principal"), t.principal or o.principal],
+					[frappe._("Product"), t.product_name],
+					[frappe._("Application"), t.application or o.application],
+					[frappe._("Production Line"), t.production_line],
+					[frappe._("Principal Product Category"), t.category_name or o.category_name],
+					[frappe._("Principal Product Spec"), t.spec or o.spec],
+					[frappe._("Principal Product Size"), t.size or o.size],
+				],
 				"region": c.territory_region,
 				"industry": c.industry_domain,
 				"customer_status": c.customer_status,
+				"stage_key": key_of(STAGE, o.stage),  # 2026-11-27: board colour by stage key
 				"sales_person_name": frappe.utils.get_fullname(o.sales_person) if o.sales_person else "",
 				"next_action_date": str(o.next_action_date) if o.next_action_date else None,
 				"last_visit": str(o.last_visit) if o.last_visit else None,
 			}
 		)
+	# 2026-11-27 (client): the latest on top: newest last visit first (then priority); a customer's place is that of
+	# its latest line (the board groups in this order)
 	order = priority_order()
-	rows.sort(key=lambda r: (order.get(r["importance"], 9999), r["customer_name"] or "", r["application"] or ""))
+	rows.sort(key=lambda r: (r["application"] or ""))
+	rows.sort(key=lambda r: order.get(r["importance"], 9999))
+	rows.sort(key=lambda r: r["last_visit"] or "", reverse=True)
 	# 2026-11-26: Development board = every development status in its Sort Order (Successful Trial too: the line
 	# stays here until the lead is Regularised); the Sales board starts at the successful trial.
-	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS]
-	sales_statuses = [{"status": "Successful Trial", "stage": "Sales"}] + [{"status": s, "stage": "Sales"} for s in SALES_PROGRESS]
+	# 2026-11-27: stage = App Key (board colours), stage_label = its current name
+	statuses = [{"status": s, "stage": "Development", "stage_label": K(STAGE, "Development")} for s in DEVELOPMENT_PROGRESS]
+	# 2026-11-27: the Sales board is the Sales statuses in their Sort Order (starts at Regularise, client)
+	sales_statuses = [{"status": s, "stage": "Sales", "stage_label": K(STAGE, "Sales")} for s in SALES_PROGRESS]
 	if stage == "Sales":
 		statuses = sales_statuses
 	elif stage != "Development":
@@ -395,12 +428,16 @@ def _pipeline(sp=None):
 			counts[r["lead_stage"]] += 1
 	return {
 		"stages": [{"stage": s, "value": counts[s]} for s in counts],
-		"trials": counts.get("Trial PO Received", 0) + counts.get("Sample Received", 0) + counts.get("Trial in Progress", 0),
-		"successful": counts.get("Successful Trial", 0),
-		"won": counts.get("Bulk Trial PO", 0),
-		"regularization": counts.get("Regularization", 0),
+		# 2026-11-27: statuses by App Key (they can be renamed)
+		"trials": sum(counts.get(K(DEV_STATUS, s), 0) for s in ("Trial PO Received", "Sample Received", "Trial in Progress")),
+		"successful": counts.get(K(DEV_STATUS, "Successful Trial"), 0),
+		"won": counts.get(K(DEV_STATUS, "Bulk Trial Order"), 0),  # 2026-11-27: was Bulk Trial PO
+		"regularization": counts.get(K(DEV_STATUS, "Regularise"), 0) + counts.get(K(SALES_STATUS, "Regularise"), 0),
 		# Sales cycle follow-ups: lines waiting on an enquiry / order / delivery / payment
-		"follow_ups": [{"status": s, "value": counts[s]} for s in ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")],
+		"follow_ups": [
+			{"status": K(SALES_STATUS, s), "key": s, "value": counts.get(K(SALES_STATUS, s), 0)}
+			for s in ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")
+		],
 	}
 
 
@@ -414,11 +451,13 @@ def _customers(sp=None):
 	count = lambda status: sum(1 for c in customers if c.customer_status == status)
 	return {
 		"total": len(customers),
-		"active": count("Active Customer"),
-		"prospects": count("Prospect"),
+		# 2026-11-27: Customer Status by App Key
+		"active": count(K(CUSTOMER_STATUS, "Active Customer")),
+		"prospects": count(K(CUSTOMER_STATUS, "Prospect")),
 		# 2026-11-23: a card for every status
-		"under_development": count("Under Development"),
-		"inactive": count("Inactive"),
+		"under_development": count(K(CUSTOMER_STATUS, "Under Development")),
+		"inactive": count(K(CUSTOMER_STATUS, "Inactive")),
+		"names": {k: K(CUSTOMER_STATUS, k) for k in ("Active Customer", "Prospect", "Under Development", "Inactive")},
 		"by_status": _group(customers, "customer_status"),
 		"by_region": _group(customers, "territory_region"),
 	}

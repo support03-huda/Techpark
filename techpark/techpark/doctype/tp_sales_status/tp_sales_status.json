@@ -6,12 +6,15 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "option_name",
   "sort_order",
   "is_active",
+  "app_key",
   "column_break_status",
   "progress",
   "result",
+  "sets_lead_progress",
   "section_opportunity",
   "sets_samples",
   "sets_trials",
@@ -20,6 +23,16 @@
   "sets_regularised"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "option_name",
    "fieldtype": "Data",
@@ -42,6 +55,14 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "app_key",
+   "fieldtype": "Data",
+   "label": "App Key",
+   "read_only": 1,
+   "no_copy": 1,
+   "unique": 1
+  },
+  {
    "fieldname": "column_break_status",
    "fieldtype": "Column Break"
   },
@@ -57,6 +78,13 @@
    "fieldtype": "Select",
    "label": "Counts As",
    "options": "Open\nWon\nLost\nOn Hold",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sets_lead_progress",
+   "fieldtype": "Link",
+   "label": "Sets Lead Progress",
+   "options": "TP Lead Progress",
    "in_list_view": 1
   },
   {
@@ -95,7 +123,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-26 22:00:00.000000",
+ "modified": "2026-11-27 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Sales Status",
@@ -155,6 +183,7 @@
  "sort_field": "sort_order",
  "sort_order": "ASC",
  "states": [],
- "title_field": "option_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id",
+ "title_field": "option_name"
 }

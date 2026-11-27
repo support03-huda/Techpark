@@ -1,11 +1,17 @@
-// Last edited: 2026-11-23
+// Last edited: 2026-11-27
+
+// 2026-11-27: master values by App Key (renameable); also in public/js/techpark.js
+frappe.provide("techpark");
+techpark.K = techpark.K || ((m, k) => ((frappe.boot.techpark_keys || {})[m] || {})[k] || k);
+techpark.colour = techpark.colour || ((m, v, f) => ((frappe.boot.techpark_colours || {})[m] || {})[v] || f || "gray");
+techpark.key_of = techpark.key_of || ((m, n) => { const x = (frappe.boot.techpark_keys || {})[m] || {}; return Object.keys(x).find((k) => x[k] === n) || n; });
+techpark.result_of = techpark.result_of || ((s) => (frappe.boot.techpark_status_results || {})[s]);
 frappe.listview_settings["TP Customer"] = {
 	add_fields: ["customer_status"],
 	get_indicator(doc) {
-		// 2026-11-23: + Under Development
-		const colors = { "Active Customer": "green", Prospect: "orange", "Under Development": "blue", Inactive: "red" };
+		// 2026-11-27: colour = the TP Customer Status master's Colour (was a fixed list of names)
 		if (doc.customer_status) {
-			return [__(doc.customer_status), colors[doc.customer_status] || "gray", `customer_status,=,${doc.customer_status}`];
+			return [__(doc.customer_status), techpark.colour("TP Customer Status", doc.customer_status), `customer_status,=,${doc.customer_status}`];
 		}
 	},
 	// 2026-11-23: the Status column header sorted by the pseudo field "status_field" -> Frappe 16 error

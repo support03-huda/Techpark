@@ -6,10 +6,21 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "industry_name",
   "is_active"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "industry_name",
    "fieldtype": "Data",
@@ -27,7 +38,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-21 19:00:00.000000",
+ "modified": "2026-11-27 19:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Industry Domain",
@@ -65,5 +76,6 @@
  "sort_order": "ASC",
  "states": [],
  "title_field": "industry_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id"
 }

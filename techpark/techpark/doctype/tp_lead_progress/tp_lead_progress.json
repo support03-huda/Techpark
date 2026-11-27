@@ -6,14 +6,27 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "option_name",
   "sort_order",
   "is_active",
+  "is_default",
+  "color",
   "column_break_effect",
   "moves_to_stage",
   "closes_lead"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "option_name",
    "fieldtype": "Data",
@@ -33,6 +46,20 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Active",
+   "in_list_view": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default",
+   "fieldtype": "Check",
+   "label": "Default",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Select",
+   "label": "Colour",
+   "options": "\nblue\ngreen\nred\norange\nyellow\ngray\npurple\npink\ncyan",
    "in_list_view": 1
   },
   {
@@ -56,7 +83,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-27 00:30:00.000000",
+ "modified": "2026-11-27 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Lead Progress",
@@ -116,6 +143,7 @@
  "sort_field": "sort_order",
  "sort_order": "ASC",
  "states": [],
- "title_field": "option_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id",
+ "title_field": "option_name"
 }

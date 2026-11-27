@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Common Application list (Customer Application master), the same for every customer.
 
@@ -46,13 +46,16 @@ def application_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.validate_and_sanitize_search_inputs
 def lead_query(doctype, txt, searchfield, start, page_len, filters):
 	"""Technical Lead dropdown on a visit: the customer's leads.
-	2026-11-26: shown as Principal, Product, Application, Production Line, Category, Size (client order)."""
+	2026-11-26: shown as Principal, Product, Application, Production Line, Category, Size (client order).
+	2026-11-27: Spec added between Category and Size."""
+	if isinstance(filters, str):
+		filters = frappe.parse_json(filters)  # 2026-11-27: also when called with JSON filters
 	customer = (filters or {}).get("customer") or ""
 	principal = (filters or {}).get("principal") or ""  # 2026-11-26: only the picked principal's leads
 	stage = (filters or {}).get("stage") or ""  # 2026-11-26: Development visit -> development leads, Sales -> regularised ones
 	return frappe.db.sql(
 		"""
-		select l.name, l.principal, p.product_name, l.application, l.production_line, c.category_name, l.size, l.current_status
+		select l.name, l.principal, p.product_name, l.application, l.production_line, c.category_name, l.spec, l.size, l.current_status
 		from `tabTP Technical Lead` l
 		left join `tabCustomer Product` p on p.name = l.product
 		left join `tabSupplier Product Category` c on c.name = l.supplier_product_category

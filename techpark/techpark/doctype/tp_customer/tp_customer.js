@@ -4,6 +4,13 @@
 // above editable tables. These and the Contacts table are synced to the real records on
 // save (techpark/customer_sync.py). The Products Info overview is a read-only summary of its table.
 
+// 2026-11-27: master values by App Key (renameable); also in public/js/techpark.js
+frappe.provide("techpark");
+techpark.K = techpark.K || ((m, k) => ((frappe.boot.techpark_keys || {})[m] || {})[k] || k);
+techpark.colour = techpark.colour || ((m, v, f) => ((frappe.boot.techpark_colours || {})[m] || {})[v] || f || "gray");
+techpark.key_of = techpark.key_of || ((m, n) => { const x = (frappe.boot.techpark_keys || {})[m] || {}; return Object.keys(x).find((k) => x[k] === n) || n; });
+techpark.result_of = techpark.result_of || ((s) => (frappe.boot.techpark_status_results || {})[s]);
+
 // 2026-11-26: a Save button on an opened table row (Technical Leads, Visits, Products ...): saves the customer
 techpark.add_row_save = function (frm) {
 	const row = frm.cur_grid;
@@ -63,6 +70,17 @@ techpark.add_row_freeze = function (frm, row, $actions) {
 			else frappe.confirm(__("Freeze {0}? Nobody can change it until an admin presses Unfreeze.", [frappe.utils.escape_html(d.record)]), go);
 		});
 };
+// 2026-11-27: Technical Leads tab: "Add Row" above the table (Add Row / a row click open the row editor:
+// Editable Grid is off on TP Customer Technical Lead)
+techpark.lead_grid_tweaks = function (frm) {
+	const grid = frm.fields_dict.technical_leads && frm.fields_dict.technical_leads.grid;
+	if (!grid) return;
+	const $w = grid.wrapper;
+	const $footer = $w.find(".grid-footer").first();
+	const $body = $w.find(".form-grid-container").first();
+	if ($footer.length && $body.length && !$footer.next().is($body)) $footer.insertBefore($body);
+};
+
 if (!techpark.row_save_bound) {
 	techpark.row_save_bound = true;
 	frappe.model.with_doctype("TP Customer", () => {
@@ -108,6 +126,7 @@ frappe.ui.form.on("TP Customer", {
 		}
 		M.set_contact_options(frm);
 		M.render_plants(frm);
+		techpark.lead_grid_tweaks(frm); // 2026-11-27: Add Row on top, ID opens the lead
 		if (frm.perm[0]?.write) {
 			frm.add_custom_button(__("Scan Visiting Card"), () => M.upload_card(frm));
 		}
@@ -153,11 +172,24 @@ frappe.ui.form.on("TP Customer", {
 	abrasive_consumption_cr: (frm) => techpark.customer_master.render_production(frm),
 	annual_turnover_cr: (frm) => techpark.customer_master.render_production(frm),
 });
+// 2026-11-27 (client): a new Technical Lead shows Progress = the TP Lead Progress Default (To Start; can be changed)
+// and Stage = Development straight away
+techpark.lead_defaults = function (doctype, name) {
+	const d = locals[doctype][name];
+	const values = {};
+	if (!d.progress && frappe.boot.techpark_default_lead_progress) values.progress = frappe.boot.techpark_default_lead_progress;
+	if (!d.stage) values.stage = techpark.K("TP Stage", "Development");
+	if (Object.keys(values).length) frappe.model.set_value(doctype, name, values);
+};
+
 frappe.ui.form.on("TP Customer Technical Lead", {
 	principal(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
 	},
-	technical_leads_add: (frm) => techpark.customer_master.render_technical(frm),
+	technical_leads_add: (frm, cdt, cdn) => {
+		techpark.lead_defaults(cdt, cdn); // 2026-11-27
+		techpark.customer_master.render_technical(frm);
+	},
 	technical_leads_remove: (frm) => techpark.customer_master.render_technical(frm),
 	application: (frm) => techpark.customer_master.render_technical(frm),
 	grinding_process: (frm) => techpark.customer_master.render_technical(frm),
@@ -185,7 +217,7 @@ frappe.ui.form.on("TP Customer Visit", {
 	visits_remove: (frm) => techpark.customer_master.render_visits(frm),
 	visit_date: (frm) => techpark.customer_master.render_visits(frm),
 	lead_status(frm, cdt, cdn) {
-		if (locals[cdt][cdn].lead_status === "Won") frappe.model.set_value(cdt, cdn, "lead_stage", "Bulk Trial PO");
+		if (locals[cdt][cdn].lead_status === techpark.K("TP Lead Status", "Won")) frappe.model.set_value(cdt, cdn, "lead_stage", techpark.K("TP Sales Status", "Bulk Trial PO")); // 2026-11-27: by App Key
 		techpark.customer_master.render_visits(frm);
 	},
 	principal(frm, cdt, cdn) {
@@ -396,7 +428,7 @@ techpark.customer_master.render_technical = async function (frm) {
 		const shares = share_list(r).slice(0, 3).join("  ");
 		const pills = [
 			r.progress ? `<span class="indicator-pill ${PROGRESS[r.progress] || "blue"}">${esc(__(r.progress))}</span>` : "",
-			r.current_status ? `<span class="indicator-pill ${r.stage === "Sales" ? "blue" : "orange"}">${esc(__(r.current_status))}</span>` : "",
+			r.current_status ? `<span class="indicator-pill ${techpark.colour("TP Stage", r.stage, "orange")}">${esc(__(r.current_status))}</span>` : "",
 		].join(" ");
 		return `<div class="tp-lead-card" data-row="${esc(r.name)}" style="cursor:pointer; border:1px solid var(--border-color); border-top:3px solid #8e2229; border-radius:var(--border-radius); padding:10px 12px; background:var(--fg-color);">
 			<div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(r.application || __("(no application)"))}</div>
@@ -617,7 +649,7 @@ techpark.customer_master.render_visits = function (frm) {
 	html += M.stats_html([
 		{ label: __("Visits"), value: visits.length },
 		{ label: __("Submitted"), value: visits.filter((v) => v.status === "Submitted").length },
-		{ label: __("Won"), value: visits.filter((v) => v.lead_status === "Won").length },
+		{ label: __(techpark.K("TP Lead Status", "Won")), value: visits.filter((v) => v.lead_status === techpark.K("TP Lead Status", "Won")).length },
 		{ label: __("Last Visit"), value: latest ? frappe.datetime.str_to_user(latest.visit_date) : "—" },
 		{ label: __("Latest Lead Status"), value: latest ? latest.lead_status : "—" },
 	]);
@@ -659,16 +691,16 @@ techpark.customer_master.render_principal_status = async function (frm, $target,
 		if (!latest[key]) latest[key] = r;
 	}
 	const esc = frappe.utils.escape_html;
+	// 2026-11-27: by what the status counts as (its master), not by its name
 	const color = (s) =>
-		["Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization"].includes(s) ? "green"
-		: s === "Enquiry Follow-up" ? "blue"
-		: ["Cancelled", "Trial Failed"].includes(s) ? "red"
-		: s === "On Hold" ? "gray"
-		: s === "Successful Trial" ? "purple"
+		techpark.result_of(s) === "Won" ? "green"
+		: techpark.result_of(s) === "Lost" ? "red"
+		: techpark.result_of(s) === "On Hold" ? "gray"
+		: s === techpark.K("TP Development Status", "Successful Trial") ? "purple"
 		: "blue";
 	const body = Object.values(latest)
 		.map((r) => {
-			const status = (r.stage === "Sales" && r.sales_status) || r.development_status || "";
+			const status = (techpark.key_of("TP Stage", r.stage) === "Sales" && r.sales_status) || r.development_status || "";
 			return `<tr>
 				<td>${r.opportunity ? `<a href="/desk/tp-opportunity/${encodeURIComponent(r.opportunity)}">${esc(r.application || "")}</a>` : esc(r.application || "")}</td>
 				<td>${esc(r.principal)}</td>

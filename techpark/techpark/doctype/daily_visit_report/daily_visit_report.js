@@ -1,9 +1,14 @@
-// Last edited: 2026-11-26
+// Last edited: 2026-11-27
 // Copyright (c) 2026, Techpark International
 // Customer Visit (DVR): one application line per visit. The Stage (Development / Sales) is chosen
 // first, then the line (principal, the customer's Technical Lead, category) and its status. On save the
 // line is copied into the visit's hidden principal row (daily_visit_report.py), which opportunities,
 // follow-ups and reports read. Plus a progress bar and Expense / Follow-up cards.
+
+// 2026-11-27: master values by App Key (renameable); also in public/js/techpark.js
+frappe.provide("techpark");
+techpark.K = techpark.K || ((m, k) => ((frappe.boot.techpark_keys || {})[m] || {})[k] || k);
+techpark.colour = techpark.colour || ((m, v, f) => ((frappe.boot.techpark_colours || {})[m] || {})[v] || f || "gray");
 
 frappe.provide("techpark.dvr");
 
@@ -21,16 +26,25 @@ techpark.dvr.STAGE_PROGRESS = {
 	Closed: 40, // 2026-11-26
 	"Successful Trial": 50,
 	"Trial Failed": 40,
-	"Bulk Trial PO": 70,
+	"Bulk Trial Order": 55, // 2026-11-27
+	"Bulk Trial": 60,
 	"Enquiry Follow-up": 75,
 	"Order Follow-up": 80,
 	"Delivery Follow-up": 85,
 	"Payment Follow-up": 90,
-	Regularization: 100,
+	Regularise: 70, // 2026-11-27: was Regularization
 	"On Hold": 50,
-	Cancelled: 50,
+	Lost: 50, // 2026-11-27: was Cancelled
 };
-techpark.dvr.TRIAL_DONE = "Successful Trial";
+// 2026-11-27 (phase 2): stages / statuses by App Key (the client may rename them)
+techpark.dvr.trial_done = () => techpark.K("TP Development Status", "Successful Trial");
+techpark.dvr.stage_key = function (name) {
+	const m = (frappe.boot.techpark_keys || {})["TP Stage"] || {};
+	return Object.keys(m).find((k) => m[k] === name) || name;
+};
+techpark.dvr.is_sales = (stage) => techpark.dvr.stage_key(stage) === "Sales";
+techpark.dvr.is_development = (stage) => techpark.dvr.stage_key(stage) === "Development";
+techpark.dvr.STATUS_RESULT = {};
 
 frappe.ui.form.on("Daily Visit Report", {
 	setup(frm) {
@@ -63,6 +77,11 @@ frappe.ui.form.on("Daily Visit Report", {
 				techpark.dvr.render_stage(frm);
 			}
 		});
+		// 2026-11-27: what each status counts as (colours)
+		frappe.xcall("techpark.statuses.get_status_results").then((map) => {
+			techpark.dvr.STATUS_RESULT = map || {};
+			techpark.dvr.render_stage(frm);
+		});
 		if (frm.is_new() && frm.doc.customer) techpark.dvr.load_contacts(frm);
 		// "New Visit" from an opportunity: start with its application line
 		if (frm.is_new() && techpark.new_visit_row) {
@@ -80,8 +99,7 @@ frappe.ui.form.on("Daily Visit Report", {
 			frappe.show_alert({ message: __("Same visit and principal: pick the next Application."), indicator: "blue" });
 		} else if (frm.is_new() && frm.doc.customer) {
 			// 2026-11-26: customer already set (e.g. from the customer): ask the Stage first
-			if (!frm.doc.dvr_stage) techpark.dvr.ask_stage(frm);
-			else techpark.dvr.ask_open_lines(frm);
+			if (!frm.doc.dvr_stage) techpark.dvr.ask_stage(frm); // 2026-11-27: no open-lines question any more
 		}
 	},
 
@@ -118,8 +136,7 @@ frappe.ui.form.on("Daily Visit Report", {
 		if (frm.doc.principal) techpark.dvr.check_development(frm, frm.doc);
 		if (!frm.doc.customer) return;
 		techpark.dvr.load_contacts(frm);
-		if (!frm.doc.dvr_stage) return techpark.dvr.ask_stage(frm); // 2026-11-26: Development or Sales? (then the open lines)
-		techpark.dvr.ask_open_lines(frm);
+		if (!frm.doc.dvr_stage) return techpark.dvr.ask_stage(frm); // 2026-11-26: Development or Sales? (2026-11-27: no open-lines question)
 	},
 
 	principals_remove(frm) {
@@ -139,8 +156,7 @@ frappe.ui.form.on("Daily Visit Report", {
 
 	// Development or Sales: the rows show only that stage's status, and open lines of that stage are offered
 	dvr_stage(frm) {
-		if (frm.doc.principal) techpark.dvr.update_row(frm, frm.doc);
-		techpark.dvr.ask_open_lines(frm);
+		if (frm.doc.principal) techpark.dvr.update_row(frm, frm.doc); // 2026-11-27: no open-lines question
 	},
 
 	// 2026-11-26: the "data changed: submit?" question is off for now (client will say when)
@@ -152,8 +168,8 @@ frappe.ui.form.on("Daily Visit Report", {
 			frappe.throw(__("Select the Technical Lead. A new one is added on the customer's Technical Leads tab first."));
 		}
 		if (!d.principal) frappe.throw(__("Select the Principal."));
-		if (d.dvr_stage === "Sales" && !d.sales_status) frappe.throw(__("Select the Sales Status."));
-		if (d.dvr_stage === "Development" && !d.development_status) frappe.throw(__("Select the Development Status."));
+		if (techpark.dvr.is_sales(d.dvr_stage) && !d.sales_status) frappe.throw(__("Select the Sales Status."));
+		if (techpark.dvr.is_development(d.dvr_stage) && !d.development_status) frappe.throw(__("Select the Development Status."));
 	},
 });
 
@@ -300,8 +316,9 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 		await frappe.model.set_value(row.doctype, row.name, {
 			application: lead.application || "",
 			supplier_product_category: lead.supplier_product_category || "",
-			...(size ? { size } : {}),
-			...(lead.spec ? { spec: lead.spec } : {}),  // 2026-11-21: spec back from the lead
+			// 2026-11-27: always the lead's (also empty): read only on the visit once a lead is picked
+			size: size || "",
+			spec: lead.spec || "",
 		});
 		if (row === frm.doc) {
 			// the customer's own Production Line / Product (from the Technical Lead)
@@ -311,12 +328,12 @@ techpark.dvr.fill_from_lead = async function (frm, row) {
 		// Continue from where the line stands (its last visit)
 		const visit_stage = frm.doc.dvr_stage;
 		if (lead.current_status && lead.stage === visit_stage) {
-			const field = visit_stage === "Sales" ? "sales_status" : "development_status";
+			const field = techpark.dvr.is_sales(visit_stage) ? "sales_status" : "development_status";
 			if (!row[field]) await frappe.model.set_value(row.doctype, row.name, field, lead.current_status);
 		}
-		if (lead.stage === "Sales" && visit_stage === "Development") {
+		if (techpark.dvr.is_sales(lead.stage) && techpark.dvr.is_development(visit_stage)) {
 			frappe.msgprint(__("{0} is already in the Sales stage ({1}). Set the visit's Stage to Sales.", [
-				lead.application, __(lead.current_status || "Sales"),
+				lead.application, __(lead.current_status || lead.stage),
 			]));
 		}
 	} finally {
@@ -346,71 +363,25 @@ techpark.dvr.check_development = async function (frm, row) {
 // Stage and progress of a row; the Sales Status only counts once the trial is successful.
 techpark.dvr.update_row = function (frm, row) {
 	const visit_stage = frm.doc.dvr_stage;
-	if (visit_stage === "Sales" && row.development_status !== techpark.dvr.TRIAL_DONE) {
+	if (techpark.dvr.is_sales(visit_stage) && row.development_status !== techpark.dvr.trial_done()) {
 		// A Sales visit follows lines whose development is complete
-		frappe.model.set_value(row.doctype, row.name, "development_status", techpark.dvr.TRIAL_DONE);
+		frappe.model.set_value(row.doctype, row.name, "development_status", techpark.dvr.trial_done());
 		return; // the development_status trigger runs this again
 	}
 	// 2026-11-26: the row's stage is the visit's Stage
-	const stage = visit_stage === "Sales" ? "Sales" : "Development";
+	const stage = techpark.dvr.is_sales(visit_stage) ? "Sales" : "Development"; // App Key
 	if (stage !== "Sales" && row.sales_status) {
 		frappe.model.set_value(row.doctype, row.name, "sales_status", "");
 	}
 	if (row === frm.doc) return techpark.dvr.render_stage(frm);
-	if (row.stage !== stage) frappe.model.set_value(row.doctype, row.name, "stage", stage);
+	const stage_name = techpark.K("TP Stage", stage); // 2026-11-27: the row keeps the stage's current name
+	if (row.stage !== stage_name) frappe.model.set_value(row.doctype, row.name, "stage", stage_name);
 	const pct = techpark.dvr.STAGE_PROGRESS[(stage === "Sales" && row.sales_status) || row.development_status] || 0;
 	if (row.progress !== pct) frappe.model.set_value(row.doctype, row.name, "progress", pct);
 	techpark.dvr.render_stage(frm);
 };
 
-// A new visit for a customer with application lines still in progress (open opportunities): ask whether
-// this visit continues them (their rows are added at their current status) or is a new application line.
-techpark.dvr.ask_open_lines = async function (frm) {
-	const customer = frm.doc.customer;
-	const stage = frm.doc.dvr_stage;
-	if (!frm.is_new() || !customer || !stage || frm.doc.docstatus !== 0) return;
-	// Ask once per customer + stage
-	if (frm._asked_lines === `${customer}|${stage}`) return;
-	frm._asked_lines = `${customer}|${stage}`;
-	const lines = await frappe.db.get_list("TP Opportunity", {
-		filters: { customer, stage, lead_status: ["in", ["Open", "On Hold"]], visits: [">", 0] },
-		fields: ["application", "principal", "supplier_product_category", "spec", "size", "stage", "status", "last_visit", "next_action"],
-		order_by: "last_visit desc",
-		limit: 50,
-	});
-	// The customer or stage may have been changed again while this was loading.
-	if (!lines.length || frm.doc.customer !== customer || frm.doc.dvr_stage !== stage) return;
-	const esc = frappe.utils.escape_html;
-	const fields = [
-		{
-			fieldtype: "HTML",
-			options: `<p>${__("{0} already has these application lines in progress. Pick the one this visit continues, or choose <b>New Application Line</b>.", [
-				`<b>${esc(frm.doc.customer_name || customer)}</b>`,
-			])}</p>`,
-		},
-	];
-	const label = (l) =>
-		[l.application, l.principal, l.spec].filter(Boolean).join(" · ") +
-		(l.status ? ` — ${__(l.status)}` : "") +
-		(l.last_visit ? ` (${__("last visit {0}", [frappe.datetime.str_to_user(l.last_visit)])})` : "");
-	fields.push({ fieldtype: "Select", fieldname: "line", label: __("Application Line"), options: lines.map(label), reqd: 1 });
-	const dialog = new frappe.ui.Dialog({
-		title: __("Continue an Application Line?"),
-		fields,
-		primary_action_label: __("Continue"),
-		primary_action(values) {
-			const picked = lines.find((l) => label(l) === values.line);
-			if (!picked) return;
-			dialog.hide();
-			techpark.dvr.continue_line(frm, picked);
-		},
-		secondary_action_label: __("New Application Line"),
-		secondary_action() {
-			dialog.hide();
-		},
-	});
-	dialog.show();
-};
+// 2026-11-27 (client): ask_open_lines removed: a new visit no longer asks to continue the customer's open application lines
 
 // A new DVR for the same visit (customer, date, type, stage, employee) and principal; only the
 // application (and its status) is left to fill. An unsaved visit is saved first.
@@ -435,7 +406,7 @@ techpark.dvr.another_application = async function (frm) {
 
 // The visit continues this line at its current status; the user moves it on from there.
 techpark.dvr.continue_line = async function (frm, l) {
-	const sales = l.stage === "Sales" || frm.doc.dvr_stage === "Sales";
+	const sales = techpark.dvr.is_sales(l.stage) || techpark.dvr.is_sales(frm.doc.dvr_stage);
 	techpark.dvr.filling_from_lead = true;
 	try {
 		await frm.set_value({
@@ -459,8 +430,8 @@ techpark.dvr.continue_line = async function (frm, l) {
 		}
 		const status = l.status || "";
 		await frm.set_value({
-			development_status: sales ? techpark.dvr.TRIAL_DONE : status,
-			sales_status: sales && l.stage === "Sales" ? status : "",
+			development_status: sales ? techpark.dvr.trial_done() : status,
+			sales_status: sales && techpark.dvr.is_sales(l.stage) ? status : "",
 		});
 	} finally {
 		techpark.dvr.filling_from_lead = false;
@@ -486,12 +457,12 @@ techpark.dvr.lines = function (frm) {
 	if (rows.length > 1) return rows;
 	const d = frm.doc;
 	if (!d.principal) return [];
-	const stage = d.dvr_stage === "Sales" ? "Sales" : "Development"; // 2026-11-26
+	const stage = techpark.dvr.is_sales(d.dvr_stage) ? "Sales" : "Development"; // 2026-11-26; App Key 2026-11-27
 	return [{
 		application: d.application,
 		principal: d.principal,
 		category_name: (rows[0] && rows[0].category_name) || "",
-		stage,
+		stage: techpark.K("TP Stage", stage), // 2026-11-27: current name (pills / banner look up its key)
 		development_status: d.development_status,
 		sales_status: d.sales_status,
 		progress: techpark.dvr.STAGE_PROGRESS[(stage === "Sales" && d.sales_status) || d.development_status] || 0,
@@ -509,13 +480,14 @@ techpark.dvr.render_stage = function (frm) {
 		return;
 	}
 	const color = (status) =>
-		["Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization"].includes(status) ? "var(--green-500)"
-		: ["Cancelled", "Trial Failed"].includes(status) ? "var(--red-500)"
-		: status === "On Hold" ? "var(--gray-500)"
+		// 2026-11-27: by what the status counts as (its master), not by its name
+		techpark.dvr.STATUS_RESULT[status] === "Won" ? "var(--green-500)"
+		: techpark.dvr.STATUS_RESULT[status] === "Lost" ? "var(--red-500)"
+		: techpark.dvr.STATUS_RESULT[status] === "On Hold" ? "var(--gray-500)"
 		: "var(--blue-500)";
 	const bars = rows
 		.map((row) => {
-			const status = (row.stage === "Sales" && row.sales_status) || row.development_status || "";
+			const status = (techpark.dvr.is_sales(row.stage) && row.sales_status) || row.development_status || "";
 			const pct = row.progress || 0;
 			const label = [row.application, row.principal, row.category_name].filter(Boolean).map(esc).join(" · ");
 			return `<div style="margin-bottom:10px;">
@@ -532,7 +504,7 @@ techpark.dvr.render_stage = function (frm) {
 		.join("");
 	frm.fields_dict.stage_html.$wrapper.html(`
 		<div style="margin: 2px 0 6px;">
-			<div class="control-label" style="margin-bottom:8px;">${__("Development")} → ${__("Sales")}</div>
+			<div class="control-label" style="margin-bottom:8px;">${__(techpark.K("TP Stage", "Development"))} → ${__(techpark.K("TP Stage", "Sales"))}</div>
 			${bars}
 		</div>`);
 };
@@ -541,8 +513,9 @@ techpark.dvr.render_stage = function (frm) {
 techpark.dvr.STAGE_COLORS = { Development: "orange", Sales: "blue", "Development + Sales": "yellow" };
 
 techpark.dvr.stage_pill = function (stage) {
-	stage = stage || "Development";
-	return `<span class="indicator-pill ${techpark.dvr.STAGE_COLORS[stage]}">${frappe.utils.escape_html(__(stage + " Stage"))}</span>`;
+	stage = stage || techpark.K("TP Stage", "Development");
+	// 2026-11-27: colour by the stage's App Key, label = its current name
+	return `<span class="indicator-pill ${techpark.dvr.STAGE_COLORS[techpark.dvr.stage_key(stage)] || "gray"}">${frappe.utils.escape_html(__(stage) + " " + __("Stage"))}</span>`;
 };
 
 // Banner at the top of the form: the application line, its stage and where it stands.
@@ -581,8 +554,8 @@ techpark.dvr.render_headline = function (frm, rows) {
 	const esc = frappe.utils.escape_html;
 	const cards = rows
 		.map((row) => {
-			const stage = row.stage || "Development";
-			const sales = stage === "Sales";
+			const stage = row.stage || techpark.K("TP Stage", "Development");
+			const sales = techpark.dvr.is_sales(stage); // 2026-11-27: by App Key
 			const status = (sales && row.sales_status) || row.development_status || "";
 			const pct = Math.max(0, Math.min(100, row.progress || 0));
 			const chips = [row.principal, frm.doc.grinding_process, row.category_name, frm.doc.product_name, frm.doc.production_line]
@@ -604,7 +577,7 @@ techpark.dvr.render_headline = function (frm, rows) {
 						<div class="tp-sb-seg dev"><div style="width:${dev_fill}%"></div></div>
 						<div class="tp-sb-seg sales"><div style="width:${sales_fill}%"></div></div>
 					</div>
-					<div class="tp-sb-legend"><span>${__("Development")}</span><span>${__("Sales")}</span></div>
+					<div class="tp-sb-legend"><span>${__(techpark.K("TP Stage", "Development"))}</span><span>${__(techpark.K("TP Stage", "Sales"))}</span></div>
 				</div>
 			</div>`;
 		})

@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Number cards of the TechPark workspace ("Custom" type).
 
@@ -11,6 +11,7 @@ their own work, managers the whole team.
 import frappe
 from frappe.utils import add_days, getdate, today
 
+from techpark.masters import CUSTOMER_STATUS, DEV_STATUS, SALES_STATUS, STAGE, K  # 2026-11-27: values by App Key
 from techpark.permission import is_manager  # 2026-11-26: Admin Roles from TechPark Settings
 
 
@@ -41,7 +42,7 @@ def get_stale_prospects_card(filters=None):
 		"fieldtype": "Int",
 		"route": ["List", "TP Customer"],
 		"route_options": {
-			"customer_status": "Prospect",
+			"customer_status": K(CUSTOMER_STATUS, "Prospect"),  # 2026-11-27: by App Key
 			"prospect_since": ["<=", str(add_days(now, -stale_days()))],
 		},
 	}
@@ -51,24 +52,28 @@ def get_stale_prospects_card(filters=None):
 def get_trials_in_progress_card(filters=None):
 	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_STATUSES
 
-	return _lead_card(TRIAL_STATUSES, stage="Development")
+	return _lead_card([K(DEV_STATUS, s) for s in TRIAL_STATUSES], stage=K(STAGE, "Development"))  # 2026-11-27: by App Key
 
 
 @frappe.whitelist()
 def get_successful_trials_card(filters=None):
 	"""Trial done, no bulk trial PO yet."""
-	return _lead_card(("Successful Trial",), status="Successful Trial")
+	done = K(DEV_STATUS, "Successful Trial")  # 2026-11-27: by App Key
+	return _lead_card((done,), status=done)
 
 
 @frappe.whitelist()
 def get_orders_won_card(filters=None):
-	"""Bulk trial PO received (the first order after a successful trial)."""
-	return _lead_card(("Bulk Trial PO",), status="Bulk Trial PO")
+	"""Bulk trial order received (the first order after a successful trial). 2026-11-27: was Bulk Trial PO."""
+	order = K(DEV_STATUS, "Bulk Trial Order")  # 2026-11-27: by App Key
+	return _lead_card((order,), status=order)
 
 
 @frappe.whitelist()
 def get_regularization_card(filters=None):
-	return _lead_card(("Regularization",), status="Regularization")
+	# 2026-11-27: was Regularization; by App Key (Development's last step and Sales' first)
+	names = (K(DEV_STATUS, "Regularise"), K(SALES_STATUS, "Regularise"))
+	return _lead_card(names, status=names[1])
 
 
 def _scope():
@@ -112,7 +117,7 @@ def _open_follow_up_states(user, team, now):
 
 
 def _stale_prospects(user, team, now):
-	filters = {"customer_status": "Prospect", "prospect_since": ("<=", add_days(now, -stale_days()))}
+	filters = {"customer_status": K(CUSTOMER_STATUS, "Prospect"), "prospect_since": ("<=", add_days(now, -stale_days()))}
 	if not team:
 		mine = frappe.get_all("Customer Agent", filters={"parenttype": "TP Customer", "agent": user}, pluck="parent")
 		filters["name"] = ("in", mine or [""])

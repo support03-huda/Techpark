@@ -10,6 +10,7 @@ from frappe.utils import cint, getdate, now_datetime, today, validate_email_addr
 from techpark.customer_sync import push_to_records
 from techpark.naming import next_numeric_name
 from techpark.permission import is_manager
+from techpark.masters import CUSTOMER_STATUS, K  # 2026-11-27: values by App Key
 
 CUSTOMER_CODE_START = 10001
 
@@ -188,22 +189,22 @@ class TPCustomer(Document):
 			self.append("plants", {"plant_name": (self.plant_location or "").strip() or "Main", "country": "India", **values})
 
 	def track_inactivation(self):
-		if self.customer_status != "Inactive":
+		if self.customer_status != K(CUSTOMER_STATUS, "Inactive"):  # 2026-11-27: by App Key
 			self.inactivated_by = None
 			self.inactivated_on = None
 			return
 
 		before = self.get_doc_before_save()
-		if not before or before.customer_status != "Inactive":
+		if not before or before.customer_status != K(CUSTOMER_STATUS, "Inactive"):
 			self.inactivated_by = frappe.session.user
 			self.inactivated_on = now_datetime()
 
 	def track_prospect(self):
 		"""Start the prospect clock when the status becomes Prospect (used by the 7-day Prospect notification)."""
-		if self.customer_status != "Prospect":
+		if self.customer_status != K(CUSTOMER_STATUS, "Prospect"):  # 2026-11-27: by App Key
 			self.prospect_since = None
 			return
 
 		before = self.get_doc_before_save()
-		if not before or before.customer_status != "Prospect":
+		if not before or before.customer_status != K(CUSTOMER_STATUS, "Prospect"):
 			self.prospect_since = today()

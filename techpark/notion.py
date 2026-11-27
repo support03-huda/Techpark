@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 # 2026-11-22: an opportunity "Sent to Principal" is pushed to the principal's Notion database (client)
 """Push to a principal's Notion database (e.g. Noritake's "TECHPARK Negotiation List").
@@ -164,10 +164,21 @@ def test_connection(principal):
 	return {"columns": sorted(n for n, t in props.values()), "filled": sorted(filled)}
 
 
+def importance_options():
+	"""2026-11-27: the Importance choices in Notion = the TP Priority master (its Colour; Notion has no cyan)."""
+	from techpark.masters import colours
+
+	colour = colours().get("TP Priority", {})
+	return [
+		{"name": p, "color": {"cyan": "blue"}.get(colour.get(p), colour.get(p) or "default")}
+		for p in frappe.get_all("TP Priority", filters={"is_active": 1}, order_by="sort_order asc", pluck="name")
+	]
+
+
 # 2026-11-22: make the Negotiation List table in Notion from TechPark (the token never leaves the server)
 COLUMNS = {
 	"Opportunity name": {"title": {}},
-	"Importance": {"select": {"options": [{"name": "High", "color": "red"}, {"name": "Medium", "color": "yellow"}, {"name": "Low", "color": "gray"}]}},
+	"Importance": {"select": {"options": []}},  # 2026-11-27: filled from the TP Priority master (importance_options)
 	"Agency": {"select": {"options": [{"name": "TECHPARK", "color": "red"}]}},
 	"beginning of negotiations": {"date": {}},
 	"Business negotiation details": {"rich_text": {}},
@@ -193,7 +204,7 @@ def create_database(principal, page):
 		{
 			"parent": {"type": "page_id", "page_id": _database_id(page)},
 			"title": [{"type": "text", "text": {"content": f"TECHPARK Negotiation List ({principal})"}}],
-			"properties": COLUMNS,
+			"properties": {**COLUMNS, "Importance": {"select": {"options": importance_options()}}},
 		},
 	)
 	frappe.db.set_value("Principal", principal, {"notion_enabled": 1, "notion_database_id": db["id"]})

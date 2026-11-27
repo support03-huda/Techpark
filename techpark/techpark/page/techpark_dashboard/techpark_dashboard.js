@@ -1,9 +1,14 @@
-// Last edited: 2026-11-23
+// Last edited: 2026-11-27
 // Copyright (c) 2026, Techpark International
 // TechPark Dashboard (same look as the UG dashboard): greeting with the headline numbers, clickable KPI cards
 // for follow-ups and the development funnel, charts of visits / pipeline / principals, what needs action,
 // a sales-person table, customers and expenses. Salespeople see their own work, managers the team.
 // Data: techpark.tp_dashboard.get_dashboard.
+
+// 2026-11-27: master values by App Key (renameable); also in public/js/techpark.js
+frappe.provide("techpark");
+techpark.K = techpark.K || ((m, k) => ((frappe.boot.techpark_keys || {})[m] || {})[k] || k);
+techpark.colour = techpark.colour || ((m, v, f) => ((frappe.boot.techpark_colours || {})[m] || {})[v] || f || "gray");
 
 const TPD_COLORS = {
 	maroon: "#8e2229", green: "#2f9e44", blue: "#1d6fb8", amber: "#e8a317", red: "#d64545",
@@ -168,7 +173,7 @@ class TPDashboard {
 				<div class="tpd-grid tpd-sales-fu"></div>
 				<div class="tpd-row">
 					<div class="tpd-panel"><h4>${__("Open follow-ups")}<span class="tpd-muted">${__("earliest first")}</span></h4><div class="tpd-follow"></div></div>
-					<div class="tpd-panel"><h4>${__("High-importance lines")}<span class="tpd-muted">${__("open")}</span></h4><div class="tpd-hot"></div></div>
+					<div class="tpd-panel"><h4>${__("High-priority lines")}<span class="tpd-muted">${__("open")}</span></h4><div class="tpd-hot"></div></div>
 				</div>`,
 			development: `
 				<div class="tpd-grid tpd-funnel"></div>
@@ -176,11 +181,11 @@ class TPDashboard {
 					<div class="tpd-panel"><h4>${__("Lines by status")}<span class="tpd-muted">${__("enquiry → trial → bulk trial PO → regularised")}</span></h4><div class="tpd-chart tpd-chart-pipeline"></div></div>
 					<div class="tpd-panel"><h4>${__("Development vs Sales")}<span class="tpd-muted">${__("open lines")}</span></h4><div class="tpd-chart tpd-chart-split"></div></div>
 				</div>
-				<div class="tpd-panel"><h4>${__("High-importance lines")}<span class="tpd-muted"><a href="/desk/techpark-development-board">${__("Open Development Board")} →</a></span></h4><div class="tpd-hot"></div></div>`,
+				<div class="tpd-panel"><h4>${__("High-priority lines")}<span class="tpd-muted"><a href="/desk/techpark-development-board">${__("Open Development Board")} →</a></span></h4><div class="tpd-hot"></div></div>`,
 			visits: `
 				<div class="tpd-subtabs">${["Development", "Sales"]
 					.map((s) => `<div class="tpd-subtab ${s === this.visit_stage ? "active" : ""}" data-stage="${s}" style="--accent:${TPD_STAGE_COLOR[s]}">
-						<span class="dot"></span>${this.esc(__(s + " Stage"))}<span class="n">${d.visits.stages[s].this_month}</span></div>`)
+						<span class="dot"></span>${this.esc(__(techpark.K("TP Stage", s)) + " " + __("Stage"))}<span class="n">${d.visits.stages[s].this_month}</span></div>`)
 					.join("")}<span class="tpd-muted" style="margin-left:auto">${__("visits this month · a visit with both stages counts in both")}</span></div>
 				<div class="tpd-visit-stage"></div>`,
 			calendar: `<div class="tpd-cal"></div>`,
@@ -414,7 +419,7 @@ class TPDashboard {
 			[__("Overdue Follow-ups"), f.overdue, __("date has passed: call or visit"), TPD_COLORS.red, todo(["<", frappe.datetime.get_today()])],
 			[__("Due Today"), f.today, __("follow-ups for today"), TPD_COLORS.orange, todo(frappe.datetime.get_today())],
 			[__("Due This Week"), f.week, __("next 7 days"), TPD_COLORS.amber, todo(["between", [frappe.datetime.get_today(), frappe.datetime.add_days(frappe.datetime.get_today(), 7)]])],
-			[__("Prospects Waiting"), f.stale_prospects, __("prospect for {0}+ days", [f.stale_days]), TPD_COLORS.violet, () => this.go("List", "TP Customer", { customer_status: "Prospect" })],
+			[__("Prospects Waiting"), f.stale_prospects, __("prospect for {0}+ days", [f.stale_days]), TPD_COLORS.violet, () => this.go("List", "TP Customer", { customer_status: techpark.K("TP Customer Status", "Prospect") })],
 			[__("Lines Overdue"), d.opportunities.overdue, __("next action date passed"), TPD_COLORS.maroon, () => this.go("techpark-development-board")],
 		]);
 	}
@@ -426,8 +431,9 @@ class TPDashboard {
 			"Delivery Follow-up": [__("delivery to follow up"), TPD_COLORS.teal],
 			"Payment Follow-up": [__("payment to collect"), TPD_COLORS.red],
 		};
+		// 2026-11-27: r.key = the App Key (the status may be renamed)
 		this.kpis(".tpd-sales-fu", rows.map((r) => [
-			__(r.status), r.value, (info[r.status] || [""])[0], (info[r.status] || [, TPD_COLORS.slate])[1],
+			__(r.status), r.value, (info[r.key || r.status] || [""])[0], (info[r.key || r.status] || [, TPD_COLORS.slate])[1],
 			() => this.report({ status: r.status }),
 		]));
 	}
@@ -454,7 +460,7 @@ class TPDashboard {
 			(r) => `<div class="main"><div class="n">${this.esc(r.customer)} · ${this.esc(r.application)}</div>
 				<div class="d">${this.esc([r.principal, r.status].filter(Boolean).join(" · "))}</div></div>${this.due_pill(r.date)}`,
 			(r) => this.go("Form", "TP Opportunity", r.name),
-			__("No High-importance lines. Set Importance on an opportunity."));
+			__("No high-priority lines. Set Priority on an opportunity."));
 	}
 
 	render_funnel(d) {
@@ -462,12 +468,13 @@ class TPDashboard {
 		const p = d.pipeline;
 		const board = () => this.go("techpark-development-board");
 		this.kpis(".tpd-funnel", [
-			[__("In Development"), o.development, __("enquiry to trial"), TPD_COLORS.orange, () => this.report({ stage: "Development", open_only: 1 })],
-			[__("Trials Running"), p.trials, __("trial PO / sample / trial"), TPD_COLORS.teal, () => this.report({ stage: "Development" })],
-			[__("Successful Trials"), p.successful, __("waiting for bulk trial PO"), TPD_COLORS.violet, () => this.report({ status: "Successful Trial" })],
-			[__("Bulk Trial PO"), p.won, __("first order after the trial"), TPD_COLORS.green, () => this.report({ status: "Bulk Trial PO" })],
-			[__("Regularised"), p.regularization, __("regular orders"), TPD_COLORS.blue, () => this.report({ status: "Regularization" })],
-			[__("High Importance"), o.high, __("open lines"), TPD_COLORS.red, board],
+			[__("In Development"), o.development, __("enquiry to trial"), TPD_COLORS.orange, () => this.report({ stage: techpark.K("TP Stage", "Development"), open_only: 1 })],
+			[__("Trials Running"), p.trials, __("trial PO / sample / trial"), TPD_COLORS.teal, () => this.report({ stage: techpark.K("TP Stage", "Development") })],
+			[__("Successful Trials"), p.successful, __("waiting for bulk trial PO"), TPD_COLORS.violet, () => this.report({ status: techpark.K("TP Development Status", "Successful Trial") })],
+			[__("Bulk Trial Order"), p.won, __("first order after the trial"), TPD_COLORS.green, () => this.report({ status: techpark.K("TP Development Status", "Bulk Trial Order") })], // 2026-11-27
+			[__("Regularised"), p.regularization, __("regular orders"), TPD_COLORS.blue, () => this.report({ status: techpark.K("TP Sales Status", "Regularise") })], // 2026-11-27
+			[__("High Priority"), o.high, // 2026-11-27: Importance is called Priority (client)
+			 __("open lines"), TPD_COLORS.red, board],
 		]);
 	}
 
@@ -498,11 +505,11 @@ class TPDashboard {
 		const list = (status) => () => this.go("List", "TP Customer", status ? { customer_status: status } : {});
 		this.kpis(".tpd-cust-kpis", [
 			[__("All Customers"), c.total, __("in the customer master"), TPD_COLORS.slate, list()],
-			[__("Active Customers"), c.active, __("buying from us"), TPD_COLORS.green, list("Active Customer")],
-			[__("Prospects"), c.prospects, __("not buying yet"), TPD_COLORS.amber, list("Prospect")],
+			[__("Active Customers"), c.active, __("buying from us"), TPD_COLORS.green, list(techpark.K("TP Customer Status", "Active Customer"))],
+			[__("Prospects"), c.prospects, __("not buying yet"), TPD_COLORS.amber, list(techpark.K("TP Customer Status", "Prospect"))],
 			// 2026-11-23: every customer status gets a card
-			[__("Under Development"), c.under_development, __("trials / development going on"), TPD_COLORS.blue, list("Under Development")],
-			[__("Inactive"), c.inactive, __("no longer active"), TPD_COLORS.red, list("Inactive")],
+			[__("Under Development"), c.under_development, __("trials / development going on"), TPD_COLORS.blue, list(techpark.K("TP Customer Status", "Under Development"))],
+			[__("Inactive"), c.inactive, __("no longer active"), TPD_COLORS.red, list(techpark.K("TP Customer Status", "Inactive"))],
 		]);
 	}
 

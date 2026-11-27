@@ -1,6 +1,13 @@
-// Last edited: 2026-11-21
+// Last edited: 2026-11-27
 // Copyright (c) 2026, Techpark International
 // Application Wise Status: Industry Segment -> Product -> Application -> its customers.
+
+// 2026-11-27: master values by App Key (renameable); also in public/js/techpark.js
+frappe.provide("techpark");
+techpark.K = techpark.K || ((m, k) => ((frappe.boot.techpark_keys || {})[m] || {})[k] || k);
+techpark.colour = techpark.colour || ((m, v, f) => ((frappe.boot.techpark_colours || {})[m] || {})[v] || f || "gray");
+techpark.key_of = techpark.key_of || ((m, n) => { const x = (frappe.boot.techpark_keys || {})[m] || {}; return Object.keys(x).find((k) => x[k] === n) || n; });
+techpark.result_of = techpark.result_of || ((s) => (frappe.boot.techpark_status_results || {})[s]);
 
 frappe.query_reports["Application Wise Status"] = {
 	filters: [
@@ -33,11 +40,11 @@ frappe.query_reports["Application Wise Status"] = {
 		if (data.is_group && column.fieldname === "label") return `<b>${value}</b>`;
 		if (data.is_group && ["demand", "customers", "stage"].includes(column.fieldname)) return `<b>${value}</b>`;
 		if (column.fieldname === "stage" && !data.is_group && data.stage) {
-			const color = data.stage === "Sales" ? "blue" : "orange";
+			const color = techpark.colour("TP Stage", data.stage, "orange"); // 2026-11-27: stage master's Colour
 			return `<span class="indicator-pill ${color}">${frappe.utils.escape_html(__(data.stage))}</span>`;
 		}
 		if (column.fieldname === "progress" && !data.is_group && data.progress) {
-			const color = { Approved: "green", "Evaluation Failed": "red", "Not Started": "gray", Quoted: "orange" }[data.progress] || "blue";
+			const color = techpark.colour("TP Lead Progress", data.progress, "blue"); // 2026-11-27: Lead Progress master's Colour
 			return `<span class="indicator-pill ${color}">${frappe.utils.escape_html(__(data.progress))}</span>`;
 		}
 		return value;

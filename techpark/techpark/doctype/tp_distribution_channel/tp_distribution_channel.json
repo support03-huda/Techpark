@@ -6,11 +6,22 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "master_id",
   "option_name",
   "sort_order",
   "is_active"
  ],
  "fields": [
+  {
+   "fieldname": "master_id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
   {
    "fieldname": "option_name",
    "fieldtype": "Data",
@@ -35,7 +46,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-26 22:00:00.000000",
+ "modified": "2026-11-27 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Distribution Channel",
@@ -95,6 +106,7 @@
  "sort_field": "sort_order",
  "sort_order": "ASC",
  "states": [],
- "title_field": "option_name",
- "track_changes": 1
+ "track_changes": 1,
+ "search_fields": "master_id",
+ "title_field": "option_name"
 }

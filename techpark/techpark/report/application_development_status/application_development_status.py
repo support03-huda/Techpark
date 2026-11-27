@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Where each development stands: one row per opportunity (customer + application / line + principal +
 wheel spec), like the client's Development Status and Sales Follow-up sheets. The status is the line's
@@ -10,6 +10,7 @@ from frappe.utils import getdate, today
 
 from techpark.opportunity import follow_up_state
 from techpark.statuses import stage_progress  # 2026-11-26: statuses are masters now
+from techpark.masters import STAGE, K  # 2026-11-27: stages by App Key
 
 # 2026-11-26: importance order = Sort Order of the TP Priority master
 
@@ -36,7 +37,7 @@ def get_columns():
 		{"fieldname": "trials", "label": _("Trials"), "fieldtype": "Data", "width": 95},
 		{"fieldname": "bulk_trial_po", "label": _("Bulk Trials PO"), "fieldtype": "Data", "width": 110},
 		{"fieldname": "regularised", "label": _("Regularised"), "fieldtype": "Data", "width": 110},
-		{"fieldname": "importance", "label": _("Importance"), "fieldtype": "Data", "width": 90},
+		{"fieldname": "importance", "label": _("Priority"), "fieldtype": "Data", "width": 90},  # 2026-11-27: label Priority (client)
 		{"fieldname": "stage", "label": _("Stage"), "fieldtype": "Data", "width": 100},
 		{"fieldname": "lead_stage", "label": _("Status"), "fieldtype": "Data", "width": 140},
 		{"fieldname": "present_status", "label": _("Present Status"), "fieldtype": "Data", "width": 260},
@@ -147,7 +148,7 @@ def get_chart(rows):
 			"labels": stages,
 			"datasets": [
 				{"name": _(stage), "values": [sum(r["lead_stage"] == s and r["stage"] == stage for r in rows) for s in stages]}
-				for stage in ("Development", "Sales")
+				for stage in (K(STAGE, "Development"), K(STAGE, "Sales"))  # 2026-11-27: current names
 			],
 		},
 		"type": "bar",

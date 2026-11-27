@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Application Wise Status: Industry Segment -> Product -> Application (the common list) -> the
 customers that have it (their Technical Lead) and where each stands (its opportunity from visits).
@@ -9,6 +9,7 @@ import frappe
 from frappe import _
 from frappe.utils import flt
 
+from techpark.masters import STAGE, K  # 2026-11-27: stages by App Key
 from techpark.shares import FIELDS as SHARE_FIELDS, share_parts  # 2026-11-21: Principal + up to 4 competitors
 
 
@@ -171,8 +172,8 @@ def get_data(filters):
 
 def _group_row(key, parent, indent, label, rows):
 	"""A group row (industry segment, product or application) with its totals."""
-	dev = sum(1 for l in rows if l.stage == "Development")
-	sales = sum(1 for l in rows if l.stage == "Sales")
+	dev = sum(1 for l in rows if l.stage == K(STAGE, "Development"))  # 2026-11-27: by App Key
+	sales = sum(1 for l in rows if l.stage == K(STAGE, "Sales"))
 	return {
 		"name": key,
 		"parent": parent,
@@ -204,8 +205,8 @@ def get_chart(groups):
 		"data": {
 			"labels": [g["label"] for g in top],
 			"datasets": [
-				{"name": _("Development"), "values": [g["_dev"] for g in top]},
-				{"name": _("Sales"), "values": [g["_sales"] for g in top]},
+				{"name": _(K(STAGE, "Development")), "values": [g["_dev"] for g in top]},
+				{"name": _(K(STAGE, "Sales")), "values": [g["_sales"] for g in top]},
 				{"name": _("Not visited yet"), "values": [g["customers"] - g["_dev"] - g["_sales"] for g in top]},
 			],
 		},

@@ -133,3 +133,8 @@
 .tpd-pane { display: flex; flex-direction: column; gap: 16px; }
 
 .tpd-present { margin-top: 5px; color: var(--text-color); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* 2026-11-27: every colour of the masters' Colour field */
+.tpd-pill.yellow { background: rgba(232, 163, 23, 0.16); color: #b7791f; }
+.tpd-pill.purple { background: rgba(124, 58, 237, 0.14); color: #6d28d9; }
+.tpd-pill.pink { background: rgba(219, 39, 119, 0.14); color: #be185d; }
+.tpd-pill.cyan { background: rgba(8, 145, 178, 0.14); color: #0e7490; }

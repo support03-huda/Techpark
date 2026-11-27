@@ -21,6 +21,7 @@ from frappe.utils import cstr, getdate, today
 
 from techpark.opportunity import refresh_opportunity, sync_visit
 from techpark.permission import is_locked, is_manager
+from techpark.masters import DEV_STATUS, K, SALES_STATUS, STAGE, key_of  # 2026-11-27: values found by App Key
 from techpark.statuses import stage_progress, statuses_counting_as  # 2026-11-26: statuses are masters now
 
 # 2026-11-26: Distributor Code is in TechPark Settings
@@ -42,6 +43,9 @@ DEVELOPMENT_PROGRESS = {
 	"Successful Trial": 50,
 	"Trial Failed": 40,
 	"Closed": 40,  # 2026-11-26
+	"Bulk Trial Order": 55,  # 2026-11-27
+	"Bulk Trial": 60,
+	"Regularise": 70,
 }
 # Sales cycle after the trial (CRM column list): the bulk trial PO, then the enquiry / order / delivery /
 # payment follow-ups of the regular business; each follow-up's Next Action is its reminder.
@@ -51,18 +55,37 @@ SALES_PROGRESS = {
 	"Order Follow-up": 80,
 	"Delivery Follow-up": 85,
 	"Payment Follow-up": 90,
-	"Regularization": 100,
 	"On Hold": 50,
-	"Cancelled": 50,
+	"Lost": 50,  # 2026-11-27: was Cancelled
 }
 STAGE_PROGRESS = {**DEVELOPMENT_PROGRESS, **SALES_PROGRESS}
 TRIAL_DONE = "Successful Trial"
 TRIAL_STATUSES = ("Trial PO Received", "Sample Received", "Trial in Progress", "Retest")
 SALES_FOLLOW_UPS = ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")
 # An order is in: the customer is buying (an enquiry follow-up is not an order yet).
-WON_STATUSES = ("Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up", "Regularization")
-LOST_STATUSES = ("Cancelled", "Trial Failed")
+WON_STATUSES = ("Bulk Trial PO", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")  # 2026-11-27: Regularization -> Regularise (Open)
+LOST_STATUSES = ("Lost", "Trial Failed")  # 2026-11-27: Cancelled renamed Lost
 GENERAL_APPLICATION = "General"
+LEAD_STATUS = "TP Lead Status"
+# 2026-11-27 (phase 2): the status / stage names in this file are App Keys; the values can be renamed, so the code
+# compares and sets through these (current names)
+
+
+def trial_done():
+	return K(DEV_STATUS, TRIAL_DONE)
+
+
+def stage_key(name):
+	"""Development / Sales (the App Key) of a stage's current name."""
+	return key_of(STAGE, name)
+
+
+def is_sales(stage):
+	return stage_key(stage) == "Sales"
+
+
+def is_development(stage):
+	return stage_key(stage) == "Development"
 # One application line per visit: these fields on the visit are copied into its (hidden) principal row,
 # which opportunities, follow-ups and reports read.
 LINE_FIELDS = (
@@ -84,37 +107,40 @@ OLD_STAGES = {
 	"Negotiation": ("Development", "Offer Submitted", None),
 	"Order Received": ("Sales", TRIAL_DONE, "Bulk Trial PO"),
 	"Order Won": ("Sales", TRIAL_DONE, "Bulk Trial PO"),
-	"Order Lost": ("Sales", TRIAL_DONE, "Cancelled"),
+	"Order Lost": ("Sales", TRIAL_DONE, "Lost"),  # 2026-11-27
 }
 
 
 def row_from_lead(lead_stage, lead_status):
 	"""Development / Sales status of a principal row for an old-style Lead Stage + Lead Status
-	(visits entered on the customer's Visits tab, and visits made before principal rows existed)."""
-	if lead_stage in DEVELOPMENT_PROGRESS:
-		stage, development, sales = "Development", lead_stage, None
-	elif lead_stage in SALES_PROGRESS:
-		stage, development, sales = "Sales", TRIAL_DONE, lead_stage
+	(visits entered on the customer's Visits tab, and visits made before principal rows existed).
+	2026-11-27: worked out on App Keys, returned as the current names."""
+	dev_key, sales_key = key_of(DEV_STATUS, lead_stage), key_of(SALES_STATUS, lead_stage)
+	lead_status = key_of(LEAD_STATUS, lead_status)
+	if dev_key in DEVELOPMENT_PROGRESS:
+		stage, development, sales = "Development", dev_key, None
+	elif sales_key in SALES_PROGRESS:
+		stage, development, sales = "Sales", TRIAL_DONE, sales_key
 	else:
 		stage, development, sales = OLD_STAGES.get(lead_stage, ("Development", "Introduction", None))
 	if lead_status == "Won":
 		stage, development, sales = "Sales", TRIAL_DONE, sales if sales in WON_STATUSES else "Bulk Trial PO"
 	elif lead_status == "Lost":
 		if stage == "Sales":
-			sales = "Cancelled"
+			sales = "Lost"  # 2026-11-27
 		else:
 			development = "Trial Failed"
 	elif lead_status == "On Hold" and stage == "Sales":
 		sales = "On Hold"
-	return {"stage": stage, "development_status": development, "sales_status": sales}
+	return {"stage": K(STAGE, stage), "development_status": K(DEV_STATUS, development), "sales_status": K(SALES_STATUS, sales)}
 
 
 def dvr_stage(stages):
 	"""Stage of the whole visit from its principal rows' stages."""
-	stages = set(stages)
+	stages = {stage_key(s) for s in stages}  # 2026-11-27: by App Key
 	if stages == {"Development", "Sales"}:
-		return "Development + Sales"
-	return "Sales" if "Sales" in stages else "Development"
+		return K(STAGE, "Development + Sales")
+	return K(STAGE, "Sales" if "Sales" in stages else "Development")
 
 
 @frappe.whitelist()
@@ -132,7 +158,7 @@ def development_done(customer=None, principal=None, supplier_product_category=No
 			where d.docstatus = 1 and d.customer = %(customer)s and d.name != %(exclude)s
 				and r.principal = %(principal)s and ifnull(r.supplier_product_category, '') = %(category)s
 				and ifnull(r.application, '') = %(application)s and ifnull(r.spec, '') = %(spec)s
-				and (r.development_status = %(done)s or r.stage = 'Sales')
+				and (r.development_status = %(done)s or r.stage = %(sales)s)
 			limit 1
 			""",
 			{
@@ -142,7 +168,8 @@ def development_done(customer=None, principal=None, supplier_product_category=No
 				"application": (application or "").strip() or GENERAL_APPLICATION,
 				"spec": (spec or "").strip(),
 				"exclude": exclude or "",
-				"done": TRIAL_DONE,
+				"done": trial_done(),  # 2026-11-27: current names
+				"sales": K(STAGE, "Sales"),
 			},
 		)
 	)
@@ -269,7 +296,8 @@ class DailyVisitReport(Document):
 			return
 		lead = frappe.db.get_value(
 			"TP Technical Lead", self.technical_lead,
-			["customer", "principal", "application_master", "product", "production_line"], as_dict=True,
+			["customer", "principal", "application_master", "product", "production_line",
+			 "application", "supplier_product_category", "spec", "size", "size_od", "size_t", "size_id"], as_dict=True,
 		)
 		if not lead:
 			return
@@ -279,6 +307,11 @@ class DailyVisitReport(Document):
 		self.application_master = lead.application_master
 		self.customer_product = lead.product
 		self.production_line = lead.production_line
+		# 2026-11-27: all autofilled fields are the lead's (read only on the visit; changed on the Technical Lead only)
+		self.application = lead.application or self.application
+		self.supplier_product_category = lead.supplier_product_category
+		self.spec = lead.spec
+		self.size = lead.size or " x ".join(v for v in (lead.size_od, lead.size_t, lead.size_id) if v)
 
 	def set_lead_from_application(self):
 		"""Before 2026-11-26: application picked from the common list made the customer's Technical Lead. Not used now."""
@@ -304,7 +337,8 @@ class DailyVisitReport(Document):
 
 	def line_to_row(self):
 		"""The visit's Application Line fields -> its first principal row (made if missing)."""
-		if self.docstatus == 0:
+		# 2026-11-27: also on Submit (docstatus is already 1 then); not on later changes to a submitted visit
+		if self._action != "update_after_submit":
 			self.set_line_from_lead()  # 2026-11-26: was set_lead_from_application (made the lead from the visit)
 		if not (self.development_status or self.sales_status or self.technical_lead):
 			return  # no line entered here (e.g. a visit from the customer's Visits tab): add_row_from_summary
@@ -356,7 +390,7 @@ class DailyVisitReport(Document):
 			},
 		)
 		# A sales status here cannot skip the Development stage.
-		if row.stage == "Sales" and not development_done(
+		if is_sales(row.stage) and not development_done(
 			self.customer, row.principal, row.supplier_product_category, self.name
 		):
 			frappe.throw(
@@ -416,29 +450,30 @@ class DailyVisitReport(Document):
 		row.development_done_before = 1 if development_done(
 			self.customer, row.principal, row.supplier_product_category, self.name, row.application, row.spec
 		) else 0
-		visit_stage = self.dvr_stage if self.dvr_stage in ("Development", "Sales") else None
+		# 2026-11-27: stages / statuses by App Key (they can be renamed)
+		visit_stage = self.dvr_stage if stage_key(self.dvr_stage) in ("Development", "Sales") else None
 		# Strict rules for new entries; already-submitted visits keep their recorded rows.
 		strict = self._action != "update_after_submit"
 		# 2026-11-26: a successful trial stays in Development until the lead's Progress is Regularised (client);
 		# only a regularised lead (lead Stage = Sales) takes Sales visits, and then no Development visits.
 		lead_stage = frappe.db.get_value("TP Technical Lead", row.technical_lead, "stage") if row.get("technical_lead") else None
-		if visit_stage == "Sales":
+		if is_sales(visit_stage):
 			# A Sales visit follows lines whose development is complete
-			row.development_status = TRIAL_DONE
-			if strict and row.get("technical_lead") and lead_stage != "Sales":
+			row.development_status = trial_done()
+			if strict and row.get("technical_lead") and not is_sales(lead_stage):
 				frappe.throw(
 					_("{0} is not Regularised yet: set its Technical Lead's Progress to Regularised to move it to Sales.").format(
 						self.line_label(row)
 					)
 				)
-		elif visit_stage == "Development":
-			if strict and lead_stage == "Sales":
+		elif is_development(visit_stage):
+			if strict and is_sales(lead_stage):
 				frappe.throw(
 					_("{0} is Regularised (Sales stage). Set the visit's Stage to Sales.").format(self.line_label(row))
 				)
 		elif row.development_done_before:
-			row.development_status = TRIAL_DONE  # older visits without a Stage
-		if visit_stage == "Sales" and strict and not row.sales_status:
+			row.development_status = trial_done()  # older visits without a Stage
+		if is_sales(visit_stage) and strict and not row.sales_status:
 			frappe.throw(
 				_("{0}: select the Sales Status.").format(self.line_label(row))
 			)
@@ -447,8 +482,8 @@ class DailyVisitReport(Document):
 				_("{0}: select the Development Status.").format(self.line_label(row))
 			)
 		# 2026-11-26: the visit's Stage (older visits without one: Sales from the successful trial on)
-		row.stage = visit_stage or ("Sales" if row.development_status == TRIAL_DONE else "Development")
-		if row.sales_status and row.stage != "Sales":
+		row.stage = visit_stage or K(STAGE, "Sales" if row.development_status == trial_done() else "Development")
+		if row.sales_status and not is_sales(row.stage):
 			frappe.throw(
 				_("{0}: Sales Status {1} can be set only after a Successful Trial.").format(
 					self.line_label(row), frappe.bold(row.sales_status)
@@ -474,7 +509,7 @@ class DailyVisitReport(Document):
 			)
 			for row in rows
 		)
-		if self.dvr_stage not in ("Development", "Sales"):
+		if stage_key(self.dvr_stage) not in ("Development", "Sales"):
 			# Not chosen (visits added from the customer's Visits tab) or an older mixed visit
 			self.dvr_stage = dvr_stage(row.stage for row in rows)
 		furthest = max(rows, key=lambda row: row.progress or 0)
@@ -495,33 +530,84 @@ class DailyVisitReport(Document):
 		self.create_follow_up()
 		self.activate_customer()
 		self.add_principal_to_customer()
+		self.set_lead_progress()  # 2026-11-27: before the line is refreshed (Regularised moves it, Lost closes it)
 		sync_visit(self)
 		self.set_line_opportunity()
 		self.update_lead_spec_size()
 
+	def set_lead_progress(self):
+		"""2026-11-27 (client): the visit's status sets its Technical Lead's Progress (status master > Sets Lead
+		Progress): Introduction ... -> Under Development, Trial Failed -> Evaluation Failed (lead closed),
+		Regularise -> Regularised (lead to Sales), Lost -> Lost (lead closed). Empty: Progress unchanged."""
+		from techpark.statuses import progress_effect, status_lead_progress
+
+		for row in self.principals:
+			if not row.get("technical_lead"):
+				continue
+			stage = "Sales" if is_sales(row.stage) else "Development"  # App Key
+			progress = status_lead_progress(stage, row.sales_status if stage == "Sales" else row.development_status)
+			lead = frappe.db.get_value("TP Technical Lead", row.technical_lead, ["progress", "last_visit"], as_dict=True) or {}
+			if not progress or lead.get("progress") == progress:
+				continue
+			if lead.get("last_visit") and getdate(self.visit_date) < getdate(lead["last_visit"]):
+				continue  # an older visit edited after submit: the lead follows its latest visit
+			effect = progress_effect(progress)
+			values = {"progress": progress, "is_closed": 1 if effect.closes_lead else 0}
+			if effect.moves_to_stage:
+				values["stage"] = effect.moves_to_stage
+			frappe.db.set_value("TP Technical Lead", row.technical_lead, values, update_modified=False)
+			# the customer tab row has no Closed column (2026-11-27 fix: "Unknown column 'is_closed'")
+			row_values = {k: v for k, v in values.items() if k != "is_closed"}
+			frappe.db.set_value("TP Customer Technical Lead", {"record": row.technical_lead}, row_values, update_modified=False)
+			frappe.get_doc("TP Technical Lead", row.technical_lead).add_comment(
+				"Info", _("Progress {0} (visit {1}: {2})").format(frappe.bold(progress), self.name, row.sales_status or row.development_status)
+			)
+			if effect.moves_to_stage and effect.moves_to_stage != row.stage:
+				self.show_stage_moved(row, progress, effect.moves_to_stage)
+			elif effect.closes_lead:
+				self.show_lead_closed(row, progress)  # 2026-11-27: Trial Failed / Lost
+
+	def lead_line(self, row):
+		"""The lead as a link + its application · principal, for the pop-ups."""
+		from frappe.utils import escape_html, get_url_to_form
+
+		line = " · ".join(escape_html(p) for p in (row.application, row.principal) if p)
+		lead = f'<a href="{get_url_to_form("TP Technical Lead", row.technical_lead)}">{escape_html(row.technical_lead)}</a>'
+		return lead, line
+
+	def show_lead_closed(self, row, progress):
+		"""2026-11-27 (client): a pop-up after submit when the visit closes its lead (Trial Failed / Lost)."""
+		from frappe.utils import escape_html
+
+		lead, line = self.lead_line(row)
+		status = row.sales_status or row.development_status
+		frappe.msgprint(
+			_(
+				"Technical Lead {0} ({1}) is now {2}{3}, so the lead has been closed."
+				"<br><br>It will no longer be offered on new visits or shown on the boards. To reopen it, change its "
+				"Progress on the Technical Lead."
+			).format(lead, line, frappe.bold(progress), f" ({escape_html(status)})" if status != progress else ""),
+			title=_("Lead closed: {0}").format(progress),
+			indicator="red",
+		)
+
+	def show_stage_moved(self, row, progress, new_stage):
+		"""2026-11-27 (client): a pop-up after submit when the lead moves on (Regularise -> Sales)."""
+		lead, line = self.lead_line(row)
+		frappe.msgprint(
+			_(
+				"Congratulations! Technical Lead {0} ({1}) is now {2} and has moved from the {3} stage to the {4} stage."
+				"<br><br>Its next visits will be {4} visits, and you will find it on the {4} Board."
+			).format(lead, line, frappe.bold(progress), frappe.bold(row.stage), frappe.bold(new_stage)),
+			title=_("Lead moved to {0}").format(new_stage),
+			indicator="green",
+		)
+
 	def update_lead_spec_size(self):
 		"""2026-11-21: the visit's Principal Product Spec / Size go to its Technical Lead (client).
-		2026-11-25: and its Principal Product Category."""
-		if not self.get("technical_lead"):
-			return
-		if frappe.db.get_value("TP Technical Lead", self.technical_lead, "is_frozen"):
-			return  # 2026-11-27: frozen lead: only an admin changes it
-		values = {f: self.get(f) for f in ("spec", "size", "supplier_product_category") if self.get(f)}
-		if not values:
-			return
-		# 2026-11-26: the change (confirmed on the visit) is noted on the lead's timeline
-		old = frappe.db.get_value("TP Technical Lead", self.technical_lead, list(values), as_dict=True) or {}
-		changed = [f for f, v in values.items() if cstr(old.get(f)).strip() != cstr(v).strip()]
-		if changed:
-			meta = frappe.get_meta("Daily Visit Report")
-			frappe.get_doc("TP Technical Lead", self.technical_lead).add_comment(
-				"Info",
-				_("Changed by visit {0}: {1}").format(
-					self.name, ", ".join(f"{_(meta.get_label(f))}: {old.get(f) or '-'} → {values[f]}" for f in changed)
-				),
-			)
-		frappe.db.set_value("TP Technical Lead", self.technical_lead, values)
-		frappe.db.set_value("TP Customer Technical Lead", {"record": self.technical_lead}, values, update_modified=False)
+		2026-11-25: and its Principal Product Category.
+		2026-11-27: not any more: a visit cannot change its Technical Lead's data (read only once picked; the lead
+		is changed on its own form, which updates its visits)."""
 
 	def set_line_opportunity(self):
 		"""sync_visit links the row to its TP Opportunity; show it on the visit too."""
@@ -535,6 +621,7 @@ class DailyVisitReport(Document):
 
 	def on_update_after_submit(self):
 		self.activate_customer()
+		self.set_lead_progress()  # 2026-11-27
 		sync_visit(self)
 		self.set_line_opportunity()
 		self.update_lead_spec_size()  # 2026-11-21
@@ -577,10 +664,14 @@ class DailyVisitReport(Document):
 		"""A won visit turns a Prospect into an Active Customer."""
 		if self.lead_status != "Won":
 			return
-		if frappe.db.get_value("TP Customer", self.customer, "customer_status") == "Prospect":
-			frappe.db.set_value("TP Customer", self.customer, "customer_status", "Active Customer")
+		from techpark.masters import CUSTOMER_STATUS
+
+		# 2026-11-27: Customer Status values by App Key (they can be renamed)
+		if frappe.db.get_value("TP Customer", self.customer, "customer_status") == K(CUSTOMER_STATUS, "Prospect"):
+			active = K(CUSTOMER_STATUS, "Active Customer")
+			frappe.db.set_value("TP Customer", self.customer, "customer_status", active)
 			frappe.get_doc("TP Customer", self.customer).add_comment(
-				"Info", _("Marked Active Customer from won visit {0}").format(self.name)
+				"Info", _("Marked {0} from won visit {1}").format(active, self.name)
 			)
 
 	def add_principal_to_customer(self):

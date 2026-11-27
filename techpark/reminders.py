@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Reminder digests, sent as a bell notification and an email (from the site's outgoing
 account) to each salesperson and manager. Limits come from TechPark Settings, and nothing
@@ -18,6 +18,7 @@ import frappe
 from frappe import _
 from frappe.utils import add_days, date_diff, escape_html, formatdate, get_fullname, getdate, today
 
+from techpark.masters import CUSTOMER_STATUS, K  # 2026-11-27: values by App Key
 from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
 
 # 2026-11-26: TechPark Settings > Roles > Manager Reminder Roles
@@ -81,14 +82,14 @@ def escalate_follow_ups(digests):
 def cold_prospects(digests):
 	days = get_setting("prospect_cold_days")
 	customer_section(
-		digests, "Prospect", days, _("Prospects gone cold (no visit for {0}+ days)").format(days)
+		digests, K(CUSTOMER_STATUS, "Prospect"), days, _("Prospects gone cold (no visit for {0}+ days)").format(days)
 	)
 
 
 def not_visited(digests):
 	days = get_setting("not_visited_days")
 	customer_section(
-		digests, "Active Customer", days, _("Customers not visited for {0}+ days").format(days)
+		digests, K(CUSTOMER_STATUS, "Active Customer"), days, _("Customers not visited for {0}+ days").format(days)
 	)
 
 
@@ -165,7 +166,7 @@ def missing_customer_data(digests):
 	everything = []
 	for c in frappe.get_all(
 		"TP Customer",
-		filters={"customer_status": ("!=", "Inactive")},
+		filters={"customer_status": ("!=", K(CUSTOMER_STATUS, "Inactive"))},
 		fields=["name", "customer_name", "customer_status", "primary_contact_name", "industry_domain", "territory_region"],
 		order_by="customer_name",
 	):

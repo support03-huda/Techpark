@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Developments / opportunities from the visits.
 
@@ -152,8 +152,7 @@ def refresh_opportunity(name):
 
 def apply_lead_progress(doc, rows):
 	"""2026-11-26: TP Lead Progress > Moves Lead to Stage / Closes the Lead, on the lead's opportunity."""
-	from techpark.statuses import progress_effect, stage_progress, stage_statuses
-	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_DONE
+	from techpark.statuses import first_status, progress_effect, stage_progress, stage_statuses
 
 	lead = next((r.technical_lead for r in reversed(rows) if r.get("technical_lead")), None)
 	if not lead:
@@ -166,8 +165,8 @@ def apply_lead_progress(doc, rows):
 		doc.stage = stage
 		statuses = stage_statuses(stage)
 		if statuses and doc.status not in statuses:
-			# Sales board starts at the successful trial (waiting for the bulk PO)
-			doc.status = TRIAL_DONE if TRIAL_DONE not in stage_statuses(doc.stage, active_only=False) else next(iter(statuses))
+			# 2026-11-27: the line starts at that stage's first status (Sales: Regularise, client)
+			doc.status = first_status(stage)
 			doc.progress = stage_progress().get(doc.status, doc.progress)
 
 
@@ -215,11 +214,11 @@ def set_milestones(doc, rows):
 	"""Fill the milestone columns from the visits. A value entered by hand that the visits cannot give
 	(Supplied, Not Tried, Cost Problem ...) is kept, except that a regularisation always shows."""
 	from techpark.statuses import milestones, statuses_counting_as
-	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_DONE
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import is_sales, trial_done as trial_done_status
 
 	# 2026-11-26: which column a status fills is set on the TP Development / Sales Status masters
 	mapping_by_field = milestones()
-	trial_done = mapping_by_field["trials"].get(TRIAL_DONE)
+	trial_done = mapping_by_field["trials"].get(trial_done_status())  # 2026-11-27: by App Key
 	trial_lost = {mapping_by_field["trials"].get(s) for s in statuses_counting_as("Lost")} - {None}
 	found = {}
 	for r in rows:
@@ -228,7 +227,7 @@ def set_milestones(doc, rows):
 			if status in mapping:
 				found[field] = mapping[status]
 		# In the Sales stage the trial was successful (also when a visit skipped the trial status).
-		if r.stage == "Sales" and trial_done and found.get("trials") not in trial_lost:
+		if is_sales(r.stage) and trial_done and found.get("trials") not in trial_lost:
 			found["trials"] = trial_done
 	for field, value in found.items():
 		current = doc.get(field)

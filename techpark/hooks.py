@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 app_name = "techpark"
 app_title = "TechPark"
 app_publisher = "SWSPL"
@@ -189,7 +189,11 @@ _customer_tab_sync = {
 }
 # The Plant field is hidden (one customer = one site): fill it with the customer's plant
 _default_plant = {"before_validate": "techpark.customer_sync.set_default_plant"}
+# 2026-11-27: every master gets its ID (e.g. PRN-0001) on insert
+from techpark.masters import OTHER_ID_PREFIX as _OTHER_MASTERS
+
 doc_events = {
+	**{dt: {"before_insert": "techpark.masters.set_master_id_event"} for dt in _OTHER_MASTERS},
 	# Sign Up: no set-password email yet, and a TP Registration for the approvers.
 	"User": {
 		"before_insert": "techpark.registration.on_user_before_insert",
