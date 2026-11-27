@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Data of the TechPark Dashboard page (techpark-dashboard) and the Development Board page
 (techpark-development-board).
@@ -15,32 +15,15 @@ from techpark.dashboard import _scope, _stale_prospects, stale_days
 from techpark.masters import priority_order  # 2026-11-26
 from techpark.permission import has_app_permission
 
-# Opportunity statuses in pipeline order (the client's development cycle).
-PIPELINE = [
-	"Introduction",
-	"Enquiry Received",
-	"Sent to Principal",
-	"Offer Received",
-	"Offer Submitted",
-	"Trial PO Received",
-	"Sample Received",
-	"Trial in Progress",
-	"Successful Trial",
-	"Bulk Trial PO",
-	"Enquiry Follow-up",
-	"Order Follow-up",
-	"Delivery Follow-up",
-	"Payment Follow-up",
-	"Regularization",
-]
+# 2026-11-27: the funnel follows the Sort Order of the TP Development / Sales Status masters (was a fixed list)
 
 
 def _pipeline_order():
-	"""2026-11-26: PIPELINE plus statuses the client added to the masters (open / won ones, in their order)."""
+	"""2026-11-27: funnel = active Development then Sales statuses in their Sort Order; lines that ended
+	(Counts As Lost / On Hold) are not part of the funnel."""
 	from techpark.statuses import status_rows
 
-	extra = [r.name for r in status_rows() if r.is_active and r.result in ("Open", "Won") and r.name not in PIPELINE and r.name != "Retest"]
-	return [*PIPELINE, *extra]
+	return list(dict.fromkeys(r.name for r in status_rows() if r.is_active and r.result in ("Open", "Won")))
 
 
 EXPENSE_PENDING = ("Pending Manager", "Pending Admin")
@@ -412,10 +395,10 @@ def _pipeline(sp=None):
 			counts[r["lead_stage"]] += 1
 	return {
 		"stages": [{"stage": s, "value": counts[s]} for s in counts],
-		"trials": counts["Trial PO Received"] + counts["Sample Received"] + counts["Trial in Progress"],
-		"successful": counts["Successful Trial"],
-		"won": counts["Bulk Trial PO"],
-		"regularization": counts["Regularization"],
+		"trials": counts.get("Trial PO Received", 0) + counts.get("Sample Received", 0) + counts.get("Trial in Progress", 0),
+		"successful": counts.get("Successful Trial", 0),
+		"won": counts.get("Bulk Trial PO", 0),
+		"regularization": counts.get("Regularization", 0),
 		# Sales cycle follow-ups: lines waiting on an enquiry / order / delivery / payment
 		"follow_ups": [{"status": s, "value": counts[s]} for s in ("Enquiry Follow-up", "Order Follow-up", "Delivery Follow-up", "Payment Follow-up")],
 	}
