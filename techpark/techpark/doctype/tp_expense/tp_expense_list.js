@@ -1,4 +1,4 @@
-// Last edited: 2026-10-29
+// Last edited: 2026-11-26
 // Copyright (c) 2026, Techpark International
 // Expense list, shown as My Expenses (filtered to the logged-in user): colour of the status, and
 // Send for Approval / Approve / Unapprove on the selected expenses.
@@ -23,7 +23,7 @@ frappe.listview_settings["TP Expense"] = {
 		if (frappe.boot.techpark_expense_approver) {
 			listview.page.add_actions_menu_item(__("Approve"), () => tp_expense_bulk_action(listview, "approve"), false);
 		}
-		if (frappe.user.has_role(["TechPark Approver", "System Manager"])) {
+		if (frappe.user.has_role(frappe.boot.techpark_roles?.admin || [])) { // 2026-11-26: Admin Roles
 			listview.page.add_actions_menu_item(__("Unapprove"), () => tp_expense_bulk_action(listview, "unapprove"), false);
 		}
 	},

@@ -63,3 +63,9 @@ techpark.patches.merge_lead_opportunities
 techpark.patches.customer_access_rules
 techpark.patches.dedupe_lead_tab_rows
 techpark.patches.lead_created_on
+techpark.patches.dropdown_masters
+techpark.patches.status_milestones
+techpark.patches.lead_progress_effects
+techpark.patches.development_flow_regularised
+techpark.patches.branding_settings
+techpark.patches.role_settings

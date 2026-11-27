@@ -1,4 +1,4 @@
-# Last edited: 2026-11-13
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Number cards of the TechPark workspace ("Custom" type).
 
@@ -11,8 +11,15 @@ their own work, managers the whole team.
 import frappe
 from frappe.utils import add_days, getdate, today
 
-from techpark.permission import MANAGER_ROLES
-PROSPECT_STALE_DAYS = 7
+from techpark.permission import is_manager  # 2026-11-26: Admin Roles from TechPark Settings
+
+
+def stale_days():
+	"""2026-11-26: TechPark Settings > Prospect Stale After (Days) (was hard coded 7)."""
+	from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
+
+	return get_setting("stale_prospect_days")
+
 LEAD_REPORT = "Application Development Status"
 
 
@@ -35,7 +42,7 @@ def get_stale_prospects_card(filters=None):
 		"route": ["List", "TP Customer"],
 		"route_options": {
 			"customer_status": "Prospect",
-			"prospect_since": ["<=", str(add_days(now, -PROSPECT_STALE_DAYS))],
+			"prospect_since": ["<=", str(add_days(now, -stale_days()))],
 		},
 	}
 
@@ -66,7 +73,7 @@ def get_regularization_card(filters=None):
 
 def _scope():
 	user = frappe.session.user
-	return user, bool(MANAGER_ROLES & set(frappe.get_roles(user))), getdate(today())
+	return user, is_manager(user), getdate(today())
 
 
 def _follow_up_card(state, date_operator):
@@ -105,7 +112,7 @@ def _open_follow_up_states(user, team, now):
 
 
 def _stale_prospects(user, team, now):
-	filters = {"customer_status": "Prospect", "prospect_since": ("<=", add_days(now, -PROSPECT_STALE_DAYS))}
+	filters = {"customer_status": "Prospect", "prospect_since": ("<=", add_days(now, -stale_days()))}
 	if not team:
 		mine = frappe.get_all("Customer Agent", filters={"parenttype": "TP Customer", "agent": user}, pluck="parent")
 		filters["name"] = ("in", mine or [""])

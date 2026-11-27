@@ -96,9 +96,10 @@
   {
    "default": "Company",
    "fieldname": "customer_type",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Customer Type",
-   "options": "Company\nIndividual"
+   "options": "TP Customer Type",
+   "link_filters": "[[\"TP Customer Type\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "industry_domain",
@@ -144,12 +145,13 @@
   {
    "default": "Prospect",
    "fieldname": "customer_status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Customer Status",
-   "options": "Prospect\nUnder Development\nActive Customer\nInactive",
-   "reqd": 1
+   "options": "TP Customer Status",
+   "reqd": 1,
+   "link_filters": "[[\"TP Customer Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "territory_region",
@@ -460,7 +462,7 @@
  "default_print_format": "Customer Card",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-26 13:00:00.000000",
+ "modified": "2026-11-26 22:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer",

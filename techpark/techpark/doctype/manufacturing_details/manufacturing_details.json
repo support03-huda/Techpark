@@ -49,9 +49,10 @@
   },
   {
    "fieldname": "process_type",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Process Type",
-   "options": "In-House\nOutsourced\nHybrid"
+   "options": "TP Process Type",
+   "link_filters": "[[\"TP Process Type\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "description",
@@ -67,7 +68,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-02 12:00:00.000000",
+ "modified": "2026-11-26 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Manufacturing Details",

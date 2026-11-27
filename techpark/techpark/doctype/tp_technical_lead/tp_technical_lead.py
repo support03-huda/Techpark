@@ -10,6 +10,10 @@ from frappe.utils import cstr, now_datetime
 from techpark.shares import validate_shares
 
 
+# 2026-11-26: the lead's main fields; a change is only noted on its timeline (no freeze for now, client)
+FROZEN = ("principal", "product", "application_master", "production_line", "supplier_product_category", "size")
+
+
 class TPTechnicalLead(Document):
 	# 2026-11-26: leads can be made by hand (form / customer tab) and from a DVR (client: keep it flexible);
 	# check_duplicate stops a second lead for the same application + production line either way.
@@ -18,6 +22,8 @@ class TPTechnicalLead(Document):
 
 	def validate(self):
 		self.check_duplicate()  # 2026-11-26
+		self.check_frozen()  # 2026-11-26
+		self.set_progress_effect()  # 2026-11-26
 		if self.application_master:
 			# Common application list: the name (and defaults) come from the master
 			master = frappe.db.get_value(
@@ -39,6 +45,56 @@ class TPTechnicalLead(Document):
 				frappe.throw(_("Principal Product Category {0} belongs to {1}, not {2}.").format(
 					frappe.bold(self.supplier_product_category), principal, self.principal
 				))
+
+	def check_frozen(self):
+		"""2026-11-26: a change to Principal, Product, Application, Production Line, Category or Size of a saved lead
+		is allowed once the user confirmed it on the form ("Do you want to save?", lead form / customer tab);
+		it is noted on the lead's timeline, since earlier visits were made with the old values."""
+		if self.is_new():
+			return
+		before = self.get_doc_before_save()
+		if not before:
+			return
+		changed = [f for f in FROZEN if cstr(before.get(f)).strip() != cstr(self.get(f)).strip()]
+		if changed:
+			self.add_comment(
+				"Info",
+				_("Changed: {0}").format(
+					", ".join(f"{_(self.meta.get_label(f))}: {before.get(f) or '-'} → {self.get(f) or '-'}" for f in changed)
+				),
+			)
+
+	def set_progress_effect(self):
+		"""2026-11-26: the Lead Progress master decides: Moves Lead to Stage (Regularised -> Sales), Closes the Lead
+		(Evaluation Failed: not offered on visits, off the boards)."""
+		from techpark.statuses import progress_effect
+
+		effect = progress_effect(self.progress)
+		self.is_closed = 1 if effect.closes_lead else 0
+		if effect.moves_to_stage:
+			self.stage = effect.moves_to_stage
+
+	def on_update(self):
+		self.update_visits()  # 2026-11-26
+		# 2026-11-26: its development line (board) follows a new progress
+		if self.opportunity and self.has_value_changed("progress"):
+			from techpark.opportunity import refresh_opportunity
+
+			refresh_opportunity(self.opportunity)
+
+	def update_visits(self):
+		"""2026-11-26: the change (confirmed on the form: "this will affect N visits") goes to the lead's visits."""
+		before = self.get_doc_before_save()
+		if not before:
+			return
+		from techpark.application import LEAD_TO_VISIT, update_lead_visits
+
+		changed = [f for f in LEAD_TO_VISIT if cstr(before.get(f)).strip() != cstr(self.get(f)).strip()]
+		if not changed:
+			return
+		count = update_lead_visits(self, changed)
+		if count:
+			self.add_comment("Info", _("{0} visit(s) updated with the changed lead data.").format(count))
 
 	def check_duplicate(self):
 		"""2026-11-26: one Technical Lead per customer + principal + application + production line

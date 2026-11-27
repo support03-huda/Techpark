@@ -1,4 +1,4 @@
-# Last edited: 2026-11-22
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 # 2026-11-22: an opportunity "Sent to Principal" is pushed to the principal's Notion database (client)
 """Push to a principal's Notion database (e.g. Noritake's "TECHPARK Negotiation List").
@@ -18,7 +18,7 @@ from frappe.utils import now_datetime, today
 
 API = "https://api.notion.com/v1"
 NOTION_VERSION = "2022-06-28"
-TRIGGER_STATUS = "Sent to Principal"
+TRIGGER_STATUS = "Sent to Principal"  # 2026-11-26: not used: Principal > Send to Notion at Status
 # columns filled (matched by the start of the Notion column name, any case)
 KEYS = ("importance", "agency", "beginning of negotiations", "business negotiation details", "product classification", "grinding method", "target process", "customer requests")
 
@@ -142,7 +142,9 @@ def push_opportunity(name):
 
 def on_opportunity_refresh(doc):
 	"""Called after an opportunity is refreshed from its visits."""
-	if doc.status != TRIGGER_STATUS or doc.get("notion_page_url"):
+	# 2026-11-26: the status is set on the Principal (Send to Notion at Status); empty = the field's default
+	trigger = frappe.db.get_value("Principal", doc.principal, "notion_trigger_status") or frappe.get_meta("Principal").get_field("notion_trigger_status").default
+	if doc.status != trigger or doc.get("notion_page_url"):
 		return
 	if not frappe.db.get_value("Principal", doc.principal, "notion_enabled"):
 		return
@@ -152,7 +154,7 @@ def on_opportunity_refresh(doc):
 @frappe.whitelist()
 def test_connection(principal):
 	"""The database's columns and which of them TechPark fills."""
-	frappe.only_for(("System Manager", "TechPark Approver"))
+	frappe.only_for(tuple(__import__("techpark.roles", fromlist=["admin_roles"]).admin_roles()))  # 2026-11-26
 	cfg = _config(principal)
 	if not cfg:
 		frappe.throw(_("Tick Push to Notion and fill the Database ID and the Integration Secret first."))
@@ -179,7 +181,7 @@ COLUMNS = {
 @frappe.whitelist()
 def create_database(principal, page):
 	"""Create the table inside a Notion page (shared with the connection) and save its ID on the principal."""
-	frappe.only_for(("System Manager", "TechPark Approver"))
+	frappe.only_for(tuple(__import__("techpark.roles", fromlist=["admin_roles"]).admin_roles()))  # 2026-11-26
 	doc = frappe.get_doc("Principal", principal)
 	token = doc.get_password("notion_token", raise_exception=False)
 	if not token:

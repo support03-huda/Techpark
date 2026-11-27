@@ -136,6 +136,9 @@ TABLES = {
 			"next_action",
 			"next_action_date",
 		],
+		# 2026-11-26: Principal / Category of a visit come from its Technical Lead (changing the lead updates the visits);
+		# pushing the tab's old value back failed on submitted visits ("Not allowed to change Product Category")
+		"read_only": ("principal", "supplier_product_category", "principal_summary", "lead_stage"),
 		"submittable": True,
 	},
 }

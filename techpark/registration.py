@@ -1,4 +1,4 @@
-# Last edited: 2026-10-24
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Approval of self-registered logins.
 
@@ -10,19 +10,19 @@ set-password email is sent only on approval.
 import frappe
 from frappe import _
 
-APPROVER_ROLE = "TechPark Approver"
-# First names of the users who approve registrations (the client's admins).
-APPROVER_FIRST_NAMES = ("Abhijeet", "Milind")
+# 2026-11-26: the approver role is TechPark Settings > Roles > Approver Role
+from techpark.roles import approver_role  # noqa: E402
+# 2026-11-26: approvers are the users with the TechPark Approver role (User > Roles); no names in code
 
 
 def is_approver(user=None):
 	user = user or frappe.session.user
-	return user == "Administrator" or APPROVER_ROLE in frappe.get_roles(user)
+	return user == "Administrator" or approver_role() in frappe.get_roles(user)
 
 
 def get_approvers():
 	users = frappe.get_all(
-		"Has Role", filters={"parenttype": "User", "role": APPROVER_ROLE}, pluck="parent", distinct=True
+		"Has Role", filters={"parenttype": "User", "role": approver_role()}, pluck="parent", distinct=True
 	)
 	return [u for u in users if u != "Administrator" and frappe.db.get_value("User", u, "enabled")]
 
@@ -119,24 +119,12 @@ def check_approval(login_manager):
 
 
 def setup():
-	"""Approver role for Milind and Abhijeet, and Sign Up switched on."""
-	if not frappe.db.exists("Role", APPROVER_ROLE):
-		frappe.get_doc({"doctype": "Role", "role_name": APPROVER_ROLE, "desk_access": 1}).insert(
+	"""The approver role, and Sign Up switched on."""
+	if not frappe.db.exists("Role", approver_role()):
+		frappe.get_doc({"doctype": "Role", "role_name": approver_role(), "desk_access": 1}).insert(
 			ignore_permissions=True
 		)
 
-	for first_name in APPROVER_FIRST_NAMES:
-		users = frappe.get_all(
-			"User",
-			filters={"first_name": first_name, "enabled": 1, "user_type": "System User"},
-			pluck="name",
-		)
-		for name in users:
-			user = frappe.get_doc("User", name)
-			if APPROVER_ROLE not in [r.role for r in user.roles]:
-				user.add_roles(APPROVER_ROLE)
-			print(f"{APPROVER_ROLE}: {name}")
-		if not users:
-			print(f"{APPROVER_ROLE}: no enabled user named {first_name}; give the role by hand")
+	# 2026-11-26: who approves is set in User > Roles (TechPark Approver), not by name here
 
 	frappe.db.set_single_value("Website Settings", "disable_signup", 0)

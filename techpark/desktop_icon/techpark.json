@@ -1,6 +1,6 @@
 {
  "app": "techpark",
- "creation": "2026-11-02 12:00:00.000000",
+ "creation": "2026-11-02 12:00:00",
  "docstatus": 0,
  "doctype": "Desktop Icon",
  "hidden": 0,
@@ -10,7 +10,8 @@
  "label": "TechPark",
  "link_to": "TechPark",
  "link_type": "Workspace Sidebar",
- "modified": "2026-11-02 12:00:00.000000",
+ "logo_url": "/assets/techpark/images/techpark_icon.png",
+ "modified": "2026-11-26 16:32:20.047715",
  "modified_by": "Administrator",
  "name": "TechPark",
  "owner": "Administrator",

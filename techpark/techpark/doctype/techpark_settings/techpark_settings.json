@@ -4,6 +4,25 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "section_branding",
+  "company_logo",
+  "column_break_branding",
+  "app_icon",
+  "section_general",
+  "home_page",
+  "email_sender_name",
+  "email_from",
+  "column_break_general",
+  "distributor_code",
+  "financial_year_start",
+  "section_roles",
+  "admin_roles",
+  "app_roles",
+  "column_break_roles",
+  "approver_role",
+  "reminder_roles",
+  "section_registration_roles",
+  "registration_roles",
   "section_reminders",
   "enable_reminders",
   "reminder_emails",
@@ -12,6 +31,8 @@
   "column_break_reminders",
   "prospect_cold_days",
   "not_visited_days",
+  "section_dashboard",
+  "stale_prospect_days",
   "section_lock",
   "lock_days",
   "section_card_scan",
@@ -21,6 +42,105 @@
   "customer_access"
  ],
  "fields": [
+  {
+   "fieldname": "section_branding",
+   "fieldtype": "Section Break",
+   "label": "Branding"
+  },
+  {
+   "fieldname": "company_logo",
+   "fieldtype": "Attach Image",
+   "label": "Company Logo"
+  },
+  {
+   "fieldname": "column_break_branding",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_icon",
+   "fieldtype": "Attach Image",
+   "label": "App Icon"
+  },
+  {
+   "fieldname": "section_general",
+   "fieldtype": "Section Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "home_page",
+   "fieldtype": "Data",
+   "label": "Home Page After Login"
+  },
+  {
+   "fieldname": "email_sender_name",
+   "fieldtype": "Data",
+   "label": "Email Sender Name"
+  },
+  {
+   "fieldname": "email_from",
+   "fieldtype": "Data",
+   "label": "Email From (Registrations)",
+   "options": "Email"
+  },
+  {
+   "fieldname": "column_break_general",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "distributor_code",
+   "fieldtype": "Data",
+   "label": "Distributor Code"
+  },
+  {
+   "fieldname": "financial_year_start",
+   "fieldtype": "Select",
+   "label": "Financial Year Starts In",
+   "options": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+  },
+  {
+   "fieldname": "section_roles",
+   "fieldtype": "Section Break",
+   "label": "Roles"
+  },
+  {
+   "fieldname": "admin_roles",
+   "fieldtype": "Table MultiSelect",
+   "label": "Admin Roles",
+   "options": "TP Role"
+  },
+  {
+   "fieldname": "app_roles",
+   "fieldtype": "Table MultiSelect",
+   "label": "Sales Roles",
+   "options": "TP Role"
+  },
+  {
+   "fieldname": "column_break_roles",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approver_role",
+   "fieldtype": "Link",
+   "label": "Approver Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "reminder_roles",
+   "fieldtype": "Table MultiSelect",
+   "label": "Manager Reminder Roles",
+   "options": "TP Role"
+  },
+  {
+   "fieldname": "section_registration_roles",
+   "fieldtype": "Section Break",
+   "label": "Registration Approval Choices"
+  },
+  {
+   "fieldname": "registration_roles",
+   "fieldtype": "Table",
+   "label": "Registration Approval Choices",
+   "options": "TP Registration Role"
+  },
   {
    "description": "Daily: overdue follow-ups escalated to managers. Weekly (Monday): cold prospects, customers not visited, principal-wise pending actions. Quarterly: customer data still missing. Each goes as a bell notification and an email.",
    "fieldname": "section_reminders",
@@ -77,6 +197,17 @@
    "depends_on": "enable_reminders"
   },
   {
+   "fieldname": "section_dashboard",
+   "fieldtype": "Section Break",
+   "label": "Dashboard"
+  },
+  {
+   "default": "7",
+   "fieldname": "stale_prospect_days",
+   "fieldtype": "Int",
+   "label": "Prospect Stale After (Days)"
+  },
+  {
    "fieldname": "section_lock",
    "fieldtype": "Section Break",
    "label": "Edit Lock"
@@ -119,7 +250,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-11-25 17:00:00.000000",
+ "modified": "2026-11-27 05:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TechPark Settings",

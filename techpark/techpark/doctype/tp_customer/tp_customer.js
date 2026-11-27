@@ -1,8 +1,31 @@
-// Last edited: 2026-11-21
+// Last edited: 2026-11-26
 // Copyright (c) 2026, Techpark International
 // Plants / Products Info / Commercial / Technical Lead / Visits tabs: summary tiles
 // above editable tables. These and the Contacts table are synced to the real records on
 // save (techpark/customer_sync.py). The Products Info overview is a read-only summary of its table.
+
+// 2026-11-26: a Save button on an opened table row (Technical Leads, Visits, Products ...): saves the customer
+techpark.add_row_save = function (frm) {
+	const row = frm.cur_grid;
+	if (!row || !row.grid_form || !frm.perm[0]?.write) return;
+	const $actions = row.grid_form.wrapper.find(".grid-header-toolbar .row-actions");
+	if ($actions.find(".tp-row-save").length) return;
+	$(`<button class="btn btn-primary btn-sm pull-right tp-row-save">${__("Save")}</button>`)
+		.appendTo($actions)
+		.on("click", (e) => {
+			e.stopPropagation(); // the heading click would close the row
+			row.toggle_view(false);
+			frm.save();
+		});
+};
+if (!techpark.row_save_bound) {
+	techpark.row_save_bound = true;
+	frappe.model.with_doctype("TP Customer", () => {
+		for (const df of frappe.get_meta("TP Customer").fields.filter((f) => f.fieldtype === "Table")) {
+			frappe.ui.form.on(df.options, { form_render: (frm) => techpark.add_row_save(frm) });
+		}
+	});
+}
 
 frappe.ui.form.on("TP Customer", {
 	setup(frm) {
@@ -38,6 +61,11 @@ frappe.ui.form.on("TP Customer", {
 		if (frm.perm[0]?.write) {
 			frm.add_custom_button(__("Scan Visiting Card"), () => M.upload_card(frm));
 		}
+		// 2026-11-26: the Technical Lead rows as saved (asked on save when a change reaches their visits)
+		frm._lead_rows = {};
+		if (techpark.lead_snapshot) {
+			for (const r of frm.doc.technical_leads || []) if (r.record) frm._lead_rows[r.name] = techpark.lead_snapshot(r);
+		}
 		if (frm.is_new()) return;
 		M.render_production(frm);
 		M.render_commercial(frm);
@@ -62,7 +90,15 @@ frappe.ui.form.on("TP Customer Production", {
 	unit: (frm) => techpark.customer_master.render_production(frm),
 	frequency: (frm) => techpark.customer_master.render_production(frm),
 });
+// 2026-11-26: "This will affect N visits. Do you want to submit?" for changed Technical Lead rows that have visits
 frappe.ui.form.on("TP Customer", {
+	async validate(frm) {
+		if (!techpark.ask_lead_visits) return;
+		const items = (frm.doc.technical_leads || [])
+			.filter((r) => r.record && (frm._lead_rows || {})[r.name])
+			.map((r) => ({ lead: r.record, saved: frm._lead_rows[r.name], row: r, doctype: "TP Customer Technical Lead" }));
+		if (!(await techpark.ask_lead_visits(items))) frappe.validated = false;
+	},
 	abrasive_consumption_cr: (frm) => techpark.customer_master.render_production(frm),
 	annual_turnover_cr: (frm) => techpark.customer_master.render_production(frm),
 });
@@ -608,4 +644,82 @@ techpark.customer_master.filter_visit_rows = function (frm) {
 	setTimeout(() => {
 		(grid.grid_rows || []).forEach((gr) => $(gr.wrapper).toggle(techpark.customer_master.in_period(frm, gr.doc)));
 	}, 0);
+};
+
+frappe.provide("techpark");
+// 2026-11-26: changing a Technical Lead that has visits: a dialog lists the changes and the visits it affects;
+// "Yes" saves and updates those visits, "No" does not save. (Here, not in techpark.js: form scripts reload with each build.)
+techpark.LEAD_FIELDS = ["principal", "product", "application_master", "production_line", "supplier_product_category", "size", "spec"];
+techpark.lead_snapshot = function (row) {
+	const out = {};
+	for (const f of techpark.LEAD_FIELDS) out[f] = (row[f] || "").toString().trim();
+	return out;
+};
+techpark.ask_lead_visits = async function (items) {
+	const changed = items
+		.map((i) => ({ ...i, now: techpark.lead_snapshot(i.row) }))
+		.map((i) => ({ ...i, fields: techpark.LEAD_FIELDS.filter((f) => i.saved[f] !== i.now[f]) }))
+		.filter((i) => i.fields.length);
+	if (!changed.length) return true;
+	const visits = await frappe.xcall("techpark.application.lead_visit_list", { leads: changed.map((i) => i.lead) });
+	const hit = changed.filter((i) => (visits[i.lead] || []).length);
+	if (!hit.length) return true;
+	const esc = frappe.utils.escape_html;
+	// Links show their title where they have one (product / application / category names)
+	const show = async (doctype, f, v) => {
+		const df = frappe.meta.get_docfield(doctype, f);
+		if (!v || !df || df.fieldtype !== "Link") return v || "—";
+		const title = await frappe.db.get_value(df.options, v, frappe.get_meta(df.options)?.title_field || "name").then((r) => r.message && Object.values(r.message)[0]).catch(() => null);
+		return title || v;
+	};
+	let total = 0;
+	const blocks = [];
+	for (const i of hit) {
+		const list = visits[i.lead];
+		total += list.length;
+		const rows = [];
+		for (const f of i.fields) {
+			rows.push(`<tr><td class="text-muted">${esc(__(frappe.meta.get_label(i.doctype, f)))}</td>
+				<td><s class="text-muted">${esc(await show(i.doctype, f, i.saved[f]))}</s></td>
+				<td><b>${esc(await show(i.doctype, f, i.now[f]))}</b></td></tr>`);
+		}
+		const chips = list
+			.map((v) => `<a href="/app/daily-visit-report/${encodeURIComponent(v.name)}" target="_blank" class="indicator-pill ${v.docstatus === 1 ? "blue" : "gray"}" style="margin:2px">${esc(v.name)} · ${frappe.datetime.str_to_user(v.visit_date)}${v.dvr_stage ? " · " + esc(__(v.dvr_stage)) : ""}</a>`)
+			.join("");
+		blocks.push(`<div style="border:1px solid var(--border-color);border-radius:10px;padding:12px;margin-bottom:12px">
+			<div style="font-weight:600;margin-bottom:8px">${esc(i.lead)}</div>
+			<table class="table table-sm" style="margin-bottom:8px"><tr><th>${__("Field")}</th><th>${__("Was")}</th><th>${__("Now")}</th></tr>${rows.join("")}</table>
+			<div class="text-muted small" style="margin-bottom:4px">${__("Visits that will be updated ({0})", [list.length])}</div>
+			<div>${chips}</div></div>`);
+	}
+	return new Promise((resolve) => {
+		let answered = false;
+		const d = new frappe.ui.Dialog({
+			title: __("Technical Lead changed"),
+			size: "large",
+			fields: [{
+				fieldtype: "HTML",
+				options: `<div class="alert alert-warning" style="margin-bottom:12px">${__("This will affect <b>{0}</b> visit(s) (DVR). They will be changed to the new data.", [total])}</div>
+					${blocks.join("")}
+					<p style="margin:0">${__("Do you want to submit?")}</p>`,
+			}],
+			primary_action_label: __("Yes, save and update {0} visit(s)", [total]),
+			primary_action() {
+				answered = true;
+				d.hide();
+				resolve(true);
+			},
+			secondary_action_label: __("No"),
+			secondary_action() {
+				d.hide();
+			},
+		});
+		d.onhide = () => {
+			if (!answered) {
+				frappe.show_alert({ message: __("Not saved: the Technical Lead was not changed."), indicator: "orange" });
+				resolve(false);
+			}
+		};
+		d.show();
+	});
 };

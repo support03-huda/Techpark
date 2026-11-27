@@ -1,4 +1,4 @@
-# Last edited: 2026-11-23
+# Last edited: 2026-11-26
 app_name = "techpark"
 app_title = "TechPark"
 app_publisher = "SWSPL"
@@ -17,6 +17,8 @@ add_to_apps_screen = [
 		"name": "techpark",
 		"title": "TechPark",
 		"route": "/desk/techpark-dashboard",
+		# 2026-11-26: the App Icon of TechPark Settings > Branding (this URL redirects to it)
+		"logo": "/api/method/techpark.branding.app_icon",
 		"has_permission": "techpark.permission.has_app_permission",
 	}
 ]
@@ -81,7 +83,7 @@ web_include_css = "/assets/techpark/css/techpark_web.css"
 
 # add methods and filters to jinja environment
 jinja = {
-	"methods": ["techpark.customer_card.get_customer_card"],
+	"methods": ["techpark.customer_card.get_customer_card", "techpark.branding.company_logo"],  # 2026-11-26: logo from settings
 }
 
 # Installation
@@ -91,7 +93,8 @@ jinja = {
 after_install = "techpark.install.after_install"
 
 # Frappe 16.54 menus: copy workspace_sidebar/techpark.json into the Sidebar on every migrate.
-after_migrate = ["techpark.sidebar.sync_sidebar"]
+# 2026-11-26: every migrate makes missing dropdown master values (e.g. Stage: Development, Sales)
+after_migrate = ["techpark.sidebar.sync_sidebar", "techpark.masters.seed", "techpark.branding.apply_branding"]  # 2026-11-26: branding
 
 # Uninstallation
 # ------------
@@ -332,3 +335,8 @@ scheduler_events = {
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
+
+# 2026-11-26: every dropdown master lists its active values in Sort Order (masters.py)
+from techpark.masters import SEED as _DROPDOWN_MASTERS  # noqa: E402
+
+standard_queries = {doctype: "techpark.masters.master_query" for doctype in _DROPDOWN_MASTERS}

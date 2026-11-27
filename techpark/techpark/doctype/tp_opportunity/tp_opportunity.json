@@ -128,12 +128,13 @@
   },
   {
    "fieldname": "importance",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Importance",
-   "options": "High\nMedium\nLow",
+   "options": "TP Priority",
    "default": "Medium",
    "in_list_view": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Priority\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "sales_person",
@@ -162,17 +163,16 @@
   },
   {
    "fieldname": "stage",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Stage",
-   "options": "\nDevelopment\nSales",
+   "options": "TP Stage",
    "read_only": 1,
    "in_standard_filter": 1
   },
   {
    "fieldname": "status",
-   "fieldtype": "Select",
+   "fieldtype": "Data",
    "label": "Status",
-   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
    "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
@@ -259,17 +259,19 @@
   },
   {
    "fieldname": "samples",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Samples",
-   "options": "\nReceived\nSupplied\nReceived / Sent\nCan Use as Samples",
-   "in_standard_filter": 1
+   "options": "TP Sample Status",
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Sample Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "trials",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Trials",
-   "options": "\nTo Try\nIn Progress\nSuccessful\nFailed\nNot Tried",
-   "in_standard_filter": 1
+   "options": "TP Trial Status",
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Trial Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "column_break_milestones",
@@ -277,16 +279,18 @@
   },
   {
    "fieldname": "bulk_trial_po",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Bulk Trials PO",
-   "options": "\nReceived\nSuccessful\nFailed"
+   "options": "TP Bulk Trial PO Status",
+   "link_filters": "[[\"TP Bulk Trial PO Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "regularised",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Regularised",
-   "options": "\nRegularised\nCost Problem\nNot Regularised",
-   "in_standard_filter": 1
+   "options": "TP Regularised Status",
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Regularised Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "section_notes",
@@ -350,7 +354,7 @@
    "group": "Visits"
   }
  ],
- "modified": "2026-11-22 11:00:00.000000",
+ "modified": "2026-11-26 23:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",

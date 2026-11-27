@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """End-to-end checks for the Technical Lead / single-application DVR / Products Info changes.
 
@@ -80,14 +80,19 @@ def _meta_checks():
 		for n in ("dvr_stage", "principal", "application_master", "spec", "size", "production_line", "customer_product",
 		          "development_status", "sales_status", "opportunity", "supplier_product_category"):
 			expect(n in f and not f[n].hidden, f"DVR.{n} missing or hidden")
-		for n in ("application", "technical_lead"):
-			expect(f[n].hidden, f"DVR.{n} should be hidden (filled from the Application)")
+		# 2026-11-26: the visit picks the Technical Lead (made on the customer first); what it fills is read only
+		expect(not f["technical_lead"].hidden, "DVR.technical_lead should be shown")
+		expect(f["application"].hidden, "DVR.application should be hidden")
+		expect(not f["principal"].read_only and f["technical_lead"].depends_on == "eval:doc.principal", "principal first, then its lead")  # 2026-11-26
+		for n in ("application_master", "customer_product", "production_line"):
+			expect(f[n].read_only, f"DVR.{n} should be read only (from the Technical Lead)")
 		expect(f["spec"].label == "Principal Product Spec" and f["size"].label == "Principal Product Size", "spec / size labels")
 		order = [x.fieldname for x in frappe.get_meta("Daily Visit Report").fields]
 		section = order[order.index("section_principal") + 1 : order.index("column_break_principal")]
 		left = [n for n in section if not f[n].hidden and f[n].depends_on != "eval:false"]
 		# 2026-11-21: Process shown; 2026-11-26: Principal Product Category shown
-		expect(left == ["principal", "application_master", "grinding_process", "customer_product", "production_line", "supplier_product_category"], f"left side {left}")
+		# 2026-11-26: Principal, Lead, then Product, Application, Process, Line, Category, Size, Spec (client order)
+		expect(left == ["principal", "technical_lead", "customer_product", "application_master", "grinding_process", "production_line", "supplier_product_category", "size", "spec"], f"left side {left}")
 		for n in ("contact", "contact_designation", "contact_phone", "visit_purpose", "department",
 		          "application_potentials", "competitor_line_activity", "segment_application", "principals"):
 			expect(f[n].hidden, f"DVR.{n} should be hidden")
@@ -120,6 +125,26 @@ def _meta_checks():
 		return "Industry Segment -> Product -> Application"
 
 	check("meta: Industry Segment -> Product -> Application", hierarchy)
+
+	def dropdown_masters():
+		# 2026-11-26: every dropdown is a master (client)
+		from techpark.masters import FIELDS, SEED, TEXT_FIELDS
+		from techpark.statuses import stage_progress, statuses_counting_as
+
+		for doctype, field, master in FIELDS:
+			df = frappe.get_meta(doctype).get_field(field)
+			expect(df.fieldtype == "Link" and df.options == master, f"{doctype}.{field} should link {master}")
+		for doctype, field in TEXT_FIELDS:
+			expect(frappe.get_meta(doctype).get_field(field).fieldtype == "Data", f"{doctype}.{field} should be Data")
+		for master, values in SEED.items():
+			missing = [v for v in values if not frappe.db.exists(master, v)]
+			expect(not missing, f"{master} missing {missing}")
+		expect(stage_progress().get("Regularization") == 100, "progress % not from the master")
+		expect("Bulk Trial PO" in statuses_counting_as("Won"), "Won statuses")
+		expect_error(lambda: frappe.delete_doc("TP Sales Status", "Regularization"))
+		return f"{len(SEED)} masters, {len(FIELDS)} fields"
+
+	check("meta: dropdown masters", dropdown_masters)
 
 
 # ---------------------------------------------------------------------------
@@ -209,6 +234,17 @@ def _dvr_checks(ctx):
 		expect(tab == "Offer Submitted", f"customer tab row shows {tab!r}")
 		return "row, opportunity, technical lead and customer tab moved to Offer Submitted"
 
+	def sales_needs_regularised():
+		# 2026-11-26: Sales visits only once the lead is Regularised (Lead Progress master moves it to Sales)
+		expect_error(lambda: _dvr(ctx, "Sales", ctx.lead1, sales_status="Enquiry Follow-up").insert(), "not Regularised")
+		progress = frappe.db.get_value("TP Lead Progress", {"moves_to_stage": "Sales"})
+		expect(progress, "no Lead Progress moves the lead to Sales")
+		lead = frappe.get_doc("TP Technical Lead", ctx.lead1.name)
+		lead.progress = progress
+		lead.save()
+		expect(lead.stage == "Sales", f"lead stage {lead.stage!r} after {progress}")
+		return f"blocked, then {progress} -> Sales"
+
 	def sales_needs_status():
 		return expect_error(lambda: _dvr(ctx, "Sales", ctx.lead1).insert(), "Sales Status")
 
@@ -225,6 +261,24 @@ def _dvr_checks(ctx):
 			lambda: _dvr(ctx, "Development", ctx.lead1, development_status="Introduction").insert(), "Sales stage"
 		)
 
+	def lead_frozen():
+		# 2026-11-26: a change (confirmed on the form) is saved and noted on the lead timeline
+		lead = frappe.get_doc("TP Technical Lead", ctx.lead1.name)
+		old = lead.production_line
+		lead.production_line = (old or "") + " X"
+		lead.save()
+		note = frappe.db.get_value("Comment", {"reference_doctype": "TP Technical Lead", "reference_name": lead.name, "content": ("like", "Changed:%")}, "content", order_by="creation desc")
+		expect(note and "Production Line" in note, f"no timeline note: {note!r}")
+		# 2026-11-26: the lead change reaches its visits
+		from techpark.application import lead_visits
+
+		visits = lead_visits(lead.name)
+		if visits:
+			expect(frappe.db.get_value("Daily Visit Report", visits[0], "production_line") == lead.production_line, "visit not updated from the lead")
+		lead.production_line = old
+		lead.save()
+		return note
+
 	def cross_customer_lead():
 		other = frappe.db.get_value("TP Technical Lead", {"customer": ("!=", ctx.customer)}, ["name", "principal", "application"], as_dict=True)
 		if not other:
@@ -238,6 +292,8 @@ def _dvr_checks(ctx):
 		check("DVR: submit creates the opportunity", submit_opportunity)
 		check("DVR: another application = its own opportunity", another_application)
 		check("DVR: status moves after submit", status_after_submit)
+	check("Technical Lead: change noted + its visits updated", lead_frozen)
+	check("DVR: Sales visit only for a Regularised lead", sales_needs_regularised)
 	check("DVR: Sales visit requires Sales Status", sales_needs_status)
 	check("DVR: Sales visit", sales_visit)
 	check("DVR: Development visit blocked once the line is in Sales", development_after_sales)
@@ -267,22 +323,31 @@ def _dvr_checks(ctx):
 			expect(app.name in anyone, "application not offered to another customer")
 		filled = line_details(ctx.customer, ctx.lead1.principal, app.name)["application"]
 		expect(str(filled.get("product")) == str(product.name), f"autofill product: {filled.get('product')!r}")
-		dvr = frappe.get_doc({
-			"doctype": "Daily Visit Report", "visit_date": today(), "customer": ctx.customer, "dvr_type": "Visit",
-			"dvr_stage": "Development", "visited_by": "Administrator", "principal": ctx.lead1.principal,
-			"application_master": app.name, "development_status": "Introduction", "discussion_notes": "run_checks",
-			"spec": "RC-SPEC", "size": "100x20x30", "production_line": "Line RC", "customer_product": filled.product,
+		# 2026-11-26: new flow: the lead is made on the customer first, the visit picks it and is filled from it
+		made = frappe.get_doc({
+			"doctype": "TP Technical Lead", "customer": ctx.customer, "principal": ctx.lead1.principal,
+			"application_master": app.name, "product": filled.product, "production_line": "Line RC",
 			"supplier_product_category": category,
 		}).insert()
-		lead = frappe.get_doc("TP Technical Lead", dvr.technical_lead)
-		expect(lead.customer == ctx.customer and lead.application_master == app.name, "customer's lead not made")
-		expect(lead.production_line == "Line RC" and str(lead.product) == str(product.name), "lead did not take Production Line / Product")
-		if category:
-			expect(str(lead.supplier_product_category) == str(category), f"lead category {lead.supplier_product_category!r}, expected {category!r}")
+		from techpark.application import lead_query
+		expect(made.name in [r[0] for r in lead_query("TP Technical Lead", "Run Checks", "name", 0, 50, {"customer": ctx.customer, "principal": made.principal})], "lead not in the visit's dropdown")
+		other = frappe.db.get_value("Principal", {"name": ("!=", made.principal)})
+		if other:  # 2026-11-26: another principal's dropdown does not show it
+			expect(made.name not in [r[0] for r in lead_query("TP Technical Lead", "", "name", 0, 500, {"customer": ctx.customer, "principal": other})], "lead shown for another principal")
+		dvr = frappe.get_doc({
+			"doctype": "Daily Visit Report", "visit_date": today(), "customer": ctx.customer, "dvr_type": "Visit",
+			"dvr_stage": "Development", "visited_by": "Administrator", "technical_lead": made.name,
+			"development_status": "Introduction", "discussion_notes": "run_checks",
+			"spec": "RC-SPEC", "size": "100x20x30", "supplier_product_category": category,
+		}).insert()
+		expect(dvr.principal == made.principal and dvr.application_master == app.name, "visit not filled from the lead")
+		expect(dvr.production_line == "Line RC" and str(dvr.customer_product) == str(product.name), "visit Production Line / Product not from the lead")
+		expect(frappe.db.count("TP Technical Lead", {"customer": ctx.customer, "application_master": app.name}) == 1, "visit made another lead")
+		lead = made
 		expect(dvr.application == "Run Checks Common App", f"application name {dvr.application!r}")
 		expect(dvr.product_name == "Run Checks BB", f"DVR list Product {dvr.product_name!r}")
 		ctx.common_dvr = dvr
-		return f"dropdown + autofill ok; lead {dvr.technical_lead} made"
+		return f"dropdown + autofill ok; visit filled from lead {dvr.technical_lead}"
 
 	def submitted_keeps_name():
 		# The master is renamed later: a submitted visit keeps its name and the customer still saves

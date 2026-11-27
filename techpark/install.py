@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Default master data for a new site."""
 
@@ -48,6 +48,9 @@ PRODUCT_ID_START = 201
 
 
 def after_install():
+	from techpark.masters import seed
+
+	seed()  # 2026-11-26: dropdown masters first (Territory Region needs its Zone)
 	seed_principals()
 	seed_regions()
 	seed_industries()

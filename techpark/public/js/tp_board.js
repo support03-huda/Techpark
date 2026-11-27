@@ -1,4 +1,4 @@
-// Last edited: 2026-11-23
+// Last edited: 2026-11-26
 // Copyright (c) 2026, Techpark International
 // Shared by the Development Board and the Sales Board pages (included by their page scripts).
 // Every application line (TP Opportunity) of that stage under its customer, with its status on the
@@ -29,7 +29,7 @@ class TPBoard {
 	}
 
 	make_filters() {
-		const is_manager = ["Sales Manager", "TechPark Approver", "System Manager"].some((r) => frappe.user.has_role(r));
+		const is_manager = (frappe.boot.techpark_roles?.admin || []).some((r) => frappe.user.has_role(r)); // 2026-11-26: Admin Roles (TechPark Settings)
 		[
 			{ fieldname: "show", label: __("Show"), fieldtype: "Select", options: ["Open", "All", "Won", "Lost"].join("\n"), default: "Open" },
 			{ fieldname: "customer", label: __("Customer"), fieldtype: "Link", options: "TP Customer" },

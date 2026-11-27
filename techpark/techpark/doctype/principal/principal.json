@@ -13,7 +13,8 @@
   "section_notion",
   "notion_enabled",
   "notion_database_id",
-  "notion_token"
+  "notion_token",
+  "notion_trigger_status"
  ],
  "fields": [
   {
@@ -60,6 +61,14 @@
    "label": "Notion Integration Secret",
    "depends_on": "eval:doc.notion_enabled",
    "length": 250
+  },
+  {
+   "default": "Sent to Principal",
+   "depends_on": "eval:doc.notion_enabled",
+   "fieldname": "notion_trigger_status",
+   "fieldtype": "Link",
+   "label": "Send to Notion at Status",
+   "options": "TP Development Status"
   }
  ],
  "grid_page_length": 50,
@@ -74,7 +83,7 @@
    "link_fieldname": "principal"
   }
  ],
- "modified": "2026-11-22 11:00:00.000000",
+ "modified": "2026-11-26 22:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Principal",

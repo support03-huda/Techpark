@@ -1,4 +1,4 @@
-// Last edited: 2026-11-06
+// Last edited: 2026-11-26
 // Copyright (c) 2026, Techpark International
 
 frappe.query_reports["Application Development Status"] = {
@@ -6,7 +6,7 @@ frappe.query_reports["Application Development Status"] = {
 		{ fieldname: "customer", label: __("Customer"), fieldtype: "Link", options: "TP Customer" },
 		{ fieldname: "principal", label: __("Principal"), fieldtype: "Link", options: "Principal" },
 		{ fieldname: "visited_by", label: __("Sales Person"), fieldtype: "Link", options: "User" },
-		{ fieldname: "importance", label: __("Importance"), fieldtype: "Select", options: "\nHigh\nMedium\nLow" },
+		{ fieldname: "importance", label: __("Importance"), fieldtype: "Link", options: "TP Priority" }, // 2026-11-26: master
 		{ fieldname: "stage", label: __("Stage"), fieldtype: "Select", options: "\nDevelopment\nSales" },
 		{
 			fieldname: "status",
@@ -35,9 +35,20 @@ frappe.query_reports["Application Development Status"] = {
 				"Cancelled",
 			].join("\n"),
 		},
+		// 2026-11-26: the Status list also has the statuses added to the masters (onload)
 		{ fieldname: "lead_status", label: __("Result"), fieldtype: "Select", options: "\nOpen\nWon\nLost\nOn Hold" },
 		{ fieldname: "open_only", label: __("Open Only (not Won / Lost)"), fieldtype: "Check", default: 1 },
 	],
+
+	// 2026-11-26: Development / Sales Status are masters: the Status filter lists them all
+	onload(report) {
+		frappe.xcall("techpark.statuses.get_status_progress").then((map) => {
+			const f = report.get_filter("status");
+			if (!f || !map) return;
+			f.df.options = ["", ...Object.keys(map)].join("\n");
+			f.refresh();
+		});
+	},
 
 	formatter(value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);

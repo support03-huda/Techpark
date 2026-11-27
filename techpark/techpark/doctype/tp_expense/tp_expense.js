@@ -1,4 +1,4 @@
-// Last edited: 2026-10-29
+// Last edited: 2026-11-26
 // Copyright (c) 2026, Techpark International
 // Expense claim: own user filled in, bills limited to own visits and active expense types, the customer
 // taken from the visit, a running total, and the buttons of the approval steps
@@ -6,7 +6,7 @@
 
 frappe.provide("techpark.expense");
 
-techpark.expense.ADMIN_ROLES = ["TechPark Approver", "System Manager"];
+techpark.expense.ADMIN_ROLES = frappe.boot.techpark_roles?.admin || []; // 2026-11-26: TechPark Settings > Admin Roles
 
 frappe.ui.form.on("TP Expense", {
 	setup(frm) {

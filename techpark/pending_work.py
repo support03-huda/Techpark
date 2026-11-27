@@ -1,4 +1,4 @@
-# Last edited: 2026-11-14
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Pending Work reminders (TechPark Settings > Pending Work Reminders, on by default).
 
@@ -16,7 +16,7 @@ from frappe.utils import add_days, date_diff, formatdate, getdate, today
 from techpark.reminders import add, deliver, link
 
 OPEN = ("Open", "In Progress")
-ADMIN_ROLES = ("System Manager", "TechPark Approver")
+# 2026-11-26: admins = TechPark Settings > Roles > Admin Roles
 
 
 def _open_work():
@@ -36,7 +36,7 @@ def _open_work():
 
 
 def _admins():
-	users = frappe.get_all("Has Role", filters={"parenttype": "User", "role": ("in", ADMIN_ROLES)}, pluck="parent", distinct=True)
+	users = frappe.get_all("Has Role", filters={"parenttype": "User", "role": ("in", list(__import__("techpark.roles", fromlist=["admin_roles"]).admin_roles()))}, pluck="parent", distinct=True)
 	return [u for u in users if u not in ("Administrator", "Guest")]
 
 

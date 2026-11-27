@@ -23,12 +23,13 @@
   },
   {
    "fieldname": "zone",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Zone",
-   "options": "North\nSouth\nEast\nWest\nCentral",
-   "reqd": 1
+   "options": "TP Zone",
+   "reqd": 1,
+   "link_filters": "[[\"TP Zone\",\"is_active\",\"=\",1]]"
   },
   {
    "default": "1",
@@ -41,7 +42,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-21 12:00:00.000000",
+ "modified": "2026-11-26 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Territory Region",

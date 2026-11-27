@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Where each development stands: one row per opportunity (customer + application / line + principal +
 wheel spec), like the client's Development Status and Sales Follow-up sheets. The status is the line's
@@ -9,9 +9,9 @@ from frappe import _
 from frappe.utils import getdate, today
 
 from techpark.opportunity import follow_up_state
-from techpark.techpark.doctype.daily_visit_report.daily_visit_report import STAGE_PROGRESS
+from techpark.statuses import stage_progress  # 2026-11-26: statuses are masters now
 
-IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
+# 2026-11-26: importance order = Sort Order of the TP Priority master
 
 
 def execute(filters=None):
@@ -116,7 +116,7 @@ def get_data(filters):
 				"stage": o.stage,
 				"lead_stage": o.status,
 				"present_status": " ".join((o.present_status or "").split()),
-				"stage_completed": o.progress or STAGE_PROGRESS.get(o.status, 0),
+				"stage_completed": o.progress or stage_progress().get(o.status, 0),
 				"lead_status": o.lead_status,
 				"last_visit": o.last_visit,
 				"visits": o.visits,
@@ -130,13 +130,16 @@ def get_data(filters):
 				"dvr": o.last_dvr,
 			}
 		)
-	rows.sort(key=lambda r: (IMPORTANCE_ORDER.get(r["importance"], 3), r["customer_name"] or "", r["application"] or ""))
+	from techpark.masters import priority_order
+
+	order = priority_order()
+	rows.sort(key=lambda r: (order.get(r["importance"], 9999), r["customer_name"] or "", r["application"] or ""))
 	return rows
 
 
 def get_chart(rows):
 	"""Opportunities at each status (Development then Sales)."""
-	stages = [s for s in STAGE_PROGRESS if any(r["lead_stage"] == s for r in rows)]
+	stages = [s for s in stage_progress() if any(r["lead_stage"] == s for r in rows)]
 	if not stages:
 		return None
 	return {

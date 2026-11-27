@@ -1,4 +1,4 @@
-# Last edited: 2026-10-29
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """TP Expense — an expense claim with its bills, and the approval steps
 Draft -> Pending Manager -> Pending Admin -> Approved.
@@ -26,9 +26,9 @@ BULK_ACTIONS = ("send_for_approval", "approve", "unapprove")
 # Most expenses in the Team History of the Expense Approvals page.
 HISTORY_LIMIT = 200
 # Role that gives the final approval.
-APPROVER_ROLE = "TechPark Approver"
+# 2026-11-26: approver = TechPark Settings > Roles > Approver Role
 # First month of the financial year (April).
-FINANCIAL_YEAR_START = 4
+# 2026-11-26: TechPark Settings > Financial Year Starts In (month)
 
 
 class TPExpense(Document):
@@ -236,12 +236,14 @@ class TPExpense(Document):
 def financial_year(date):
 	"""April to March as four digits: 2627 for April 2026 to March 2027."""
 	date = getdate(date)
-	start = date.year if date.month >= FINANCIAL_YEAR_START else date.year - 1
+	from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
+
+	start = date.year if date.month >= get_setting("financial_year_start") else date.year - 1
 	return f"{start % 100:02d}{(start + 1) % 100:02d}"
 
 
 def get_approver_users():
-	holders = frappe.get_all("Has Role", filters={"role": APPROVER_ROLE, "parenttype": "User"}, pluck="parent")
+	holders = frappe.get_all("Has Role", filters={"role": __import__("techpark.roles", fromlist=["approver_role"]).approver_role(), "parenttype": "User"}, pluck="parent")
 	if not holders:
 		return set()
 	return set(frappe.get_all("User", filters={"name": ["in", holders], "enabled": 1}, pluck="name")) - {"Administrator"}

@@ -58,9 +58,10 @@
   },
   {
    "fieldname": "frequency",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Frequency",
-   "options": "Daily\nWeekly\nMonthly\nQuarterly\nAnnual"
+   "options": "TP Frequency",
+   "link_filters": "[[\"TP Frequency\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "remarks",
@@ -71,7 +72,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-02 12:00:00.000000",
+ "modified": "2026-11-26 19:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Customer Product Production",

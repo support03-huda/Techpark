@@ -28,19 +28,19 @@
   "segment_application",
   "section_principal",
   "principal",
+  "technical_lead",
+  "customer_product",
   "application_master",
   "grinding_process",
-  "customer_product",
   "production_line",
-  "technical_lead",
   "application",
   "supplier_product_category",
+  "size",
+  "spec",
   "product_name",
   "column_break_principal",
   "development_status",
   "sales_status",
-  "spec",
-  "size",
   "opportunity",
   "development_done_before",
   "principals",
@@ -110,12 +110,13 @@
   },
   {
    "fieldname": "dvr_stage",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Stage",
-   "options": "\nDevelopment\nSales\nDevelopment + Sales",
+   "options": "TP Stage",
    "bold": 1,
    "allow_on_submit": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Stage\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "contact",
@@ -157,12 +158,13 @@
   },
   {
    "fieldname": "dvr_type",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "DVR Type",
-   "options": "Visit\nPhone Call\nEmail\nVideo Call\nWhatsApp\nMeeting",
+   "options": "TP Visit Type",
    "default": "Visit",
    "reqd": 1,
-   "in_standard_filter": 1
+   "in_standard_filter": 1,
+   "link_filters": "[[\"TP Visit Type\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "department",
@@ -245,12 +247,31 @@
    "allow_on_submit": 1
   },
   {
+   "fieldname": "technical_lead",
+   "fieldtype": "Link",
+   "label": "Technical Lead",
+   "options": "TP Technical Lead",
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.principal"
+  },
+  {
+   "fieldname": "customer_product",
+   "fieldtype": "Link",
+   "label": "Product",
+   "options": "Customer Product",
+   "allow_on_submit": 1,
+   "in_standard_filter": 1,
+   "read_only": 1,
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal)"
+  },
+  {
    "fieldname": "application_master",
    "fieldtype": "Link",
    "label": "Application",
    "options": "Customer Application",
-   "depends_on": "eval:doc.principal",
-   "allow_on_submit": 1
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal) && (doc.principal)",
+   "allow_on_submit": 1,
+   "read_only": 1
   },
   {
    "fieldname": "grinding_process",
@@ -259,29 +280,15 @@
    "read_only": 1,
    "allow_on_submit": 1,
    "fetch_from": "application_master.grinding_process",
-   "depends_on": "eval:doc.application_master"
-  },
-  {
-   "fieldname": "customer_product",
-   "fieldtype": "Link",
-   "label": "Product",
-   "options": "Customer Product",
-   "allow_on_submit": 1,
-   "in_standard_filter": 1
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal) && (doc.application_master)"
   },
   {
    "fieldname": "production_line",
    "fieldtype": "Data",
    "label": "Production Line",
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "technical_lead",
-   "fieldtype": "Link",
-   "label": "Technical Lead",
-   "options": "TP Technical Lead",
    "allow_on_submit": 1,
-   "hidden": 1
+   "read_only": 1,
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal)"
   },
   {
    "fieldname": "application",
@@ -301,7 +308,21 @@
    "label": "Principal Product Category",
    "options": "Supplier Product Category",
    "allow_on_submit": 1,
-   "depends_on": "eval:doc.principal"
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal) && (doc.principal)"
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "label": "Principal Product Size",
+   "allow_on_submit": 1,
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal)"
+  },
+  {
+   "fieldname": "spec",
+   "fieldtype": "Data",
+   "label": "Principal Product Spec",
+   "allow_on_submit": 1,
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal)"
   },
   {
    "fieldname": "product_name",
@@ -320,32 +341,21 @@
   },
   {
    "fieldname": "development_status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Development Status",
-   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed",
+   "options": "TP Development Status",
    "allow_on_submit": 1,
-   "read_only_depends_on": "eval:doc.development_done_before",
-   "depends_on": "eval:doc.dvr_stage != 'Sales'"
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal) && (doc.dvr_stage != 'Sales')",
+   "link_filters": "[[\"TP Development Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "sales_status",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Sales Status",
-   "options": "\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
+   "options": "TP Sales Status",
    "allow_on_submit": 1,
-   "depends_on": "eval:doc.dvr_stage && doc.dvr_stage != 'Development'"
-  },
-  {
-   "fieldname": "spec",
-   "fieldtype": "Data",
-   "label": "Principal Product Spec",
-   "allow_on_submit": 1
-  },
-  {
-   "fieldname": "size",
-   "fieldtype": "Data",
-   "label": "Principal Product Size",
-   "allow_on_submit": 1
+   "depends_on": "eval:(doc.technical_lead || !doc.__islocal) && (doc.dvr_stage && doc.dvr_stage != 'Development')",
+   "link_filters": "[[\"TP Sales Status\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "opportunity",
@@ -435,10 +445,9 @@
   },
   {
    "fieldname": "lead_stage",
-   "fieldtype": "Select",
+   "fieldtype": "Data",
    "in_standard_filter": 1,
    "label": "Lead Stage",
-   "options": "\nIntroduction\nEnquiry Received\nSent to Principal\nOffer Received\nOffer Submitted\nTrial PO Received\nSample Received\nTrial in Progress\nRetest\nSuccessful Trial\nTrial Failed\nBulk Trial PO\nEnquiry Follow-up\nOrder Follow-up\nDelivery Follow-up\nPayment Follow-up\nRegularization\nOn Hold\nCancelled",
    "allow_on_submit": 1,
    "read_only": 1
   },
@@ -538,7 +547,7 @@
    "table_fieldname": "items"
   }
  ],
- "modified": "2026-11-25 16:00:00.000000",
+ "modified": "2026-11-27 01:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "Daily Visit Report",

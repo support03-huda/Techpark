@@ -8,12 +8,13 @@
   "record",
   "lead_created_on",
   "principal",
-  "application_master",
-  "application",
-  "grinding_process",
-  "supplier_product_category",
   "product",
+  "application_master",
+  "grinding_process",
   "production_line",
+  "supplier_product_category",
+  "size",
+  "application",
   "division",
   "process_stage",
   "column_break_tl1",
@@ -51,7 +52,6 @@
   "wheel_speed",
   "column_break_size",
   "spec",
-  "size",
   "size_od",
   "size_t",
   "size_id",
@@ -90,6 +90,16 @@
    "reqd": 1
   },
   {
+   "fieldname": "product",
+   "fieldtype": "Link",
+   "label": "Product",
+   "options": "Customer Product",
+   "fetch_from": "application_master.product",
+   "fetch_if_empty": 1,
+   "in_list_view": 1,
+   "columns": 2
+  },
+  {
    "fieldname": "application_master",
    "fieldtype": "Link",
    "label": "Application",
@@ -99,22 +109,19 @@
    "reqd": 1
   },
   {
-   "fieldname": "application",
-   "fieldtype": "Data",
-   "label": "Application Name",
-   "fetch_from": "application_master.application_name",
-   "read_only_depends_on": "eval:doc.application_master",
-   "hidden": 1
-  },
-  {
    "fieldname": "grinding_process",
    "fieldtype": "Data",
    "label": "Process",
-   "in_list_view": 1,
-   "columns": 1,
    "fetch_from": "application_master.grinding_process",
    "fetch_if_empty": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "production_line",
+   "fieldtype": "Data",
+   "label": "Production Line",
+   "in_list_view": 1,
+   "columns": 1
   },
   {
    "fieldname": "supplier_product_category",
@@ -125,17 +132,19 @@
    "columns": 1
   },
   {
-   "fieldname": "product",
-   "fieldtype": "Link",
-   "label": "Product",
-   "options": "Customer Product",
-   "fetch_from": "application_master.product",
-   "fetch_if_empty": 1
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "label": "Principal Product Size",
+   "in_list_view": 1,
+   "columns": 1
   },
   {
-   "fieldname": "production_line",
+   "fieldname": "application",
    "fieldtype": "Data",
-   "label": "Production Line"
+   "label": "Application Name",
+   "fetch_from": "application_master.application_name",
+   "read_only_depends_on": "eval:doc.application_master",
+   "hidden": 1
   },
   {
    "fieldname": "division",
@@ -155,9 +164,10 @@
   },
   {
    "fieldname": "distribution_channel",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Distribution Channel",
-   "options": "\nDirect (Commission)\nIndirect Business"
+   "options": "TP Distribution Channel",
+   "link_filters": "[[\"TP Distribution Channel\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "contact_person",
@@ -166,20 +176,17 @@
   },
   {
    "fieldname": "progress",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Progress",
-   "options": "\nNot Started\nQuoted\nTrial Order Received\nUnder Trial\nApproved\nEvaluation Failed",
-   "in_list_view": 1,
-   "columns": 1
+   "options": "TP Lead Progress",
+   "link_filters": "[[\"TP Lead Progress\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "stage",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Stage",
-   "options": "\nDevelopment\nSales",
-   "read_only": 1,
-   "in_list_view": 1,
-   "columns": 1
+   "options": "TP Stage",
+   "read_only": 1
   },
   {
    "fieldname": "current_status",
@@ -198,9 +205,7 @@
    "fieldname": "annual_demand_amount",
    "fieldtype": "Currency",
    "label": "Annual Demand Amount (INR)",
-   "options": "INR",
-   "in_list_view": 1,
-   "columns": 1
+   "options": "INR"
   },
   {
    "fieldname": "annual_quantity",
@@ -324,8 +329,10 @@
   },
   {
    "fieldname": "machine_maker",
-   "fieldtype": "Data",
-   "label": "M/C Maker"
+   "fieldtype": "Link",
+   "label": "M/C Maker",
+   "options": "TP Machine Maker",
+   "link_filters": "[[\"TP Machine Maker\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "machine_quantity",
@@ -345,11 +352,6 @@
    "fieldname": "spec",
    "fieldtype": "Data",
    "label": "Principal Product Spec"
-  },
-  {
-   "fieldname": "size",
-   "fieldtype": "Data",
-   "label": "Principal Product Size"
   },
   {
    "fieldname": "size_od",
@@ -406,7 +408,7 @@
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-11-26 15:00:00.000000",
+ "modified": "2026-11-26 23:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Customer Technical Lead",

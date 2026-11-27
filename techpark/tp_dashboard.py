@@ -11,7 +11,8 @@ sees their own visits, customers and expenses, managers the whole team.
 import frappe
 from frappe.utils import add_days, add_months, flt, formatdate, get_first_day, getdate, today
 
-from techpark.dashboard import PROSPECT_STALE_DAYS, _scope, _stale_prospects
+from techpark.dashboard import _scope, _stale_prospects, stale_days
+from techpark.masters import priority_order  # 2026-11-26
 from techpark.permission import has_app_permission
 
 # Opportunity statuses in pipeline order (the client's development cycle).
@@ -32,6 +33,16 @@ PIPELINE = [
 	"Payment Follow-up",
 	"Regularization",
 ]
+
+
+def _pipeline_order():
+	"""2026-11-26: PIPELINE plus statuses the client added to the masters (open / won ones, in their order)."""
+	from techpark.statuses import status_rows
+
+	extra = [r.name for r in status_rows() if r.is_active and r.result in ("Open", "Won") and r.name not in PIPELINE and r.name != "Retest"]
+	return [*PIPELINE, *extra]
+
+
 EXPENSE_PENDING = ("Pending Manager", "Pending Admin")
 MONTHS = 12
 
@@ -73,7 +84,7 @@ def get_dashboard(sales_person=None):
 			"today": sum(1 for f in follow_ups if f.due == now),
 			"week": sum(1 for f in follow_ups if f.due and now <= f.due <= add_days(now, 7)),
 			"stale_prospects": _stale_prospects(user, team, now),
-			"stale_days": PROSPECT_STALE_DAYS,
+			"stale_days": stale_days(),
 			"list": [
 				{
 					"todo": f.name, "visit": f.reference_name, "customer": f.customer_name,
@@ -109,8 +120,9 @@ def get_dashboard(sales_person=None):
 def _visits_by_stage(visits, since, month_start):
 	"""Visits tab, one part per stage: the visits with a principal row in that stage (a visit with both
 	stages counts in both), their rows' statuses, principals, people and the latest visits."""
-	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import DEVELOPMENT_PROGRESS, SALES_PROGRESS
+	from techpark.statuses import stage_statuses  # 2026-11-26: statuses are masters now
 
+	DEVELOPMENT_PROGRESS, SALES_PROGRESS = stage_statuses("Development"), stage_statuses("Sales")
 	rows = frappe.get_all(
 		"DVR Principal",
 		filters={"parenttype": "Daily Visit Report", "parent": ("in", [v.name for v in visits] or [""])},
@@ -163,7 +175,7 @@ OPPORTUNITY_FIELDS = [
 	"importance", "sales_person", "stage", "status", "progress", "lead_status", "next_action",
 	"next_action_date", "last_visit", "visits", "remarks", "present_status", "joint_with", "invoice_oc", "samples", "trials", "bulk_trial_po", "regularised",
 ]
-IMPORTANCE_ORDER = {"High": 0, "Medium": 1, "Low": 2}
+# 2026-11-26: importance order = Sort Order of the TP Priority master
 
 
 def _opportunities(now, visits, month_start, sp=None):
@@ -224,10 +236,9 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 	"""Development / Sales Board: every application line (opportunity) of that stage with its customer."""
 	if not has_app_permission():
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
-	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
-		DEVELOPMENT_PROGRESS,
-		SALES_PROGRESS,
-	)
+	from techpark.statuses import stage_statuses  # 2026-11-26: board columns = the active statuses of the masters
+
+	DEVELOPMENT_PROGRESS, SALES_PROGRESS = stage_statuses("Development"), stage_statuses("Sales")
 
 	filters = {"visits": (">", 0)}
 	for field, value in (("customer", customer), ("principal", principal), ("sales_person", sales_person), ("importance", importance)):
@@ -263,9 +274,11 @@ def get_development_board(customer=None, principal=None, sales_person=None, impo
 				"last_visit": str(o.last_visit) if o.last_visit else None,
 			}
 		)
-	rows.sort(key=lambda r: (IMPORTANCE_ORDER.get(r["importance"], 3), r["customer_name"] or "", r["application"] or ""))
-	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS if s != "Successful Trial"]
-	# A successful trial moves the line to the Sales stage: there it waits for the bulk trial PO.
+	order = priority_order()
+	rows.sort(key=lambda r: (order.get(r["importance"], 9999), r["customer_name"] or "", r["application"] or ""))
+	# 2026-11-26: Development board = every development status in its Sort Order (Successful Trial too: the line
+	# stays here until the lead is Regularised); the Sales board starts at the successful trial.
+	statuses = [{"status": s, "stage": "Development"} for s in DEVELOPMENT_PROGRESS]
 	sales_statuses = [{"status": "Successful Trial", "stage": "Sales"}] + [{"status": s, "stage": "Sales"} for s in SALES_PROGRESS]
 	if stage == "Sales":
 		statuses = sales_statuses
@@ -393,12 +406,12 @@ def _pipeline(sp=None):
 	from techpark.techpark.report.application_development_status.application_development_status import get_data
 
 	rows = get_data(frappe._dict(visited_by=sp) if sp else frappe._dict())
-	counts = {stage: 0 for stage in PIPELINE}
+	counts = {stage: 0 for stage in _pipeline_order()}
 	for r in rows:
 		if r.get("lead_stage") in counts:
 			counts[r["lead_stage"]] += 1
 	return {
-		"stages": [{"stage": s, "value": counts[s]} for s in PIPELINE],
+		"stages": [{"stage": s, "value": counts[s]} for s in counts],
 		"trials": counts["Trial PO Received"] + counts["Sample Received"] + counts["Trial in Progress"],
 		"successful": counts["Successful Trial"],
 		"won": counts["Bulk Trial PO"],
@@ -431,12 +444,12 @@ def _customers(sp=None):
 def _sales_people():
 	"""2026-11-23: enabled users with a sales role, for the admin's Sales Person filter."""
 	users = frappe.get_all(
-		"Has Role", filters={"parenttype": "User", "role": ("in", ("Sales User", "Sales Manager"))}, pluck="parent", distinct=True
+		"Has Role", filters={"parenttype": "User", "role": ("in", list(__import__("techpark.roles", fromlist=["app_roles"]).app_roles()))}, pluck="parent", distinct=True
 	)
 	# 2026-11-23: admins (e.g. Milind Lokare) stay users but are not in the Sales Person dropdown
 	# 2026-11-26: only TechPark Approvers (Abhijeet, Milind) are left out; Santosh is a System Manager but also a
 	# salesperson (manager of Shiv and Vedant), so he stays in the list
-	admins = set(frappe.get_all("Has Role", filters={"parenttype": "User", "role": "TechPark Approver"}, pluck="parent"))
+	admins = set(frappe.get_all("Has Role", filters={"parenttype": "User", "role": __import__("techpark.roles", fromlist=["approver_role"]).approver_role()}, pluck="parent"))
 	users = [u for u in users if u not in admins]
 	return [
 		{"value": u.name, "label": u.full_name or u.name}

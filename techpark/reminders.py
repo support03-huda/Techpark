@@ -1,4 +1,4 @@
-# Last edited: 2026-11-21
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """Reminder digests, sent as a bell notification and an email (from the site's outgoing
 account) to each salesperson and manager. Limits come from TechPark Settings, and nothing
@@ -20,7 +20,7 @@ from frappe.utils import add_days, date_diff, escape_html, formatdate, get_fulln
 
 from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
 
-MANAGER_ROLES = ("Sales Manager", "TechPark Approver")
+# 2026-11-26: TechPark Settings > Roles > Manager Reminder Roles
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +244,7 @@ def get_agents():
 
 def get_managers():
 	users = frappe.get_all(
-		"Has Role", filters={"parenttype": "User", "role": ("in", MANAGER_ROLES)}, pluck="parent", distinct=True
+		"Has Role", filters={"parenttype": "User", "role": ("in", list(__import__("techpark.roles", fromlist=["reminder_roles"]).reminder_roles()))}, pluck="parent", distinct=True
 	)
 	return [u for u in users if u != "Administrator"]
 

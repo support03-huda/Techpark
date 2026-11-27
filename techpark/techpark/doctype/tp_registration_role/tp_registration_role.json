@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "creation": "2026-11-27 04:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "istable": 1,
+ "field_order": [
+  "choice",
+  "role"
+ ],
+ "fields": [
+  {
+   "fieldname": "choice",
+   "fieldtype": "Data",
+   "label": "Choice",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "label": "Role",
+   "options": "Role",
+   "reqd": 1,
+   "in_list_view": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-27 04:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Registration Role",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,4 +1,4 @@
-# Last edited: 2026-11-07
+# Last edited: 2026-11-26
 # Copyright (c) 2026, Techpark International
 """TP Registration — a login made through Sign Up, approved or rejected once by an approver.
 
@@ -11,24 +11,26 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint, now_datetime
 
-from techpark.login import HOME
+from techpark.login import home  # 2026-11-26: settings
+from techpark.roles import approver_role, registration_choices  # 2026-11-26: settings
 from techpark.registration import find_employee_by_email, get_free_employees, is_approver
 
-APPROVER_ROLE = "TechPark Approver"
-SENDER = "TechPark <support@softworld.co.in>"
-# Choice in the approval dialog -> roles the login gets.
-ROLE_CHOICES = {
-	"Sales User": ["Sales User"],
-	"Sales Manager": ["Sales User", "Sales Manager"],
-	"Admin": ["Sales User", "Sales Manager", APPROVER_ROLE],
-}
+# 2026-11-26: Approver Role, Email From and the approval choices are in TechPark Settings (were hard coded)
+
+
+def registration_sender():
+	"""2026-11-26: "TechPark <support@...>" from TechPark Settings."""
+	from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
+
+	email, name = get_setting("email_from"), get_setting("email_sender_name")
+	return f"{name} <{email}>" if name and email else email or None
 
 
 class TPRegistration(Document):
 	def onload(self):
 		self.set_onload("can_decide", is_approver())
 		if self.status == "Pending" and is_approver():
-			self.set_onload("role_choices", list(ROLE_CHOICES))
+			self.set_onload("role_choices", list(registration_choices()))
 			self.set_onload("matched_employee", find_employee_by_email(self.email, self.user))
 			self.set_onload("employees", get_free_employees(self.user))
 
@@ -41,8 +43,9 @@ class TPRegistration(Document):
 	@frappe.whitelist()
 	def approve(self, role, existing_employee=0, employee=None):
 		self.check_can_decide()
-		if role not in ROLE_CHOICES:
-			frappe.throw(_("Choose one of: {0}.").format(", ".join(ROLE_CHOICES)))
+		choices = registration_choices()
+		if role not in choices:
+			frappe.throw(_("Choose one of: {0}.").format(", ".join(choices)))
 		existing_employee = cint(existing_employee)
 		if existing_employee and not employee:
 			frappe.throw(_("Select the employee, or untick Existing Employee."))
@@ -51,7 +54,7 @@ class TPRegistration(Document):
 		user.user_type = "System User"
 		user.enabled = 1
 		current = {row.role for row in user.roles}
-		for new_role in ROLE_CHOICES[role]:
+		for new_role in choices[role]:
 			if new_role not in current:
 				user.append("roles", {"role": new_role})
 		# Approvers may not edit users themselves; this one change is checked above.
@@ -84,7 +87,7 @@ class TPRegistration(Document):
 		if not has_outgoing_email():
 			return False
 		# Where /update-password sends the person once the password is set.
-		frappe.db.set_value("User", user.name, "redirect_url", frappe.utils.get_url(HOME))
+		frappe.db.set_value("User", user.name, "redirect_url", frappe.utils.get_url(home()))
 		frappe.cache.hdel("redirect_after_login", user.name)
 		link = user._reset_password()
 		message = f"""
@@ -116,7 +119,7 @@ class TPRegistration(Document):
 		try:
 			frappe.sendmail(
 				recipients=[self.email],
-				sender=SENDER,
+				sender=registration_sender(),  # 2026-11-26: TechPark Settings > Email Sender Name / Email From
 				subject=subject,
 				message=message,
 				reference_doctype=self.doctype,

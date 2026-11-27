@@ -1,0 +1,160 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:option_name",
+ "creation": "2026-11-26 19:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "option_name",
+  "sort_order",
+  "is_active",
+  "column_break_status",
+  "progress",
+  "result",
+  "section_opportunity",
+  "sets_samples",
+  "sets_trials",
+  "column_break_opportunity",
+  "sets_bulk_trial_po",
+  "sets_regularised"
+ ],
+ "fields": [
+  {
+   "fieldname": "option_name",
+   "fieldtype": "Data",
+   "label": "Sales Status",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order",
+   "in_list_view": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "progress",
+   "fieldtype": "Percent",
+   "label": "Progress %",
+   "in_list_view": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "result",
+   "fieldtype": "Select",
+   "label": "Counts As",
+   "options": "Open\nWon\nLost\nOn Hold",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_opportunity",
+   "fieldtype": "Section Break",
+   "label": "Opportunity Columns"
+  },
+  {
+   "fieldname": "sets_samples",
+   "fieldtype": "Link",
+   "label": "Sets Samples",
+   "options": "TP Sample Status"
+  },
+  {
+   "fieldname": "sets_trials",
+   "fieldtype": "Link",
+   "label": "Sets Trials",
+   "options": "TP Trial Status"
+  },
+  {
+   "fieldname": "column_break_opportunity",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sets_bulk_trial_po",
+   "fieldtype": "Link",
+   "label": "Sets Bulk Trials PO",
+   "options": "TP Bulk Trial PO Status"
+  },
+  {
+   "fieldname": "sets_regularised",
+   "fieldtype": "Link",
+   "label": "Sets Regularised",
+   "options": "TP Regularised Status"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-26 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "TechPark",
+ "name": "TP Sales Status",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "TechPark Approver",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 0
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "sort_order",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "option_name",
+ "track_changes": 1
+}

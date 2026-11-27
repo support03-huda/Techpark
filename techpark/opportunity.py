@@ -74,11 +74,7 @@ def lead_opportunity(lead):
 
 def refresh_opportunity(name):
 	"""Status, next action, visit dates and stage history of an opportunity from its submitted visits."""
-	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import (
-		LOST_STATUSES,
-		STAGE_PROGRESS,
-		WON_STATUSES,
-	)
+	from techpark.statuses import stage_progress, statuses_counting_as  # 2026-11-26: statuses are masters now
 
 	if not frappe.db.exists("TP Opportunity", name):
 		return
@@ -112,13 +108,15 @@ def refresh_opportunity(name):
 	status = latest.get("sales_status") or latest.get("development_status")
 	doc.stage = latest.get("stage")
 	doc.status = status
-	doc.progress = STAGE_PROGRESS.get(status, 0)
+	doc.progress = stage_progress().get(status, 0)
 	doc.lead_status = (
-		"Won" if status in WON_STATUSES
-		else "Lost" if status in LOST_STATUSES
-		else "On Hold" if status == "On Hold"
+		"Won" if status in statuses_counting_as("Won")
+		else "Lost" if status in statuses_counting_as("Lost")
+		else "On Hold" if status in statuses_counting_as("On Hold")
 		else "Open"
 	)
+	# 2026-11-26: the lead's Progress can move the line to another stage (Regularised -> Sales board) or close it
+	apply_lead_progress(doc, rows)
 	doc.present_status = latest.get("discussion_notes")
 	doc.next_action = latest.get("row_next_action") or latest.get("next_action")
 	doc.next_action_date = latest.get("row_next_action_date") or latest.get("next_action_date")
@@ -152,6 +150,27 @@ def refresh_opportunity(name):
 		frappe.log_error(title="Notion push not queued: " + doc.name)
 
 
+def apply_lead_progress(doc, rows):
+	"""2026-11-26: TP Lead Progress > Moves Lead to Stage / Closes the Lead, on the lead's opportunity."""
+	from techpark.statuses import progress_effect, stage_progress, stage_statuses
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_DONE
+
+	lead = next((r.technical_lead for r in reversed(rows) if r.get("technical_lead")), None)
+	if not lead:
+		return
+	effect = progress_effect(frappe.db.get_value("TP Technical Lead", lead, "progress"))
+	if effect.closes_lead:
+		doc.lead_status = "Lost"  # closed: off the boards (they show open lines)
+	stage = effect.moves_to_stage
+	if stage and stage != doc.stage:
+		doc.stage = stage
+		statuses = stage_statuses(stage)
+		if statuses and doc.status not in statuses:
+			# Sales board starts at the successful trial (waiting for the bulk PO)
+			doc.status = TRIAL_DONE if TRIAL_DONE not in stage_statuses(doc.stage, active_only=False) else next(iter(statuses))
+			doc.progress = stage_progress().get(doc.status, doc.progress)
+
+
 def update_technical_lead(doc, rows):
 	"""Show the line's stage and current status on its Technical Lead and the customer's Technical Lead tab."""
 	lead = next((r.technical_lead for r in reversed(rows) if r.get("technical_lead")), None) or frappe.db.get_value(
@@ -159,10 +178,14 @@ def update_technical_lead(doc, rows):
 	)
 	if not lead or not frappe.db.exists("TP Technical Lead", lead):
 		return
+	from techpark.statuses import progress_effect
+
+	# 2026-11-26: a line that ended (Closed / Cancelled: counts as Lost) or a closing Progress closes the lead
+	closed = 1 if doc.lead_status == "Lost" or progress_effect(frappe.db.get_value("TP Technical Lead", lead, "progress")).closes_lead else 0
 	frappe.db.set_value(
 		"TP Technical Lead",
 		lead,
-		{"stage": doc.stage, "current_status": doc.status, "opportunity": doc.name, "last_visit": doc.last_visit},
+		{"stage": doc.stage, "current_status": doc.status, "opportunity": doc.name, "last_visit": doc.last_visit, "is_closed": closed},
 		update_modified=False,
 	)
 	frappe.db.set_value(
@@ -172,6 +195,7 @@ def update_technical_lead(doc, rows):
 
 # Visit status -> value of the Samples / Trials / Bulk Trials PO / Regularised columns (the client's
 # Development Status sheet). The latest matching visit wins.
+# 2026-11-26: not used any more: the mapping is on the status masters (masters.MILESTONES seeds it)
 MILESTONES = {
 	"samples": {"Sample Received": "Received"},
 	"trials": {
@@ -190,18 +214,25 @@ MILESTONES = {
 def set_milestones(doc, rows):
 	"""Fill the milestone columns from the visits. A value entered by hand that the visits cannot give
 	(Supplied, Not Tried, Cost Problem ...) is kept, except that a regularisation always shows."""
+	from techpark.statuses import milestones, statuses_counting_as
+	from techpark.techpark.doctype.daily_visit_report.daily_visit_report import TRIAL_DONE
+
+	# 2026-11-26: which column a status fills is set on the TP Development / Sales Status masters
+	mapping_by_field = milestones()
+	trial_done = mapping_by_field["trials"].get(TRIAL_DONE)
+	trial_lost = {mapping_by_field["trials"].get(s) for s in statuses_counting_as("Lost")} - {None}
 	found = {}
 	for r in rows:
 		status = r.sales_status or r.development_status
-		for field, mapping in MILESTONES.items():
+		for field, mapping in mapping_by_field.items():
 			if status in mapping:
 				found[field] = mapping[status]
 		# In the Sales stage the trial was successful (also when a visit skipped the trial status).
-		if r.stage == "Sales" and found.get("trials") != "Failed":
-			found["trials"] = "Successful"
+		if r.stage == "Sales" and trial_done and found.get("trials") not in trial_lost:
+			found["trials"] = trial_done
 	for field, value in found.items():
 		current = doc.get(field)
-		if not current or current in MILESTONES[field].values() or value == "Regularised":
+		if not current or current in mapping_by_field[field].values() or field == "regularised":
 			doc.set(field, value)
 
 

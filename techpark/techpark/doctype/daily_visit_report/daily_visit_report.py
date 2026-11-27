@@ -19,13 +19,14 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cstr, getdate, today
 
-from techpark.application import get_or_create_lead
 from techpark.opportunity import refresh_opportunity, sync_visit
 from techpark.permission import is_locked, is_manager
+from techpark.statuses import stage_progress, statuses_counting_as  # 2026-11-26: statuses are masters now
 
-DISTRIBUTOR = "TP"
+# 2026-11-26: Distributor Code is in TechPark Settings
 
-# Status -> % of the whole cycle (Development up to 50%, Sales after). Keep in sync with daily_visit_report.js.
+# Status -> % of the whole cycle (Development up to 50%, Sales after). 2026-11-26: these are only the defaults
+# (old patches use them): the live values are on the TP Development Status / TP Sales Status masters (statuses.py).
 # The client's development cycle (CRM column list / Development Status format, 2026-11-06):
 # enquiry -> sent to the principal -> offer -> trial PO -> sample -> trial -> bulk trial PO -> regularised.
 DEVELOPMENT_PROGRESS = {
@@ -40,6 +41,7 @@ DEVELOPMENT_PROGRESS = {
 	"Retest": 40,
 	"Successful Trial": 50,
 	"Trial Failed": 40,
+	"Closed": 40,  # 2026-11-26
 }
 # Sales cycle after the trial (CRM column list): the bulk trial PO, then the enquiry / order / delivery /
 # payment follow-ups of the regular business; each follow-up's Next Action is its reminder.
@@ -172,7 +174,9 @@ class DailyVisitReport(Document):
 		self.row_to_line()  # visits made before the line moved onto the form
 
 	def validate(self):
-		self.distributor = DISTRIBUTOR
+		from techpark.techpark.doctype.techpark_settings.techpark_settings import get_setting
+
+		self.distributor = get_setting("distributor_code")
 		self.validate_visited_by()
 		self.clean_joint_visitors()
 		self.validate_dates()
@@ -258,8 +262,26 @@ class DailyVisitReport(Document):
 				)
 			)
 
+	def set_line_from_lead(self):
+		"""2026-11-26: the visit's line is the customer's Technical Lead (made on the customer's Technical Leads tab
+		first, client): its principal, application, product and production line are copied. No lead is made here."""
+		if not self.technical_lead:
+			return
+		lead = frappe.db.get_value(
+			"TP Technical Lead", self.technical_lead,
+			["customer", "principal", "application_master", "product", "production_line"], as_dict=True,
+		)
+		if not lead:
+			return
+		if lead.customer != self.customer:
+			frappe.throw(_("Technical Lead {0} belongs to another customer.").format(frappe.bold(self.technical_lead)))
+		self.principal = lead.principal
+		self.application_master = lead.application_master
+		self.customer_product = lead.product
+		self.production_line = lead.production_line
+
 	def set_lead_from_application(self):
-		"""Application picked from the common list: use (or make) the customer's Technical Lead for it."""
+		"""Before 2026-11-26: application picked from the common list made the customer's Technical Lead. Not used now."""
 		if not (self.get("application_master") and self.customer and self.principal):
 			return
 		# 2026-11-26: the lead must also be of the visit's Production Line (an application can run on several lines)
@@ -272,6 +294,8 @@ class DailyVisitReport(Document):
 				and (not self.customer_product or cstr(lead.product) == cstr(self.customer_product))  # 2026-11-26: Product too
 			):
 				return
+		from techpark.application import get_or_create_lead
+
 		self.technical_lead = get_or_create_lead(
 			self.customer, self.principal, self.application_master,
 			product=self.customer_product, production_line=self.production_line,
@@ -281,7 +305,7 @@ class DailyVisitReport(Document):
 	def line_to_row(self):
 		"""The visit's Application Line fields -> its first principal row (made if missing)."""
 		if self.docstatus == 0:
-			self.set_lead_from_application()
+			self.set_line_from_lead()  # 2026-11-26: was set_lead_from_application (made the lead from the visit)
 		if not (self.development_status or self.sales_status or self.technical_lead):
 			return  # no line entered here (e.g. a visit from the customer's Visits tab): add_row_from_summary
 		row = self.principals[0] if self.principals else self.append("principals", {})
@@ -395,17 +419,25 @@ class DailyVisitReport(Document):
 		visit_stage = self.dvr_stage if self.dvr_stage in ("Development", "Sales") else None
 		# Strict rules for new entries; already-submitted visits keep their recorded rows.
 		strict = self._action != "update_after_submit"
+		# 2026-11-26: a successful trial stays in Development until the lead's Progress is Regularised (client);
+		# only a regularised lead (lead Stage = Sales) takes Sales visits, and then no Development visits.
+		lead_stage = frappe.db.get_value("TP Technical Lead", row.technical_lead, "stage") if row.get("technical_lead") else None
 		if visit_stage == "Sales":
 			# A Sales visit follows lines whose development is complete
 			row.development_status = TRIAL_DONE
-		elif row.development_done_before:
-			row.development_status = TRIAL_DONE
-			if visit_stage == "Development" and strict:
+			if strict and row.get("technical_lead") and lead_stage != "Sales":
 				frappe.throw(
-					_("{0} already had a Successful Trial, so it is in the Sales stage. Set the visit's Stage to Sales.").format(
+					_("{0} is not Regularised yet: set its Technical Lead's Progress to Regularised to move it to Sales.").format(
 						self.line_label(row)
 					)
 				)
+		elif visit_stage == "Development":
+			if strict and lead_stage == "Sales":
+				frappe.throw(
+					_("{0} is Regularised (Sales stage). Set the visit's Stage to Sales.").format(self.line_label(row))
+				)
+		elif row.development_done_before:
+			row.development_status = TRIAL_DONE  # older visits without a Stage
 		if visit_stage == "Sales" and strict and not row.sales_status:
 			frappe.throw(
 				_("{0}: select the Sales Status.").format(self.line_label(row))
@@ -414,14 +446,15 @@ class DailyVisitReport(Document):
 			frappe.throw(
 				_("{0}: select the Development Status.").format(self.line_label(row))
 			)
-		row.stage = "Sales" if row.development_status == TRIAL_DONE else "Development"
+		# 2026-11-26: the visit's Stage (older visits without one: Sales from the successful trial on)
+		row.stage = visit_stage or ("Sales" if row.development_status == TRIAL_DONE else "Development")
 		if row.sales_status and row.stage != "Sales":
 			frappe.throw(
 				_("{0}: Sales Status {1} can be set only after a Successful Trial.").format(
 					self.line_label(row), frappe.bold(row.sales_status)
 				)
 			)
-		row.progress = STAGE_PROGRESS.get(row.sales_status or row.development_status, 0)
+		row.progress = stage_progress().get(row.sales_status or row.development_status, 0)  # 2026-11-26: % from the status master
 		if row.next_action_date and getdate(row.next_action_date) < getdate(self.visit_date):
 			frappe.throw(
 				_("{0}: Next Action By cannot be before the Visit Date.").format(self.line_label(row))
@@ -448,11 +481,12 @@ class DailyVisitReport(Document):
 		self.lead_stage = furthest.sales_status or furthest.development_status
 		self.stage_completed = furthest.progress or 0
 		statuses = [row.sales_status or row.development_status for row in rows]
-		if any(s in WON_STATUSES for s in statuses):
+		# 2026-11-26: what a status counts as (Won / Lost / On Hold) is set on its master
+		if any(s in statuses_counting_as("Won") for s in statuses):
 			self.lead_status = "Won"
-		elif all(s in LOST_STATUSES for s in statuses):
+		elif all(s in statuses_counting_as("Lost") for s in statuses):
 			self.lead_status = "Lost"
-		elif all(s == "On Hold" for s in statuses):
+		elif all(s in statuses_counting_as("On Hold") for s in statuses):
 			self.lead_status = "On Hold"
 		else:
 			self.lead_status = "Prospect"
@@ -473,6 +507,17 @@ class DailyVisitReport(Document):
 		values = {f: self.get(f) for f in ("spec", "size", "supplier_product_category") if self.get(f)}
 		if not values:
 			return
+		# 2026-11-26: the change (confirmed on the visit) is noted on the lead's timeline
+		old = frappe.db.get_value("TP Technical Lead", self.technical_lead, list(values), as_dict=True) or {}
+		changed = [f for f, v in values.items() if cstr(old.get(f)).strip() != cstr(v).strip()]
+		if changed:
+			meta = frappe.get_meta("Daily Visit Report")
+			frappe.get_doc("TP Technical Lead", self.technical_lead).add_comment(
+				"Info",
+				_("Changed by visit {0}: {1}").format(
+					self.name, ", ".join(f"{_(meta.get_label(f))}: {old.get(f) or '-'} → {values[f]}" for f in changed)
+				),
+			)
 		frappe.db.set_value("TP Technical Lead", self.technical_lead, values)
 		frappe.db.set_value("TP Customer Technical Lead", {"record": self.technical_lead}, values, update_modified=False)
 

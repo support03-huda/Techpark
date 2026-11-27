@@ -28,10 +28,12 @@
   },
   {
    "fieldname": "stage",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Stage",
    "in_list_view": 1,
-   "columns": 1
+   "columns": 1,
+   "options": "TP Stage",
+   "link_filters": "[[\"TP Stage\",\"is_active\",\"=\",1]]"
   },
   {
    "fieldname": "visit",
@@ -57,7 +59,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-06 12:00:00.000000",
+ "modified": "2026-11-26 23:30:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "owner": "Administrator",
