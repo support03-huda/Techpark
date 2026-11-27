@@ -1,4 +1,4 @@
-// Last edited: 2026-11-26
+// Last edited: 2026-11-27
 // Copyright (c) 2026, Techpark International
 // Opened from a visit's "Create a new Technical Lead": after saving, Frappe returns to that
 // visit and puts this lead in the row it was created from.
@@ -16,6 +16,7 @@ frappe.ui.form.on("TP Technical Lead", {
 	// 2026-11-26: a change that reaches the lead's visits asks first ("This will affect N visits. Do you want to submit?")
 	refresh(frm) {
 		frm._lead_saved = !frm.is_new() && techpark.lead_snapshot ? techpark.lead_snapshot(frm.doc) : null;
+		techpark.lead_freeze(frm); // 2026-11-27
 	},
 	async validate(frm) {
 		if (!frm._lead_saved || !techpark.ask_lead_visits) return;
@@ -100,4 +101,34 @@ techpark.ask_lead_visits = async function (items) {
 		};
 		d.show();
 	});
+};
+
+// 2026-11-27: Freeze / Unfreeze (admins: TechPark Settings > Admin Roles); a frozen lead is read only for everyone else
+techpark.lead_freeze = function (frm) {
+	if (frm.is_new()) return;
+	// 2026-11-27: decided on the server: Freeze = may edit the lead, Unfreeze = Admin Roles
+	const can_freeze = !!(frm.doc.__onload || {}).can_freeze, can_unfreeze = !!(frm.doc.__onload || {}).can_unfreeze;
+	if (frm.doc.is_frozen) {
+		frm.set_intro(
+			__("Frozen by {0} on {1}: no changes until an admin presses Unfreeze.", [
+				frappe.utils.escape_html(frappe.user.full_name(frm.doc.frozen_by) || frm.doc.frozen_by || ""),
+				frm.doc.frozen_on ? frappe.datetime.str_to_user(frm.doc.frozen_on) : "",
+			]),
+			"blue"
+		);
+		frm.disable_form(); // 2026-11-27: read only for everybody, admins too, until Unfreeze
+	} else {
+		frm.set_intro("");
+	}
+	const set = (frozen) =>
+		frappe.xcall("techpark.techpark.doctype.tp_technical_lead.tp_technical_lead.set_frozen", { name: frm.doc.name, frozen })
+			// 2026-11-27: a full reload, since the read-only state set while frozen stays on the open page after Unfreeze
+			.then(() => window.location.reload());
+	if (frm.doc.is_frozen) {
+		if (can_unfreeze) frm.add_custom_button(__("Unfreeze"), () => set(0));
+	} else if (can_freeze) {
+		frm.add_custom_button(__("Freeze"), () =>
+			frappe.confirm(__("Freeze {0}? Nobody can change it until an admin presses Unfreeze.", [frappe.utils.escape_html(frm.doc.name)]), () => set(1))
+		);
+	}
 };

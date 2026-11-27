@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Daily Visit Report (DVR) — one record per customer visit, call or meeting.
 
@@ -504,6 +504,8 @@ class DailyVisitReport(Document):
 		2026-11-25: and its Principal Product Category."""
 		if not self.get("technical_lead"):
 			return
+		if frappe.db.get_value("TP Technical Lead", self.technical_lead, "is_frozen"):
+			return  # 2026-11-27: frozen lead: only an admin changes it
 		values = {f: self.get(f) for f in ("spec", "size", "supplier_product_category") if self.get(f)}
 		if not values:
 			return

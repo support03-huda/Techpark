@@ -1,4 +1,4 @@
-# Last edited: 2026-11-23
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Customer Master — code 10001, 10002 … as per the approved client spec."""
 
@@ -65,6 +65,9 @@ class TPCustomer(Document):
 		self.customer_no = str(cint(last) + 1)
 
 	def onload(self):
+		# 2026-11-27: Technical Lead row buttons: Freeze for whoever may edit the customer, Unfreeze for admins
+		self.set_onload("can_freeze", bool(frappe.has_permission("TP Customer", "write", self)))
+		self.set_onload("can_unfreeze", is_manager())
 		# A Sales User sees only their own visits on the Visits tab.
 		if is_manager():
 			return

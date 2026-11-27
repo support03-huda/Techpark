@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """Two-way sync between the TP Customer tabs and the real records.
 
@@ -63,8 +63,9 @@ TABLES = {
 		# read-only Stage / Current Status come from the lead (set from its opportunity)
 		"display": lambda names: _lead_status(names),
 		# 2026-11-26: shown on the tab but never written back to the lead
-		"read_only": ("lead_created_on",),
+		"read_only": ("lead_created_on", "is_frozen"),  # 2026-11-27: Frozen is set with the Freeze button only
 		"fields": [
+			"is_frozen",
 			"principal",
 			"lead_created_on",  # 2026-11-26: shown on the tab (read only)
 			"application_master",

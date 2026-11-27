@@ -1,4 +1,4 @@
-# Last edited: 2026-11-26
+# Last edited: 2026-11-27
 # Copyright (c) 2026, Techpark International
 """One application of a customer (Demand Survey row). Filled once, then picked on visits."""
 
@@ -14,13 +14,44 @@ from techpark.shares import validate_shares
 FROZEN = ("principal", "product", "application_master", "production_line", "supplier_product_category", "size")
 
 
+@frappe.whitelist()
+def set_frozen(name, frozen):
+	"""2026-11-27: Freeze: anybody who may edit the lead; Unfreeze: admins only (TechPark Settings > Admin Roles)."""
+	from techpark.permission import is_manager
+
+	frozen = frappe.utils.cint(frozen)
+	doc = frappe.get_doc("TP Technical Lead", name)
+	if frozen:
+		if not frappe.has_permission("TP Technical Lead", "write", doc):
+			frappe.throw(_("You may not freeze {0}.").format(name), frappe.PermissionError)
+	elif not is_manager():
+		frappe.throw(_("Only an admin can unfreeze a Technical Lead."), frappe.PermissionError)
+	doc.db_set(
+		{"is_frozen": frozen, "frozen_by": frappe.session.user if frozen else None, "frozen_on": now_datetime() if frozen else None},
+		notify=True,
+	)
+	# 2026-11-27: the customer's Technical Leads tab row shows it too (its Freeze / Unfreeze button reads it)
+	frappe.db.set_value("TP Customer Technical Lead", {"record": name}, "is_frozen", frozen, update_modified=False)
+	doc.add_comment("Info", _("Frozen: no changes until an admin unfreezes it.") if frozen else _("Unfrozen."))
+	return frozen
+
+
 class TPTechnicalLead(Document):
 	# 2026-11-26: leads can be made by hand (form / customer tab) and from a DVR (client: keep it flexible);
 	# check_duplicate stops a second lead for the same application + production line either way.
+	def onload(self):
+		# 2026-11-27: the Freeze / Unfreeze button shows for admins (decided here, not in the browser)
+		from techpark.permission import is_manager
+
+		# 2026-11-27: Freeze for whoever may edit it, Unfreeze for admins
+		self.set_onload("can_freeze", bool(frappe.has_permission("TP Technical Lead", "write", self)))
+		self.set_onload("can_unfreeze", is_manager())
+
 	def before_insert(self):
 		self.lead_created_on = now_datetime()  # 2026-11-26: when the lead was made (client)
 
 	def validate(self):
+		self.check_freeze()  # 2026-11-27
 		self.check_duplicate()  # 2026-11-26
 		self.check_frozen()  # 2026-11-26
 		self.set_progress_effect()  # 2026-11-26
@@ -95,6 +126,21 @@ class TPTechnicalLead(Document):
 		count = update_lead_visits(self, changed)
 		if count:
 			self.add_comment("Info", _("{0} visit(s) updated with the changed lead data.").format(count))
+
+	def on_trash(self):
+		if self.is_frozen:  # 2026-11-27
+			frappe.throw(_("Technical Lead {0} is frozen: an admin must Unfreeze it before it can be deleted.").format(frappe.bold(self.name)))
+
+	def check_freeze(self):
+		"""2026-11-27: a frozen lead cannot be changed by anybody, admins too: an admin first presses Unfreeze
+		(then Freeze again). Freeze / Unfreeze go through set_frozen (admins only), not through a save."""
+		if self.is_new():
+			return
+		before = self.get_doc_before_save()
+		if before and (before.is_frozen or self.is_frozen != before.is_frozen):
+			frappe.throw(
+				_("Technical Lead {0} is frozen: an admin must Unfreeze it before it can be changed.").format(frappe.bold(self.name))
+			)  # a plain validation error, so the customer tab shows "Technical Leads row #n: ..."
 
 	def check_duplicate(self):
 		"""2026-11-26: one Technical Lead per customer + principal + application + production line

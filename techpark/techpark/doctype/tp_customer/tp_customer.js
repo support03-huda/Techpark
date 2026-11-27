@@ -1,4 +1,4 @@
-// Last edited: 2026-11-26
+// Last edited: 2026-11-27
 // Copyright (c) 2026, Techpark International
 // Plants / Products Info / Commercial / Technical Lead / Visits tabs: summary tiles
 // above editable tables. These and the Contacts table are synced to the real records on
@@ -17,12 +17,62 @@ techpark.add_row_save = function (frm) {
 			row.toggle_view(false);
 			frm.save();
 		});
+	techpark.add_row_freeze(frm, row, $actions);
+};
+
+// 2026-11-27: a frozen lead's row: every field read only (in the grid and the opened row), no Delete
+techpark.LAYOUT_TYPES = ["Section Break", "Column Break", "Tab Break", "HTML", "Button"];
+techpark.lock_frozen_row = function (frm, cdn) {
+	const grid = frm.fields_dict.technical_leads && frm.fields_dict.technical_leads.grid;
+	const d = locals["TP Customer Technical Lead"] && locals["TP Customer Technical Lead"][cdn];
+	const gr = grid && grid.grid_rows_by_docname && grid.grid_rows_by_docname[cdn];
+	if (!d || !d.is_frozen || !gr) return;
+	for (const df of gr.docfields || []) {
+		if (techpark.LAYOUT_TYPES.includes(df.fieldtype)) continue;
+		df.read_only = 1; // this row's own copy of the fields
+		gr.set_field_property(df.fieldname, "read_only", 1);
+	}
+	if (gr.grid_form) {
+		gr.grid_form.wrapper.find(".grid-delete-row, .grid-insert-row, .grid-insert-row-below, .grid-duplicate-row, .grid-move-row").hide();
+		if (!gr.grid_form.wrapper.find(".tp-frozen-note").length) {
+			$(`<div class="tp-frozen-note alert alert-info" style="margin:8px 0">${__("Frozen: no changes until an admin presses Unfreeze.")}</div>`)
+				.prependTo(gr.grid_form.wrapper.find(".grid-form-body"));
+		}
+	}
+};
+techpark.lock_frozen_rows = function (frm) {
+	for (const d of frm.doc.technical_leads || []) if (d.is_frozen) techpark.lock_frozen_row(frm, d.name);
+};
+
+// 2026-11-27: Freeze / Unfreeze a saved Technical Lead from its row (admins); a frozen row is read only for others
+techpark.add_row_freeze = function (frm, row, $actions) {
+	const d = row.doc;
+	if (d.doctype !== "TP Customer Technical Lead" || !d.record) return;
+	// 2026-11-27: Freeze for whoever may edit, Unfreeze for admins only
+	const o = frm.doc.__onload || {};
+	if (!(d.is_frozen ? o.can_unfreeze : o.can_freeze) || $actions.find(".tp-row-freeze").length) return;
+	$(`<button class="btn btn-default btn-sm pull-right tp-row-freeze">${d.is_frozen ? __("Unfreeze") : __("Freeze")}</button>`)
+		.appendTo($actions)
+		.on("click", (e) => {
+			e.stopPropagation();
+			const go = () =>
+				frappe.xcall("techpark.techpark.doctype.tp_technical_lead.tp_technical_lead.set_frozen", { name: d.record, frozen: d.is_frozen ? 0 : 1 })
+					.then(() => window.location.reload()); // 2026-11-27: read-only state set while frozen must go
+			if (frm.is_dirty()) return frappe.msgprint(__("Save the customer first."));
+			if (d.is_frozen) go();
+			else frappe.confirm(__("Freeze {0}? Nobody can change it until an admin presses Unfreeze.", [frappe.utils.escape_html(d.record)]), go);
+		});
 };
 if (!techpark.row_save_bound) {
 	techpark.row_save_bound = true;
 	frappe.model.with_doctype("TP Customer", () => {
 		for (const df of frappe.get_meta("TP Customer").fields.filter((f) => f.fieldtype === "Table")) {
-			frappe.ui.form.on(df.options, { form_render: (frm) => techpark.add_row_save(frm) });
+			frappe.ui.form.on(df.options, {
+				form_render: (frm, cdt, cdn) => {
+					techpark.add_row_save(frm);
+					techpark.lock_frozen_row(frm, cdn); // 2026-11-27
+				},
+			});
 		}
 	});
 }
@@ -71,6 +121,7 @@ frappe.ui.form.on("TP Customer", {
 		M.render_commercial(frm);
 		M.render_technical(frm);
 		M.render_visits(frm);
+		techpark.lock_frozen_rows(frm); // 2026-11-27: frozen leads' rows read only
 		// "Customer Card" is the default print format of TP Customer
 		frm.add_custom_button(__("Print Customer Card"), () => frm.print_doc());
 	},

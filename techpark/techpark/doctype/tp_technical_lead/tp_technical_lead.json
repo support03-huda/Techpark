@@ -9,6 +9,9 @@
   "customer",
   "customer_name",
   "lead_created_on",
+  "is_frozen",
+  "frozen_by",
+  "frozen_on",
   "column_break_customer",
   "principal",
   "product",
@@ -90,6 +93,32 @@
    "fieldname": "lead_created_on",
    "fieldtype": "Datetime",
    "label": "Created On",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_frozen",
+   "fieldtype": "Check",
+   "label": "Frozen",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "depends_on": "eval:doc.is_frozen",
+   "fieldname": "frozen_by",
+   "fieldtype": "Link",
+   "label": "Frozen By",
+   "options": "User",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "depends_on": "eval:doc.is_frozen",
+   "fieldname": "frozen_on",
+   "fieldtype": "Datetime",
+   "label": "Frozen On",
    "read_only": 1,
    "no_copy": 1
   },
@@ -443,7 +472,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-27 00:30:00.000000",
+ "modified": "2026-11-27 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",
