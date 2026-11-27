@@ -73,3 +73,4 @@ techpark.patches.master_ids
 techpark.patches.status_flow_regularise
 techpark.patches.app_keys
 techpark.patches.master_ids #2026-11-27 all masters
+techpark.patches.merge_old_statuses
