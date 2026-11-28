@@ -106,6 +106,8 @@ frappe.ui.form.on("TP Customer", {
 			filters: { principal: locals[cdt][cdn].principal || "", is_active: 1 },
 		}));
 		frm.set_query("principal", "technical_leads", () => ({ filters: { is_active: 1 } }));
+		// 2026-11-28 (client): Application = only the row's Product's applications
+		frm.set_query("application_master", "technical_leads", (doc, cdt, cdn) => techpark.lead_application_query(locals[cdt][cdn]));
 		frm.set_query("supplier_product_category", "technical_leads", (doc, cdt, cdn) => ({
 			filters: { principal: locals[cdt][cdn].principal || "", is_active: 1 },
 		}));
@@ -172,6 +174,17 @@ frappe.ui.form.on("TP Customer", {
 	abrasive_consumption_cr: (frm) => techpark.customer_master.render_production(frm),
 	annual_turnover_cr: (frm) => techpark.customer_master.render_production(frm),
 });
+// 2026-11-28 (client): Application = only the picked Product's applications (Customer Application master);
+// a new Product drops an Application of another product
+techpark.lead_application_query = (d) => ({ filters: { is_active: 1, ...(d.product ? { product: d.product } : {}) } });
+techpark.lead_product_changed = async function (doctype, name) {
+	const d = locals[doctype][name];
+	if (!d.product || !d.application_master) return;
+	const r = await frappe.db.get_value("Customer Application", d.application_master, "product");
+	const product = r && r.message && r.message.product;
+	if (product && product !== d.product) frappe.model.set_value(doctype, name, "application_master", "");
+};
+
 // 2026-11-27 (client): a new Technical Lead shows Progress = the TP Lead Progress Default (To Start; can be changed)
 // and Stage = Development straight away
 techpark.lead_defaults = function (doctype, name) {
@@ -185,6 +198,9 @@ techpark.lead_defaults = function (doctype, name) {
 frappe.ui.form.on("TP Customer Technical Lead", {
 	principal(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "supplier_product_category", "");
+	},
+	product(frm, cdt, cdn) {
+		techpark.lead_product_changed(cdt, cdn); // 2026-11-28
 	},
 	technical_leads_add: (frm, cdt, cdn) => {
 		techpark.lead_defaults(cdt, cdn); // 2026-11-27

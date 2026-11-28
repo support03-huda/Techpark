@@ -20,6 +20,17 @@ techpark.lead_defaults = function (doctype, name) {
 	if (Object.keys(values).length) frappe.model.set_value(doctype, name, values);
 };
 
+// 2026-11-28 (client): Application = only the picked Product's applications (Customer Application master);
+// a new Product drops an Application of another product
+techpark.lead_application_query = (d) => ({ filters: { is_active: 1, ...(d.product ? { product: d.product } : {}) } });
+techpark.lead_product_changed = async function (doctype, name) {
+	const d = locals[doctype][name];
+	if (!d.product || !d.application_master) return;
+	const r = await frappe.db.get_value("Customer Application", d.application_master, "product");
+	const product = r && r.message && r.message.product;
+	if (product && product !== d.product) frappe.model.set_value(doctype, name, "application_master", "");
+};
+
 frappe.ui.form.on("TP Technical Lead", {
 	onload(frm) {
 		if (frm.is_new()) techpark.lead_defaults(frm.doctype, frm.docname); // 2026-11-27
@@ -29,9 +40,13 @@ frappe.ui.form.on("TP Technical Lead", {
 		frm.set_query("supplier_product_category", () => ({
 			filters: { principal: frm.doc.principal || "", is_active: 1 },
 		}));
+		frm.set_query("application_master", () => techpark.lead_application_query(frm.doc)); // 2026-11-28
 	},
 	principal(frm) {
 		frm.set_value("supplier_product_category", "");
+	},
+	product(frm) {
+		techpark.lead_product_changed(frm.doctype, frm.docname); // 2026-11-28
 	},
 	// 2026-11-26: a change that reaches the lead's visits asks first ("This will affect N visits. Do you want to submit?")
 	refresh(frm) {

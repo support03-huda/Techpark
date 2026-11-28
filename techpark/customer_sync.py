@@ -75,7 +75,7 @@ TABLES = {
 			"product",
 			"production_line",
 			"division",  # 2026-11-21: moved from the Application master
-			"process_stage",
+			# 2026-11-28 (client): Process Stage and X Layer taken off the Technical Lead
 			"distribution_channel",
 			"contact_person",
 			"progress",
@@ -108,7 +108,6 @@ TABLES = {
 			"size_id",
 			"size",  # 2026-11-21: one Size field
 			"spec",  # 2026-11-21: Spec / Size come from the DVR
-			"x_layer",
 			"dresser_details",
 			"issue",
 			"action_plan",

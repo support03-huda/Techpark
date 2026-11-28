@@ -23,7 +23,6 @@
   "size",
   "application",
   "division",
-  "process_stage",
   "column_break_tl1",
   "distribution_channel",
   "contact_person",
@@ -64,7 +63,6 @@
   "size_od",
   "size_t",
   "size_id",
-  "x_layer",
   "dresser_details",
   "section_plan",
   "issue",
@@ -198,12 +196,6 @@
    "fieldtype": "Link",
    "label": "Division",
    "options": "Customer Division"
-  },
-  {
-   "fieldname": "process_stage",
-   "fieldtype": "Link",
-   "label": "Process Stage",
-   "options": "Process stages"
   },
   {
    "fieldname": "column_break_tl1",
@@ -438,11 +430,6 @@
    "hidden": 1
   },
   {
-   "fieldname": "x_layer",
-   "fieldtype": "Data",
-   "label": "X Layer"
-  },
-  {
    "fieldname": "dresser_details",
    "fieldtype": "Small Text",
    "label": "Dresser Details"
@@ -473,7 +460,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-27 20:30:00.000000",
+ "modified": "2026-11-28 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "TechPark",
  "name": "TP Technical Lead",
